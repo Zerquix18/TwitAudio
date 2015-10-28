@@ -1,37 +1,32 @@
 <?php
 echo shell_exec('git checkout *');
-echo shell_exec('git pull -f');
-if( ! function_exists('curl_init') )
-	return;
+echo shell_exec('git pull -f origin master');
 require_once('./load.php');
-$css = PATH . INC . CS . 'default.css';
-$js = PATH . INC . JS . 'default.js';
+$css_path = PATH . INC . CSS . 'default.css';
+$js_path = PATH . INC . JS . 'default.js';
 /*------------------------- css ---------------------*/
 $url = 'http://cssminifier.com/raw';
-$css = file_get_contents($css);
-$data = array(
-	'input' => $css,
+$css = file_get_contents($css_path);
+$postdata = array('http' => array(
+	'method'  => 'POST',
+	'header'  => 'Content-type: application/x-www-form-urlencoded',
+	'content' => http_build_query( array('input' => $css) ) 
+	)
 );
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$minified = curl_exec($ch);
-if( false === $minified )
-	return;
-curl_close($ch);
-file_put_contents($css, $minified);
+$minified = file_get_contents($url, false, stream_context_create($postdata)) or die("here");
+if( false === $minified || empty($minified) )
+	exit;
+file_put_contents($css_path, $minified);
 /*------------------------- js ---------------------*/
 $url = 'http://javascript-minifier.com/raw';
-$js = file_get_contents($js);
-$data = array(
-	'input' => $js,
+$js = file_get_contents($js_path);
+$postdata = array('http' => array(
+	'method'  => 'POST',
+	'header'  => 'Content-type: application/x-www-form-urlencoded',
+	'content' => http_build_query( array('input' => $js) ) 
+	)
 );
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$minified = curl_exec($ch);
-if( false === $minified )
-	return;
-file_put_contents($js, $minified);
+$minified = file_get_contents($url, false, stream_context_create($postdata));
+if( false === $minified || empty($minified) )
+	exit;
+file_put_contents($js_path, $minified);
