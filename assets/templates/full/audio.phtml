@@ -1,0 +1,71 @@
+<?php
+$a = $_BODY['audio'];
+$u = $_BODY['user'];
+$u->audios_public = (int) $u->audios_public;
+$t = $u->user . ': ';
+if( strlen($a->description) > 10 )
+	$t .= substr($a->description, 0, 10) . '...';
+else
+	$t .= $a->description;
+$_BODY['title'] = $t;
+$_BODY['robots'] = (bool) $u->audios_public;
+$can_listen = can_listen($u->id);
+load_template('header')
+?>
+	<div class="container h">
+		<div class="row">
+			<div id="le_content" class="column">
+				<div class="box">
+					<?php
+					if( $u->audios_public ):
+						display_audio($a, true);
+					else:
+						if( ! is_logged() )
+							alert_error( __("This audio is private. You must be logged in to listen to it."), true );
+						elseif( ! $can_listen )
+							alert_error( sprintf( __("This audio is private. You must be following %s on Twitter to listen to it."), '@' . $u->user), true );
+						else
+							display_audio($a, true);
+					endif;
+					?>
+					<p class="title"><?php _e('Comments') ?></p>
+					<?php if( ! $u->audios_public && ! is_logged()  ):
+						alert_error( __("This audio is private. You must log in to read the comments.") );
+					elseif( ! $u->audios_public && ! $can_listen ):
+						alert_error( sprintf( __("This audio is private. You must be following %s on Twitter to read the comments."), '@' . $u->user), true);
+					else:
+						?>
+					<div id="comments">
+						<?php load_comments($a->id) ?>
+						<?php if( ! is_logged() ): ?>
+							<a class="signin" href="<?php url() ?>signin.php"><img src="<?php echo url() . INC . IMG ?>signin.png" /></a>
+						<?php endif ?>
+					</div>
+					<?php if( is_logged() ): ?>
+					<div id="comments_error"></div>
+					<form method="POST" id="form_comment" action="<?php echo url() . INC . 'ajax/comment.php' ?>">
+						<textarea name="comment" maxlength="200" id="comment_box" placeholder="<?php _e('Type a comment') ?>"></textarea>
+						<ul class="c_footer">
+							<li class="left">
+								<label>
+								<input type="hidden" name="id" value="<?php echo $a->id ?>">
+								<input type="hidden" name="s_twitter" value="0">
+								<input type="checkbox" name="s_twitter" value="1" checked="checked">
+								&nbsp;<?php _e('Send to Twitter') ?>
+								</label>
+							</li>
+							<li class="right">
+								<button id="c_submit" type="submit" disabled="disabled" class="submit_btn"><?php _e('Comment') ?></button>
+							</li>
+						</ul>
+					</form>
+				<?php endif; endif ?>
+				</div>
+			</div>
+			<?php load_template('sidebar') ?>
+		</div>
+	</div>
+	<script type="text/javascript">var is_audio = true, audio_id = '<?php echo $a->id ?>'; </script>
+	<?php load_template('footer') ?>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<div class="box_post" id="box_post">
+	<div class="row centered" id="post">
+		<div class="column" id="record">
+			<i class="fa fa-microphone fa-3x"></i>
+			<span class="a_text"><?php _e('record') ?></span>
+		</div>
+		<div class="column c" id="or">or</div>
+		<div class="column" id="upload">
+			<i class="fa fa-upload fa-3x"></i>
+			<span class="a_text"><?php _e('upload') ?></span>
+		</div>
+	</div>
+	<div id="waiting" class="centered_v" style="display:none;">
+		<?php _e('Waiting for microphone access...') ?>
+	</div>
+	<div id="error" style="display:none">
+		<div class="alert error center"><?php _e('Microphone access is not allowed or was blocked.') ?>
+		</div>
+	</div>
+	<div id="error_processing" style="display:none">
+		<div class="alert error center"></div>
+	</div>
+	<div id="record_form" style="display:none;">
+	<p><?php _e('You can record up to 2 minutes.') ?></p>
+	<p id="cleft"><?php _e('Recording in <span id="cleftn">3</span>...') ?></p>
+	<p id="l_reached" style="display:none"><?php _e('Limit reached!') ?></p>
+	<hr>
+		<i class="fa fa-stop" title="<?php _e('Stop') ?>" id="stop"></i>
+		<span id="count">0:00</span>
+		<span id="cancel" title="<?php _e('Cancel') ?>">
+			<i class="fa fa-times-circle"></i> <?php _e('Cancel') ?>
+		</span>
+	</div>
+	<form method="POST" action="<?php echo url() . INC . 'ajax/upload.php' ?>" enctype="multipart/form-data" style="display:none;" id="up_form">
+		<input type="file" id="up_file" name="up_file" style="visibility: hidden; display: none;" accept=".mp3,.aac,.m4a,.wav,.ogg">
+	</form>
+	<form method="POST" id="cut_form" action="<?php echo url() . INC . 'ajax/cut.php' ?>" style="display:none">
+		<?php _e("I'm sorry! That audio is too long :( Would you like to cut it a bit?"); ?><br>
+		<div id="player_cut" class="jp-jplayer"></div>
+			<div id="cut_container" class="jp-audio sm audio_preview">
+				<div class="jp-type-single">
+  					<div class="jp-gui jp-interface">
+						<ul class="jp-controls">
+							<li><a href="javascript:;" class="jp-play" tabindex="1"><i class="fa fa-play control"></i></a></li>
+							<li><a href="javascript:;" class="jp-pause" tabindex="1"><i class="fa fa-pause control"></i></a></li>
+							<li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+							<li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute"><i class="fa fa-volume-up vcontrol"></i></a></li>
+							<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute"><i class="fa fa-volume-down vcontrol"></i></a></li>
+							<li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+						</ul>
+						<div class="jp-progress">
+							<div class="jp-seek-bar">
+								<div class="jp-play-bar"></div>
+							</div>
+						</div>
+						<div class="jp-volume-bar">
+							<div class="jp-volume-bar-value"></div>
+						</div>
+						<div class="jp-current-time"></div>
+						<div class="jp-duration"></div>
+					</div>
+					<div class="jp-no-solution" style="display:none">
+						<span>Update Required</span>To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+					</div>
+				</div>
+			</div>
+		<p id="cut_error"></p>
+		<input type="hidden" name="id" id="audio_id">
+		<div id="cut_block">
+			Start: <input type="text" id="start" name="start" value="0:00"> | End: <input type="text" name="end" id="end" value="2:00">
+		</div>
+		<hr>
+		<button type="submit" id="cut_button"><i class="fa fa-scissors"></i>&nbsp;<?php _e('Cut') ?></button> | <button type="button" id="cut_cancel"><i class="fa fa-times-circle"></i>&nbsp;<?php _e('Cancel') ?></button>
+	</form>
+	<form method="POST" action="<?php echo url() . INC . 'ajax/post.php' ?>" id="post_form" style="display:none">
+		<span><?php _e('Your audio is ready!') ?></span>
+		<div id="player_preview" class="jp-jplayer"></div>
+			<div id="preview_container" class="jp-audio sm audio_preview">
+				<div class="jp-type-single">
+  					<div class="jp-gui jp-interface">
+						<ul class="jp-controls">
+							<li><a href="javascript:;" class="jp-play" tabindex="1"><i class="fa fa-play control"></i></a></li>
+							<li><a href="javascript:;" class="jp-pause" tabindex="1"><i class="fa fa-pause control"></i></a></li>
+							<li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+							<li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute"><i class="fa fa-volume-up vcontrol"></i></a></li>
+							<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute"><i class="fa fa-volume-down vcontrol"></i></a></li>
+							<li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+						</ul>
+						<div class="jp-progress">
+							<div class="jp-seek-bar">
+								<div class="jp-play-bar"></div>
+							</div>
+						</div>
+						<div class="jp-volume-bar">
+							<div class="jp-volume-bar-value"></div>
+						</div>
+						<div class="jp-current-time"></div>
+						<div class="jp-duration"></div>
+					</div>
+					<div class="jp-no-solution" style="display:none">
+						<span>Update Required</span>To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+					</div>
+				</div>
+			</div>
+		<input type="hidden" name="id" id="a_id">
+		<textarea maxlength="200" id="desc" name="description" class="desc" placeholder="<?php _e('Add a description...') ?>"></textarea>
+		<label class="checkbox">
+			<input type="hidden" name="s_twitter" value="0">
+			<input type="checkbox" checked="checked" name="s_twitter" value="1"> <?php _e('Send to twitter') ?>
+		</label>
+		<hr>
+		<button class="submit_btn" type="submit"><?php _e('Post') ?></button> | <button type="button" id="post_cancel"><i class="fa fa-times-circle"></i>&nbsp;<?php _e('Cancel') ?></button>
+	</form>
+	<div id="uploading" class="centered_v" style="display:none;">
+		<?php _e('Uploading...') ?>
+		<div class="progress">
+			<span id="up_progress" class="lebar" style="width:0%"></span>
+		</div>
+	</div>
+	<div id="cutting" class="centered_v" style="display:none;">
+		<?php _e('Cutting...') ?>
+		<div class="progress">
+			<span id="cut_progress" class="lebar" style="width:0%"></span>
+		</div>
+	</div>
+</div>
+<?php $_BODY['post_box'] = true ?>

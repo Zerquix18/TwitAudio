@@ -1,0 +1,46 @@
+<?php
+$_BODY['q'] =
+$q = validate_args(@$_GET['q']) ? htmlentities(trim($_GET['q'])) : '';
+$_BODY['title'] = $q . ' ' . __('Search');
+load_template('header');
+$_BODY['sort'] =
+$s = validate_args( @$_GET['o'] )
+	&& in_array($_GET['o'], array("d", "l", "p") ) ?
+		$_GET['o']
+	:
+		'd'
+?>
+	<div class="container h">
+		<div class="row">
+			<div id="le_content" class="column">
+				<div class="box">
+				<div class="sb">
+				<?php if( ! empty($q) )
+					_e("You're looking for...");
+				else
+					_e("Type something to search")
+				?>
+				<form method="GET" action="<?php echo url() . 'search' ?>">
+					<input type="text" name="q" id="s">
+				</form>
+				</div>
+				<hr>
+				<div id="search">
+				<?php
+				!empty($_GET['q']) and search($_GET['q'], $s, 1)
+				?>
+				</div>
+				</div>
+			</div>
+			<?php load_template('sidebar') ?>
+		</div>
+	</div>
+	<?php if( ! empty($q) ): ?>
+	<script type="text/javascript">
+	$("#q, #s").val("<?php echo addslashes($_GET['q']) ?>");
+	var search = "<?php echo urlencode($_GET['q']) ?>";
+	</script>
+	<?php endif ?>
+	<?php load_template('footer') ?>
+</body>
+</html>

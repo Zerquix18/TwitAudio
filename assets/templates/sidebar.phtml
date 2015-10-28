@@ -1,0 +1,61 @@
+			<div id="le_sidebar" class="column">
+			<?php if( in_array($_BODY['page'], array("default", "settings")) ): ?>
+				<div class="box">
+					<a href="<?php echo url() . 'audios/' . $_USER->user ?>">
+						<img class="pp" src="<?php echo get_image($_USER->avatar, 'bigger') ?>">
+					</a>
+					<hr>
+					<div id="user_i">
+					<ul>
+						<li>
+						<?php echo $db->query("SELECT COUNT(*) AS size FROM audios WHERE user = ? AND reply_to = '0'", $_USER->id)->size ?>
+						</li>
+						<li><a class="nodeco" href="<?php echo url() . 'audios/' . $_USER->user ?>"><?php _e('audios') ?></a></li>
+					</ul>
+					<div class="dv"></div>
+					<ul>
+						<li>						<?php echo $db->query("SELECT COUNT(*) AS size FROM audios WHERE id IN ( SELECT audio_id FROM likes WHERE user_id = ? ) AND reply_to = '0'", $_USER->id)->size ?>
+						</li>
+						<li><a class="nodeco" href="<?php echo url() . 'likes/' . $_USER->user ?>"><?php _e('likes') ?></a></li>
+					</ul>	
+					</div>
+				</div>
+				<?php elseif( $_BODY['page'] == 'search'): ?>
+				<div class="box">
+					<p class="title"><?php _e('Sort by...') ?></p>
+					<ul id="sort_search">
+						<li <?php if($_BODY['sort'] == 'd') echo 'class="active"' ?>>
+							<a href="<?php echo url() . 'search?q=' . urlencode($_BODY['q']) . '&o=d' ?>">
+								<?php _e('Date') ?>
+							</a>
+						</li>
+						<li <?php if($_BODY['sort'] == 'l') echo 'class="active"' ?>>
+							<a href="<?php echo url() . 'search?q=' . urlencode($_BODY['q']) . '&o=l' ?>">
+								<?php _e('Likes') ?>
+							</a>
+						</li>
+						<li <?php if($_BODY['sort'] == 'p') echo 'class="active"' ?>>
+							<a href="<?php echo url() . 'search?q=' . urlencode($_BODY['q']) . '&o=p' ?>">
+								<?php _e('Plays') ?>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<?php endif; ?>
+				<div class="box">
+					<p class="title"><?php _e('Trending') ?></p>
+					<?php load_trendings() ?>
+				</div>
+				<div class="box ads_box">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Responsive -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1967021427191293"
+     data-ad-slot="1547888976"
+     data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+				</div>
+			</div>

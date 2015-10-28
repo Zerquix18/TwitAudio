@@ -1,0 +1,32 @@
+<?php load_template('header') ?>
+	<div class="container h">
+		<div id="welcome">
+			<div id="logo-full">
+				<img src="<?php echo $_BODY['img_url'] ?>logo-full.png" alt="TwitAudio" title="TwitAudio">
+			</div>
+			<div class="ksyo">
+				<?php _e('Share voice notes and audio files using Twitter') ?>
+			</div>
+		</div>
+		<div id="guide">
+			<div class="step si">
+				<div class="stepn"><?php _e('Step 1') ?></div>
+				<a href="<?php echo url() . 'signin.php' ?>">
+					<img src="<?php echo $_BODY['img_url'] ?>signin.png" alt="Sign in with Twitter" title="Sign in with Twitter">
+				</a>
+			</div>
+			<div class="step">
+				<div class="stepn"><?php _e('Step 2') ?></div>
+					<img src="<?php echo $_BODY['img_url'] ?>step2.png">
+					<?php _e('Record or upload an audio') ?>
+			</div>
+			<div class="step">
+				<div class="stepn"><?php _e('Step 3') ?></div>
+					<img src="<?php echo $_BODY['img_url'] ?>step3.png">
+					<?php _e('Share it to Twitter!') ?>
+			</div>
+		</div>
+		<?php load_template('footer') ?>
+	</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="<?php getlang() ?>">
+<head>
+	<title><?php if( isset($_BODY['title']) ) echo $_BODY['title'] . ' | ' ?>TwitAudio</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="title" content="<?php echo $_BODY['meta']['title'] ?>">
+	<meta name="robots" content="<?php echo $_BODY['robots'] ? 'index,follow' : 'noindex,nofollow' ?>">
+	<link rel="stylesheet" href="<?php echo $_BODY['css_url'] . 'default.css' ?>">
+	<?php if( ! in_array($_BODY['page'], array("index") ) ): ?>
+	<link rel="stylesheet" href="<?php echo $_BODY['css_url'] ?>font-awesome.css">
+	<?php endif ?>
+	<link rel="apple-touch-icon" href="<?php echo $_BODY['img_url'] ?>apple-icon.png">
+	<link rel="icon" href="<?php echo $_BODY['img_url'] ?>favicon.ico">
+	<?php if( ! in_array($_BODY['page'], array("index", "process") ) ): ?>
+	<script src="<?php echo $_BODY['js_url'] ?>jquery-1.11.3.min.js"></script>
+	<?php endif ?>
+	<?php if('audio' === $_BODY['page'] && $_BODY['robots']): ?>
+		<meta name="twitter:player" content="<?php echo 'https://twitaudio.com/frame/' . $_BODY['audio']->id ?>">
+		<meta name="twitter:player:height" content="47">
+		<meta name="twitter:player:width" content="435">
+		<meta name="twitter:card" content="player">
+		<meta name="twitter:site" content="@twit_audio">
+		<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $_BODY['user']->user) ?>">
+		<meta name="twitter:image" content="https://twitaudio.com/assets/img/image.jpg">
+		<meta name="twitter:url" content="https://twitaudio.com/<?php echo $_BODY['audio']->id ?>">
+		<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
+	<?php endif ?>
+	<meta property="og:title" content="TwitAudio">
+	<meta property="og:image" content="https://twitaudio.com/assets/img/logo-md.png">
+</head>
+<body<?php if( in_array($_BODY['page'], array("index", "process") ) ) echo ' id="h"' ?>>
+	<nav id="nav">
+		<div class="container">
+			<div id="logo-sm" class="left">
+				<a href="<?php echo url() ?>">
+					<img src="<?php echo $_BODY['img_url'] ?>logo-sm.png" alt="TwitAudio">
+				</a>
+			</div>
+			<form method="GET" id="srch" action="<?php echo url() . 'search' ?>">
+				<input type="text" maxlength="60" id="q" name="q" placeholder="Search for popular audios...">
+			</form>
+		</div>
+	</nav>

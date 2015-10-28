@@ -1,0 +1,18 @@
+<?php
+$_BODY['robots'] = false
+or load_template('header') ?>
+	<div class="container h">
+		<div id="processing" class="box">
+			<div id="pl">
+			<?php if( array_key_exists('error', $_BODY) ):
+				echo '<div class="alert error">' . $_BODY['error'] . '</div>';
+			else: ?>
+				<i class="fa fa-refresh fa-spin"></i>&nbsp;
+				<?php _e('Loading your data...') ?>
+			<?php endif ?>
+			</div>
+		</div>
+		<?php load_template('footer') ?>
+	</div>
+</body>
+</html>

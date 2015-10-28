@@ -1,0 +1,38 @@
+<?php
+$_BODY['title'] = __('Settings') and load_template('header')
+?>
+	<div class="container h">
+		<div class="row">
+			<div id="le_content" class="column">
+				<div class="box" id="settings">
+					<h2><?php echo $_BODY['title'] ?></h2>
+					<hr>
+					<div id="settings_result"></div>
+					<form id="settings_form" method="POST" action="<?php echo url() . INC . 'ajax/settings.php' ?>">
+					<strong><?php _e('Audios') ?></strong>
+					<label class="checkbox">
+						<input type="hidden" name="audios_public" value="0">
+						<input type="checkbox" name="audios_public" value="1" <?php echo (int) $_USER->audios_public ? 'checked="checked"' : '' ?>> <?php _e('Make my audios public') ?>
+					</label>
+					<strong><?php _e('Likes') ?></strong>
+					<label class="checkbox">
+						<input type="hidden" name="likes_public" value="0">
+						<input type="checkbox" name="likes_public" value="1" <?php echo (int) $_USER->likes_public ? 'checked="checked"' : '' ?>> <?php _e('Make my likes public') ?>
+					</label>
+					<p class="info">
+					<?php
+						_e("If your audios are private, only people following you on Twitter will be able to listen to them and they won't be played in  Twitter.");
+						echo '<a href="'.url().'faq#"> ' . __('Read more.') . '</a>';
+					?>
+					</p>
+					<hr>
+					<button class="submit_btn" type="submit"><?php _e('Update settings') ?></button>
+					</form>
+				</div>
+			</div>
+			<?php load_template('sidebar') ?>
+		</div>
+	</div>
+	<?php load_template('footer') ?>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?php
+$_BODY['title'] = __('Error 404')
+and $_BODY['page'] = '404'
+and $_BODY['robots'] = false
+or load_template('header')
+?>
+	<div class="container h">
+		<div id="processing" class="box">
+			<div id="pl">
+				<h2><?php echo $_BODY['title'] ?></h2>
+				<hr>
+				<?php _e('We could not find that. Try using the search box.') ?>
+				<ul id="options404">
+					<li>
+						<a href="#" onclick="javascript:history.back();">
+						<?php _e('Go back to the previous page') ?>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<?php load_template('footer') ?>
+	</div>
+</body>
+</html>

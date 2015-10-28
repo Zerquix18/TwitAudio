@@ -1,0 +1,90 @@
+<?php
+$u = $_BODY['user'];
+$is_like = isset($_GET['l']);
+$are_likes_visible = 
+(int) $u->likes_public || ( is_logged() && $u->id == $_USER->id );
+$are_audios_visible =
+(int) $u->audios_public || ( is_logged() && $u->id == $_USER->id );
+if( ! (int) $u->likes_public )
+	$_BODY['robots'] = false;
+$_BODY['title'] = $is_like ?
+	sprintf( __("%s likes"), $u->user )
+:
+	$u->user;
+load_template('header');
+?>
+	<div class="container h">
+		<div class="row">
+			<div id="le_content" class="column">
+				<div class="box">
+				<div class="profile_info">
+				<a class="pl" target="_blank" href="<?php echo get_image($u->avatar) ?>">
+					<img class="pp" src="<?php echo get_image($u->avatar, 'bigger') ?>">
+				</a>
+					<span class="name"><?php echo htmlentities($u->name) ?></span>
+					<span class="uname">@<?php echo $u->user ?></span>
+					<div class="bio">
+					<?php echo htmlentities( $u->bio ) ?>
+					</div>
+					<?php if( $are_likes_visible || $are_audios_visible ): ?>
+					<ul class="sn" style="margin-top:10px">
+						<li class="right">
+							<a href="<?php echo url() . (!$is_like ? 'likes/' : 'audios/') . $u->user ?>">
+								<?php
+								$con = is_logged() && $_USER->id == $u->id;
+								if( ! $is_like && $are_audios_visible )
+									echo $con ?
+										__('See your likes')
+									:
+										sprintf( __("See %s's likes"), $u->user );
+								else
+									echo $con ?
+										__('See your audios')
+									:
+										sprintf( __("See %s's audios"), $u->user );
+								?>
+								&rarr;
+							</a>
+						<?php endif ?>
+						</li>
+					</ul>
+					<hr>
+				</div>
+				<p class="title">
+					<?php echo sprintf( $is_like ?
+						$_BODY['title']
+					:
+						 __("%s's audios")
+					,$u->user) ?>
+				</p>
+				<div id="<?php echo $is_like ? 'likes' : 'audios'; ?>">
+					<?php
+					$call = $is_like ? 'load_likes' : 'load_audios';
+						if( $is_like ? $are_likes_visible : $are_audios_visible ):
+							$call($u->id);
+						else:
+							if( ! is_logged() ):
+								if( $is_like )
+									alert_error( __("This user's likes are private. You must login to listen to them."), true);
+								else
+									alert_error( __("This user's audios are private. You must login to listen to them."), true);
+							elseif( ! can_listen( $u->id ) ):
+								if( $is_like )
+									alert_error( __("You must be following this account on Twitter to view their liked audios."), true );
+								else
+									alert_error( __("You must be following this account on Twitter to listen to their audios."), true );
+							else:
+								$call($u->id);
+							endif;
+						endif;
+					?>
+				</div>
+				</div>
+			</div>
+			<?php load_template('sidebar') ?>
+		</div>
+	</div>
+	<script type="text/javascript">var profile = '<?php echo $u->user ?>';</script>
+	<?php load_template('footer') ?>
+</body>
+</html>
