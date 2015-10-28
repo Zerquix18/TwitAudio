@@ -1,6 +1,9 @@
 <?php
-echo shell_exec('git checkout *');
-echo shell_exec('git pull -f origin master');
+// devuelve todo al estado del último commit local, sin borrar archivos nuevos.
+shell_exec('git reset --hard HEAD');
+// actualiza nuevamente todo, sin borrar archivos nuevos.
+// sobreescribe todos los archivos ya existentes en el repo
+shell_exec('git pull origin master');
 require_once('./load.php');
 $css_path = PATH . INC . CSS . 'default.css';
 $js_path = PATH . INC . JS . 'default.js';
