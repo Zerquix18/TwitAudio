@@ -55,7 +55,7 @@ if( (int) $exists->size > 0 ) { // it already exists
 			$time,
 			$lang
 		)
-	) or die($db->error);
+	);
 }
 unset($_SESSION['access_token']);
 unset($_SESSION['access_token_secret']);
