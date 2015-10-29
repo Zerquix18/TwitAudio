@@ -4,6 +4,8 @@ shell_exec('git reset --hard HEAD');
 // actualiza nuevamente todo, sin borrar archivos nuevos.
 // sobreescribe todos los archivos ya existentes en el repo
 shell_exec('git pull origin master');
+// devuelve los permisos
+shell_exec('chmod -R 777 .');
 require_once('./load.php');
 $css_path = PATH . INC . CSS . 'default.css';
 $js_path = PATH . INC . JS . 'default.js';
