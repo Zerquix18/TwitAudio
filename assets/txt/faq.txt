@@ -15,3 +15,5 @@
 	<li>BlackBerry Browser (version 10 or higher)</li>
 </ul>
 <p>If you cannot update/install one of those browsers, you still have the option to record your voice note with your phone/PC and upload it to TwitAudio through the option to upload an audio file.</p>
+
+<p>If you're an iOS user, you can use Bowser, which is a browser that allows audio recording, while we work in our iOS app.</p>
