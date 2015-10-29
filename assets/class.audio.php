@@ -8,7 +8,7 @@
 * @since {27/9/2015}
 *
 **/
-require_once( dirname(__FILE__) . "/getid3/getid3.php");
+require dirname(__FILE__) . '/getid3/getid3.php';
 class Audio {
 	public $audio;
 	public $original_name;
@@ -17,12 +17,10 @@ class Audio {
 	public $default_rate = 128;
 	public $error = false;
 	public $error_code;
-	public $allowed_formats = array("aac", "mp4", "mp3", "ogg", "wav");
+	public $allowed_formats = array('aac', 'mp4', 'mp3', 'ogg', 'wav');
 	public $is_voice;
 	private $format;
 	public function __construct($audio_path, $valid = false, $is_voice = false) {
-		if( ! file_exists($audio_path) )
-			return exit("l");
 		$id3 = new getID3();
 		$this->info = $id3->analyze($audio_path);
 		$this->audio = $this->original_name = $audio_path;

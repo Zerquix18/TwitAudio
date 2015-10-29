@@ -1,5 +1,5 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
@@ -9,7 +9,10 @@ $q = trim($_POST['q']);
 $p = (int) $_POST['p'];
 if( ! is_numeric($_POST['p']) || $p < 1 )
 	_result( __('Request malformed.'), false );
-$a = $db->query("SELECT user,id FROM audios WHERE id = ?", $db->real_escape( $_POST['q']) );
+$a = $db->query(
+	"SELECT user,id FROM audios WHERE id = ?",
+	$db->real_escape( $_POST['q'])
+);
 if( empty($q) || ! $a->nums )
 	_result( __('Request malformed.'), false );
 if( ! can_listen($a->user) )

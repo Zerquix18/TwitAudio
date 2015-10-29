@@ -1,9 +1,10 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-! validate_args( @$_POST['q'], @$_POST['p'] ) and _result( __('Request malformed.'), false );
+if( ! validate_args( @$_POST['q'], @$_POST['p'] ) )
+	_result( __('Request malformed.'), false );
 
 $q = trim($_POST['q']);
 $s = validate_args( @$_POST['o'] )

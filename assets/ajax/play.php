@@ -1,17 +1,22 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-! validate_args( @$_POST['id'] ) and _result( __('Request malformed.'), false );
+if( ! validate_args( @$_POST['id'] ) )
+	_result( __('Request malformed.'), false );
 
 $id = $_POST['id'];
 
-! preg_match("/^[A-Za-z0-9]{6}$/", $id ) and _result( __('Request malformed.'), false );
+if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
+	_result( __('Request malformed.'), false );
 
 // does audio exist ?
 
-$exists_audio = $db->query("SELECT plays,reply_to FROM audios WHERE id = ?", $id);
+$exists_audio = $db->query(
+	"SELECT plays,reply_to FROM audios WHERE id = ?",
+	$id
+);
 if( ! (int) $exists_audio->nums )
 	_result( __("The audio you tried to like doesn't exist."), false );
 
@@ -21,7 +26,13 @@ if( $exists_audio->reply_to != '0' )
 $ip = getip();
 
 // was played ?
-$was_played = $db->query("SELECT COUNT(*) AS size FROM plays WHERE user_ip = ? AND audio_id = ?", $ip, $id);
+$was_played = $db->query(
+	"SELECT COUNT(*) AS size FROM plays
+	WHERE user_ip = ?
+	AND audio_id = ?",
+	$ip,
+	$id
+);
 $was_played = (int) $was_played->size;
 if( $was_played )
 	_result(null, false);

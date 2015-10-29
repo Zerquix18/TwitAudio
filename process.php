@@ -1,10 +1,15 @@
 <?php
-require_once('load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 $error = __("There was an error while processing your data :(");
 $denied =  __("You denied our request, so there's nothing we can do. :/");
 $_BODY['page'] = __('Processing');
 $_BODY['meta']['robots'] = false;
-if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) ) || ! validate_args( $_SESSION['access_token'], $_SESSION['access_token_secret']) ) {
+if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
+	|| ! validate_args(
+		$_SESSION['access_token'],
+		$_SESSION['access_token_secret']
+		)
+	) {
 	$_BODY['error'] = $den ? $denied : $error;
 	load_full_template('process');
 	exit();
@@ -22,7 +27,7 @@ $verified = (int) $s->verified;
 $access_token = $_SESSION['access_token'];
 $access_token_secret = $_SESSION['access_token_secret'];
 // does the user exist?
-$exists = $db->query("SELECT COUNT(*) AS size FROM users WHERE id = ?", $_SESSION['id']);
+$exists = $db->query("SELECT COUNT(*) AS size FROM users WHERE id = ?",$_SESSION['id']);
 if( (int) $exists->size > 0 ) { // it already exists
 	// re-update everythin'
 	$r = $db->update("users", array(

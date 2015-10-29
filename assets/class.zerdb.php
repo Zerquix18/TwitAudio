@@ -294,9 +294,9 @@ class zerdb {
 				$a = is_string($a) ? "'$a'" : $a; // if it's string it will pass it like an string eh... be careful.
 				$query = preg_replace("/\?/", $a, $query, 1); // Replaces all ? by args in order... that's why the count have to be the same
 			}
-			$this->query = $query;
-			return $this->execute();
-		}
+		}			
+		$this->query = $query;
+		return $this->execute();
 	}
 /**
 *

@@ -1,19 +1,25 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-! is_logged() and _result( __("Authentication required."), false);
+if( ! is_logged() )
+	_result( __("Authentication required."), false);
 
-! validate_args( @$_POST['id'] ) and _result( __('Request malformed.'), false );
+if( ! validate_args( @$_POST['id'] ) )
+	_result( __('Request malformed.'), false );
 
 $id = $_POST['id'];
 
-! preg_match("/^[A-Za-z0-9]{6}$/", $id ) and _result( __('Request malformed.'), false );
+if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
+	_result( __('Request malformed.'), false );
 
 // does audio exist ?
 
-$exists = $db->query("SELECT user,audio FROM audios WHERE id = ?", $id);
+$exists = $db->query(
+	"SELECT user,audio FROM audios WHERE id = ?",
+	$id
+);
 
 if( $exists->nums === 0 )
 	_result( __("That audio doesn't exist."), false);

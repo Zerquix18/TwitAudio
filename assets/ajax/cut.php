@@ -1,14 +1,16 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-! is_logged() and _result( __("Authentication required."), false);
+if( ! is_logged() )
+	_result( __("Authentication required."), false);
 
-! validate_args( $_POST['start'], $_POST['end'], $_POST['id'] )
-	and _result( __('Request malformed.'), false );
+if( ! validate_args( $_POST['start'], $_POST['end'], $_POST['id'] ) )
+	_result( __('Request malformed.'), false );
 
-! array_key_exists($_POST['id'], $_SESSION) and result( __('Request malformed.'), false );
+if( ! array_key_exists($_POST['id'], $_SESSION) )
+	result( __('Request malformed.'), false );
 
 if( is_numeric($_POST['start']) ) {
 	$start = (int) $_POST['start'];
@@ -49,4 +51,10 @@ $a = new Audio($_SESSION[$id]['tmp_url'], true);
 $n = $a->cut( $start, $end );
 $_SESSION[$id]['tmp_url'] = $n;
 $_SESSION[$id]['duration'] = floor($a->info['playtime_seconds']);
-_result( true, true, array('id' => $id, 'tmp_url' => url() . INC . TMP . end( $l = explode('/', $a->audio) ) ) );
+_result( true, true,
+	array(
+		'id' => $id,
+		'tmp_url' =>
+		url() . INC . TMP . end( $l = explode('/', $a->audio) ) 
+		)
+	);

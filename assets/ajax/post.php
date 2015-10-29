@@ -1,18 +1,19 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-! is_logged() and _result( __("Authentication required."), false);
+if( ! is_logged() )
+	_result( __("Authentication required."), false);
 
-! validate_args( $_POST['id'], $_POST['description'])
-	and _result( __('Request malformed.'), false );
+if( ! validate_args( $_POST['id'], $_POST['description']) )
+	_result( __('Request malformed.'), false );
 
-! array_key_exists('s_twitter', $_POST)
-	and _result( __('Request malformed.'), false );
+if( ! array_key_exists('s_twitter', $_POST) )
+	_result( __('Request malformed.'), false );
 
-! array_key_exists($_POST['id'], $_SESSION)
-	and _result( __("Request malformed."), false );
+if( ! array_key_exists($_POST['id'], $_SESSION) )
+	_result( __("Request malformed."), false );
 
 $id = $_POST['id'];
 
@@ -26,7 +27,11 @@ $_POST['description'] = trim($_POST['description']);
 extract_hashtags( $_POST['description'] );
 // ok then
 
-while( file_exists( PATH . INC . 'audios/' . $n = substr( md5( uniqid() . rand(1,100) ), 0, 26 ) . '.mp3' ) );
+while( file_exists(
+	PATH . INC . 'audios/' .
+	$n = substr( md5( uniqid() . rand(1,100) ), 0, 26 ) . '.mp3'
+	)
+);
 
 rename( $_SESSION[$id]['tmp_url'], PATH . INC . 'audios/' . $n);
 

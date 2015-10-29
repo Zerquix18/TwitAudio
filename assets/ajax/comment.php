@@ -1,11 +1,16 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-! is_logged() and _result( __("Authentication required."), false);
+if( ! is_logged() ) 
+	_result( __("Authentication required."), false);
 
-if( ! validate_args( @$_POST['comment'], @$_POST['s_twitter'], @$_POST['id']) )
+if( ! validate_args(
+	@$_POST['comment'],
+	@$_POST['s_twitter'],
+	@$_POST['id'])
+	)
 	_result( __("Request malformed.") );
 
 if( ! preg_match("/^[A-Za-z0-9]{6}$/", $_POST['id']) )
@@ -17,7 +22,10 @@ if( empty($_POST['comment']) )
 	_result( __("The comment cannot be empty."), false);
 if( mb_strlen($_POST['comment'], 'utf-8') > 200 )
 	_result( __("The comment cannot have more than 200 characters") );
-$exists = $db->query("SELECT reply_to,tw_id,user FROM audios WHERE id = ?", $_POST['id']); // 'id' is protected by regex
+$exists = $db->query(
+	"SELECT reply_to,tw_id,user FROM audios WHERE id = ?",
+	$_POST['id'] // 'id' is protected by regex
+);
 if( $exists->nums === 0 )
 	_result( __("The audio you're trying to reply does not exist."), false );
 if( $exists->reply_to != '0' )
@@ -40,7 +48,10 @@ $db->insert("audios", array(
 if( $_POST['s_twitter'] === '1' ) {
 	$tweet = ' - https://twitaudio.com/'. $_POST['id'];
 	$len = strlen($tweet);
-	$at = $db->query("SELECT user FROM users WHERE id = ?", $exists->user);
+	$at = $db->query(
+		"SELECT user FROM users WHERE id = ?",
+		$exists->user
+	);
 	$at = $at->user;
 	$len2 = strlen($at);
 	$desc = "@$at ";
@@ -56,4 +67,6 @@ if( $_POST['s_twitter'] === '1' ) {
 			)
 		)->where("id", $a_id)->_();
 }
-display_comment($db->query("SELECT * FROM audios WHERE id = ?", $a_id));
+display_comment(
+	$db->query("SELECT * FROM audios WHERE id = ?", $a_id)
+);

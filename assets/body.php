@@ -81,12 +81,28 @@ function d_diff( $time ) {
 }
 function display_audio( $a, $big = false ) {
 	global $db, $_USER;
-	$u = (is_logged() && $a->user == $_USER->id) ? $_USER : $db->query("SELECT * FROM users WHERE id = ?", $a->user);
-	$was_played = $db->query("SELECT COUNT(*) AS size FROM plays WHERE audio_id = ? AND user_ip = ?", $a->id, getip() );
+	$u = ( is_logged() && $a->user == $_USER->id) ?
+		$_USER
+	:
+		$db->query(
+			'SELECT * FROM users WHERE id = ?',
+			$a->user
+		);
+	$was_played = $db->query(
+		'SELECT COUNT(*) AS size FROM plays
+		WHERE audio_id = ? AND user_ip = ?',
+		$a->id,
+		getip()
+	);
 	$was_played = (int) $was_played->size;
 	if( is_logged() ):
-	$is_liked = $db->query("SELECT COUNT(*) AS size FROM likes WHERE audio_id = ? AND user_id = ?", $a->id, $_USER->id);
-	$is_liked = (int) $is_liked->size;
+		$is_liked = $db->query(
+			"SELECT COUNT(*) AS size FROM likes
+			WHERE audio_id = ? AND user_id = ?",
+			$a->id,
+			$_USER->id
+		);
+		$is_liked = (int) $is_liked->size;
 	endif;
 	$size = $big ? 'bigger' : 'normal'
 ?>
@@ -186,22 +202,41 @@ function can_listen( $id2 ) {
 	if( $l && $_USER->id == $id2 ) // same user
 		return true;
 	// check if audios of user2 are private.
-	$c = $db->query("SELECT audios_public FROM users WHERE id = ?", $id2);
+	$c = $db->query(
+		"SELECT audios_public FROM users WHERE id = ?",
+		$id2
+	);
 	if( $c->nums > 0 && $c->audios_public == '1' )
 		return true; // they're public.
 	if( ! $l )
 		return false; // not logged and audios aren't public.
 	// not public. check if cached ...
-	$db->query("DELETE FROM following_cache WHERE time < " . time() - 10800 );
-	$x = $db->query("SELECT result FROM following_cache WHERE user_id = ? AND following = ?", $_USER->id, $id2 );
+	$db->query(
+		"DELETE FROM following_cache WHERE time < " .
+		time() - 10800
+	);
+	$x = $db->query("SELECT result FROM following_cache
+		WHERE user_id = ? AND following = ?",
+		$_USER->id,
+		$id2
+	);
 	if( $x->nums > 0 )
 		return (int) $x->result;
 	// not cached, make twitter requests
-	$g = $twitter->tw->get('friendships/lookup', array('user_id' => $id2) );
+	$g = $twitter->tw->get(
+		'friendships/lookup',
+		array('user_id' => $id2)
+	);
 	if( array_key_exists('errors', $g ) ) {
 		// API rate limit reached :( try another
-		$t = $twitter->tw->get('users/lookup', array('user_id' => $id2) );
-		if( array_key_exists('errors', $t ) || array_key_exists('error', $t) ) // both limits reached... ):
+		$t = $twitter->tw->get(
+			'users/lookup',
+			array('user_id' => $id2)
+		);
+		if( 
+			array_key_exists('errors', $t )
+			|| array_key_exists('error', $t)
+		) // both limits reached... ):
 			return false;
 		$check = array_key_exists('following', $t[0]) && $t[0]->following;
 	}else
@@ -220,8 +255,13 @@ function sanitize( $str ) {
 		return '';
 	$str = htmlspecialchars( $str );
 	$str = str_replace( array( chr( 10 ), chr( 13 ) ), '' , $str );
-	$str = preg_replace('/https?:\/\/[\w\-\.!~#?&=+%;:\*\'"(),\/]+/u','<a href="$0" target="_blank" rel="nofollow">$0</a>', $str);
-    	$str = preg_replace_callback('~([#@])([^\s#@!\"\$\%&\'\(\)\*\+\,\-./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~',
+	$str = preg_replace(
+		'/https?:\/\/[\w\-\.!~#?&=+%;:\*\'"(),\/]+/u',
+		'<a href="$0" target="_blank" rel="nofollow">$0</a>',
+		$str
+	);
+    	$str = preg_replace_callback(
+    		'~([#@])([^\s#@!\"\$\%&\'\(\)\*\+\,\-./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~',
     		function($m) {
     			$dir = $m[1] == "#" ? "search/?q=%23" : "";
     			return '<a href="' . url() . $dir . $m[2] . '">' . $m[0] . '</a>';
@@ -239,8 +279,15 @@ function search($search, $s, $p = 1) {
 	if( empty($search) )
 		return;
 	$escaped = $db->real_escape($search);
-	$query = "SELECT * FROM audios WHERE reply_to = '0' AND MATCH(`description`) AGAINST (? IN BOOLEAN MODE)";
-	$count = $db->query("SELECT COUNT(*) AS size FROM audios WHERE reply_to = '0' AND MATCH(`description`) AGAINST (? IN BOOLEAN MODE)", $escaped);
+	$query = "SELECT * FROM audios WHERE reply_to = '0'
+	AND MATCH(`description`) AGAINST (? IN BOOLEAN MODE)";
+	$count = $db->query(
+		"SELECT COUNT(*) AS size FROM audios
+		WHERE reply_to = '0'
+		AND MATCH(`description`)
+		AGAINST (? IN BOOLEAN MODE)",
+		$escaped
+	);
 	$count = (int) $count->size;
 	if( !$count )
 		alert_error( __("No results were found. :("), true );
@@ -266,8 +313,12 @@ function search($search, $s, $p = 1) {
 }
 function load_audios( $id, $p = 1 ) {
 	global $db;
-	$q = "SELECT * FROM audios WHERE user = ? AND reply_to = '0' ORDER BY time DESC";
-	$count = $db->query("SELECT COUNT(*) AS size FROM audios WHERE user = ? AND reply_to = '0'", $id);
+	$q = "SELECT * FROM audios
+	WHERE user = ?
+	AND reply_to = '0'
+	ORDER BY time DESC";
+	$count = $db->query("SELECT COUNT(*) AS size FROM audios
+	WHERE user = ? AND reply_to = '0'", $id);
 	$count = (int) $count->size;
 	if( 0 === $count )
 		return alert_error( __("This user has not uploaded audios... yet."), true);
@@ -283,11 +334,27 @@ function load_audios( $id, $p = 1 ) {
 }
 function load_likes( $id, $p = 1 ) {
 	global $db;
-	$q = "SELECT * FROM audios WHERE id IN (SELECT audio_id FROM likes WHERE user_id = ? ORDER BY time DESC) AND reply_to = '0'";
-	$count = $db->query("SELECT COUNT(*) AS size FROM audios WHERE id IN ( SELECT audio_id FROM likes WHERE user_id = ? ) AND reply_to = '0'", $id);
+	$q = "SELECT * FROM audios
+	WHERE id IN (
+		SELECT audio_id FROM likes
+		WHERE user_id = ?
+		ORDER BY time DESC
+		)
+	AND reply_to = '0'";
+	$count = $db->query(
+		"SELECT COUNT(*) AS size FROM audios
+		WHERE id IN (
+			SELECT audio_id FROM likes
+			WHERE user_id = ?
+			)
+		AND reply_to = '0'",
+		$id);
 	$count = (int) $count->size;
 	if( 0 === $count )
-		return alert_error( __("This user has not liked audios... yet."), true );
+		return alert_error(
+			__("This user has not liked audios... yet."),
+			true
+		);
 	$total_pages = ceil( $count / 10 );
 	if( $p > $total_pages )
 		return;
@@ -300,9 +367,21 @@ function load_likes( $id, $p = 1 ) {
 }
 function display_comment( $a ) {
 	global $db, $_USER;
-	$u = (is_logged() && $a->user == $_USER->id) ? $_USER : $db->query("SELECT * FROM users WHERE id = ?", $a->user);
+	$u = (is_logged() && $a->user == $_USER->id) ?
+		$_USER
+	:
+		$db->query(
+			"SELECT * FROM users WHERE id = ?",
+			$a->user
+		);
 	if( is_logged() ):
-	$is_liked = $db->query("SELECT COUNT(*) AS size FROM likes WHERE audio_id = ? AND user_id = ?", $a->id, $_USER->id);
+	$is_liked = $db->query(
+		"SELECT COUNT(*) AS size FROM likes
+		WHERE audio_id = ?
+		AND user_id = ?",
+		$a->id,
+		$_USER->id
+	);
 	$is_liked = (int) $is_liked->size;
 	endif;
 	$size = $big ? 'bigger' : 'normal'
@@ -339,11 +418,19 @@ function display_comment( $a ) {
 }
 function load_comments( $id, $p = 1 ) {
 	global $db;
-	$q = "SELECT * FROM audios WHERE reply_to = ? ORDER BY likes DESC";
-	$count = $db->query("SELECT COUNT(*) AS size FROM audios WHERE reply_to = ?", $id);
+	$q = "SELECT * FROM audios
+		WHERE reply_to = ?
+		ORDER BY likes DESC";
+	$count = $db->query(
+		"SELECT COUNT(*) AS size FROM audios
+		WHERE reply_to = ?",
+		$id
+	);
 	$count = (int) $count->size;
 	if( 0 === $count ){
-		echo '<div class="alert info center" id="no_comments">' . __("There are not comments yet. Be the first!") . '</div>';
+		echo '<div class="alert info center" id="no_comments">' .
+			__("There are not comments yet. Be the first!") .
+		'</div>';
 		return;
 	}
 	$total_pages = ceil( $count / 10 );
@@ -360,16 +447,23 @@ function load_trendings() {
 	global $db;
 	$time1 = time() - 432000;
 	$time2 = time();
-	$trends = $db->query("SELECT COUNT( DISTINCT user ) total, 
-		trend FROM trends
+	$trends = $db->query(
+		"SELECT COUNT( DISTINCT user ) total, trend
+		FROM trends
 		WHERE 
 			time BETWEEN ? AND ?
        		&& trend != ''
 		GROUP BY trend
 		ORDER BY total DESC 
-		LIMIT 10", $time1, $time2);
+		LIMIT 10",
+		$time1,
+		$time2
+	);
 	if( $trends->nums === 0 ){
-		return alert_error( __("There aren't trendings right now."), true );
+		return alert_error(
+			__("There aren't trendings right now."),
+			true
+		);
 	}
 	while($t = $trends->r->fetch_array() ):
 	?>

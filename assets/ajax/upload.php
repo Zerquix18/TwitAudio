@@ -1,13 +1,14 @@
 <?php
-require_once('../../load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
-!is_logged() and _result( __("Authentication required."), false);
+if( !is_logged() ) _result( __("Authentication required."), false);
 
 if( ! array_key_exists('is_voice', $_POST)
 	|| ! is_string($_POST['is_voice'])
-	|| ! in_array($_POST['is_voice'], array('true', 'false'), true ) )
+	|| ! in_array($_POST['is_voice'], array('true', 'false'), true )
+	)
 	_result( __("Request malformed."), false);
 
 $is_voice = 'true' === $_POST['is_voice'];
@@ -19,10 +20,18 @@ if( $is_voice ): // validation if it's voice
 	// save the result in a file
 	file_put_contents( $file = PATH . INC . TMP . uniqid() . '.mp3', $bin);
 else: // validation for a normal file, which is not voice
-	if( empty($_FILES['up_file']) || is_array($_FILES['up_file']['name'] ) || ( isset($_FILES['up_file']["error"])  && $_FILES['up_file']["error"] != 0 ) )
+	if( empty($_FILES['up_file'])
+		|| is_array($_FILES['up_file']['name'] )
+		|| ( isset($_FILES['up_file']["error"] ) &&
+			$_FILES['up_file']["error"] != 0
+			)
+		)
 		_result( __('There was an error while processing the file...'), false );
 	$format = end( $lala = explode('.', $_FILES['up_file']['name']) );
-	if( ! in_array(strtolower($format), array("mp3", "m4a", "aac", "ogg", "wav") ) )
+	if( ! in_array(
+		strtolower($format),
+		array("mp3", "m4a", "aac", "ogg", "wav")
+		) )
 		_result( __("That format is not allowed"), false );
 	$fs = ( ( $_FILES['up_file']['size'] / 1024) / 1024);
 	if( $fs <= 0 || $fs > 50 )
@@ -30,7 +39,7 @@ else: // validation for a normal file, which is not voice
 	move_uploaded_file(
 		$_FILES['up_file']['tmp_name'],
 		$file = PATH . INC . TMP . uniqid() . '.' . $format
-	) or _result( __("There was a problem while processing the file."), false );
+	) or _result( __("There was a problem while processing the file."), false);
 endif;
 // now $file needs to be validated
 $a = new Audio($file);
@@ -46,6 +55,19 @@ $_SESSION[$id] = array(
 		'duration' => floor( $a->info['playtime_seconds'])
 	);
 if( $a->error && $a->error_code == 3 )
-	_result($a->error, false, array('tmp_url' => url() . INC . TMP . end($q = explode('/', $a->audio) ), 'id' => $id ) );
-
-_result( true, true, array('tmp_url' => url() . INC . TMP . end($q = explode('/', $a->audio) ), 'id' => $id ) );
+	_result(
+		$a->error,
+		false,
+		array(
+			'tmp_url' => url() . INC . TMP .
+				end($q = explode('/', $a->audio) ),
+			'id' => $id
+			)
+		);
+_result( true, true,
+	array(
+		'tmp_url' => url() . INC . TMP .
+			end($q = explode('/', $a->audio) ),
+		'id' => $id
+		)
+	);

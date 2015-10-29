@@ -7,9 +7,9 @@
 spl_autoload_register( function($class) {
     // fuck namespaces
     if( file_exists( PATH . INC . 'tw/' . $class. '.php') )
-        require_once(PATH . INC . 'tw/' . $class. '.php');
+        require PATH . INC . 'tw/' . $class. '.php';
     else
-        require_once(PATH . INC . 'tw/Util/' . $class. '.php');
+        require PATH . INC . 'tw/Util/' . $class. '.php';
 });
 /**
  * TwitterOAuth class for interacting with the Twitter API.
