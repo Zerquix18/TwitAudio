@@ -41,7 +41,7 @@ if( (int) $exists->size > 0 ) { // it already exists
 	$audios_public = (int) ! $s->protected;
 	$time = time();
 	$lang = $s->lang;
-	$r = $db->insert("users", array(
+	$db->insert("users", array(
 			$_SESSION['id'],
 			$user,
 			$db->real_escape($name),
@@ -60,12 +60,12 @@ if( (int) $exists->size > 0 ) { // it already exists
 unset($_SESSION['access_token']);
 unset($_SESSION['access_token_secret']);
 // insert the session
-if( $r )
-	$db->insert("sessions", array(
-			$_SESSION['id'],
-			session_id(),
-			time(),
-			getip()
-		)
-	);
+$db->delete("sessions")->where("sess_id", session_id() )->_();
+$db->insert("sessions", array(
+		$_SESSION['id'],
+		session_id(),
+		time(),
+		getip()
+	)
+);
 header("Location: ". url() );

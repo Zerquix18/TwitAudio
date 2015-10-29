@@ -30,7 +30,8 @@ function load_full_template( $name ) {
 	require_once($f);
 }
 function get_image( $link, $size = '' ){
-	$format = end($hola = explode(".", $link));
+	$hola = explode(".", $link);
+	$format = end($hola);
 	$hola = explode("_", $link);
 	array_pop($hola);
 	$link = implode("_", $hola);

@@ -2,7 +2,7 @@
 	<div class="container h">
 		<div class="row">
 			<div id="le_content" class="column">
-			<?php if( $_SESSION['first_time'] ): ?>
+			<?php if( isset($_SESSION['first_time']) ): ?>
 				<div id="firstime" class="prompt">
 				<div class="welcome_text">
 					<?php _e('Welcome to TwitAudio!'); ?>

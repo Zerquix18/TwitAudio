@@ -1,12 +1,10 @@
 <?php
 function _is_logged() {
 	global $db;
-	if( ! isset($_COOKIE['ta_session']) )
+	if( ! isset($_COOKIE['ta_session']) || empty($_SESSION) )
 		return 0;
-	$x = $db->query("SELECT user_id FROM sessions WHERE sess_id = ? AND ip = ? AND time > ?",
-		$db->real_escape( session_id() ),
-		getip(),
-		time() - 604800
+	$x = $db->query("SELECT user_id FROM sessions WHERE sess_id = ?",
+		$db->real_escape( session_id() )
 		);
 	return $x->nums > 0 ? (int) $x->user_id : 0;
 }
