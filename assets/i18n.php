@@ -20,6 +20,8 @@ require PATH . INC . 'i18n/streams.php';
 $lenguajes = array("en");
 
 function prefered_language( array $available_languages) {
+	if( ! isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) )
+		return 'en';
 	$available_languages = array_flip($available_languages);
 	$langs = array();
 	preg_match_all(

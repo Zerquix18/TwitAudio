@@ -27,7 +27,7 @@ function generate_id($session=false) {
 	$table = $session ? 'sessions' : 'audios';
 	$wh = $session ? 'sess_id' : 'id';
 	while( // check if exists
-		$x = (
+		($x = (
 			$db->query(
 				"SELECT COUNT(*) AS size FROM $table
 				 WHERE $wh = ?", 
@@ -36,7 +36,7 @@ function generate_id($session=false) {
 				:
 				substr( str_shuffle($chars), 0, 6)
 			)
-		) && $x->size > 0
+		) )&& $x->size > 0
 	);
 	return $id;
 }
