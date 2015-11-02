@@ -16,7 +16,7 @@ if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 }
 $twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
 $s = $twitter->tw->get('account/verify_credentials');
-if( ! is_object($s) )
+if( ! is_object($s) || array_key_exists('error', $s) )
 	$_BODY['error'] = $error and exit( load_full_template('process') );
 load_full_template('process');
 $user = $s->screen_name;

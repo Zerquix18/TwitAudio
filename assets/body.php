@@ -20,14 +20,14 @@ function load_template( $name ) {
 	$f = PATH . INC . TEMP . $name . '.phtml';
 	if( ! file_exists($f) )
 		return false;
-	require_once($f);
+	require($f);
 }
 function load_full_template( $name ) {
 	global $db, $_BODY, $_USER, $lenguajeso, $lenguajest;
 	$f = PATH . INC . FULL_TEMP . $name . '.phtml';
 	if( ! file_exists($f) )
 		return false;
-	require_once($f);
+	require($f);
 }
 function get_image( $link, $size = '' ){
 	$hola = explode(".", $link);
