@@ -44,7 +44,8 @@ function prefered_language( array $available_languages) {
 		}
 	}
 	arsort($langs);
-	return (string) array_shift( $x=array_keys($langs) );
+	$x=array_keys($langs);
+	return (string) array_shift( $x );
 }
 function getlang() {
 	global $lenguajes, $db;

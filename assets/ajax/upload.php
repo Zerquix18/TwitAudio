@@ -1,5 +1,6 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
+require $_SERVER['DOCUMENT_ROOT'] . INC . 'class.audio.php';
 
 ('POST' !== getenv('REQUEST_METHOD') ) and exit();
 
