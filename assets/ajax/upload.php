@@ -28,7 +28,7 @@ else: // validation for a normal file, which is not voice
 			)
 		)
 		_result( __('There was an error while processing the file...'), false );
-	$format = end( $lala = explode('.', $_FILES['up_file']['name']) );
+	$format = last( explode('.', $_FILES['up_file']['name']) );
 	if( ! in_array(
 		strtolower($format),
 		array("mp3", "m4a", "aac", "ogg", "wav")
@@ -61,14 +61,14 @@ if( $a->error && $a->error_code == 3 )
 		false,
 		array(
 			'tmp_url' => url() . INC . TMP .
-				end($q = explode('/', $a->audio) ),
+				last( explode('/', $a->audio) ),
 			'id' => $id
 			)
 		);
 _result( true, true,
 	array(
 		'tmp_url' => url() . INC . TMP .
-			end($q = explode('/', $a->audio) ),
+			last( explode('/', $a->audio) ),
 		'id' => $id
 		)
 	);

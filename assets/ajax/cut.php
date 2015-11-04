@@ -55,6 +55,6 @@ _result( true, true,
 	array(
 		'id' => $id,
 		'tmp_url' =>
-		url() . INC . TMP . end( $l = explode('/', $a->audio) ) 
+		url() . INC . TMP . last( explode('/', $a->audio) ) 
 		)
 	);

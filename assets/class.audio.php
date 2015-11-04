@@ -24,7 +24,7 @@ class Audio {
 		$id3 = new getID3();
 		$this->info = $id3->analyze($audio_path);
 		$this->audio = $this->original_name = $audio_path;
-		$this->format = end( $l = explode(".", $audio_path) );
+		$this->format = last( explode(".", $audio_path) );
 		$this->is_voice = $is_voice;
 		if( ! $valid )
 			$this->prepare();

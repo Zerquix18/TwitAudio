@@ -88,3 +88,6 @@ function extract_hashtags($text) {
 	}
 	$db->query($query);
 }
+function last( array $arr ) {
+	return end($arr);
+}
