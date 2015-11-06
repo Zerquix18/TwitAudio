@@ -198,7 +198,7 @@ $(document).ready( function() {
 }
 function can_listen( $id2 ) {
 	global $db, $twitter, $_USER;
-	$l = is_logged();
+	$l = $_USER !== NULL;
 	if( $l && $_USER->id == $id2 ) // same user
 		return true;
 	// check if audios of user2 are private.

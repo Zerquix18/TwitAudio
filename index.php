@@ -12,27 +12,27 @@ switch($p):
 		if( $a->nums == 0 )
 			return load_full_template('404');
 		$u = $db->query("SELECT * FROM users WHERE id = ?", $a->user);
-		$_BODY['page'] = $p
-		and $_BODY['audio'] = $a
-		and $_BODY['user'] = $u
-		and load_full_template('audio');
+		$_BODY['page'] = $p;
+		$_BODY['audio'] = $a;
+		$_BODY['user'] = $u;
+		load_full_template('audio');
 		break;
 	case "settings":
-		is_logged() ?
-			$_BODY['page'] = 'settings'
-			and $_BODY['robots'] = false
-			or load_full_template('settings')
-		:
-			header('Location: ' . url());
+		if( ! is_logged() )
+			return load_full_template('404');
+		$_BODY['page'] = 'settings';
+		$_BODY['robots'] = false;
+		load_full_template('settings');
 	break;
 	case "search":
-		$_BODY['page'] = 'search' and load_full_template('search');
+		$_BODY['page'] = 'search';
+		load_full_template('search');
 		break;
 	case "frame":
 		if( ! validate_args(@$_GET['id']) )
-			exit( load_full_template('404') );
+			return load_full_template('404');
 		if( ! preg_match("/^[A-Za-z0-9]{6}$/", $_GET['id']) )
-			exit( load_full_template('404') );
+			return load_full_template('404');
 		$a = $db->query(
 			"SELECT * FROM audios WHERE id = ?",
 			$_GET['id']
@@ -48,15 +48,18 @@ switch($p):
 		$_BODY['audio'] = $a and load_full_template('frame');
 		break;
 	case "profile":
-	! validate_args(@$_GET['u']) and exit();
-	$u = $db->query("SELECT * FROM users WHERE user = ?", $db->real_escape($_GET['u']) );
-	( $u->nums > 0 ) ?
-		$_BODY['page'] = $p
-		and $_BODY['user'] = $u
-		and load_full_template('profile')
-	:
-		load_full_template('404');
-	break;
+		if( ! validate_args(@$_GET['u']) )
+			exit;
+		$u = $db->query(
+			'SELECT * FROM users WHERE user = ?',
+			$db->real_escape($_GET['u'])
+		);
+		if( $u->nums === 0 )
+			load_full_template('404');
+		$_BODY['page'] = $p;
+		$_BODY['user'] = $u;
+		load_full_template('profile');
+		break;
 	case "text":
 		if( ! isset($_GET['txt'])
 			|| ! in_array(

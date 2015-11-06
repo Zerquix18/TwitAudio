@@ -49,10 +49,10 @@ function prefered_language( array $available_languages) {
 }
 function getlang() {
 	global $lenguajes, $db;
-	if( is_logged() )
+	if( $x = is_logged() )
 		return $db->query(
 			"SELECT lang FROM users WHERE id = ?",
-			$_SESSION['id'])
+			$x)
 		->lang;
 	if( isset($_GET['l'])
 		&& is_string($_GET['l'])
