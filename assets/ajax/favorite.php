@@ -21,38 +21,38 @@ $exists_audio = $db->query(
 	$id
 );
 if( ! (int) $exists_audio->nums )
-	_result( __("The audio you tried to like doesn't exist."), false );
+	_result( __("The audio you tried to favorite doesn't exist."), false );
 if( ! can_listen( $exists_audio->user ) )
-	_result( __("You can't listen to this user's audios, so you can neither like them."), false );
+	_result( __("You can't listen to this user's audios, so you can neither favorite them."), false );
 
-// already liked?
+// already faved?
 
-$liked = $db->query(
-	"SELECT COUNT(*) AS size FROM likes
+$favorited = $db->query(
+	"SELECT COUNT(*) AS size FROM favorites
 	WHERE audio_id = ?
 	AND user_id = ?",
 	$id,
 	$_USER->id
 );
 
-$liked = (int) $liked->size;
+$favorited = (int) $favorited->size;
 
-if( $liked ) {
+if( $favorited ) {
 	$db->query(
-		"UPDATE audios SET likes = likes-1 WHERE id = ?",
+		"UPDATE audios SET favorites = favorites-1 WHERE id = ?",
 		$id
 	);
 	$db->query(
-		"DELETE FROM likes WHERE audio_id = ? AND user_id = ?",
+		"DELETE FROM favorites WHERE audio_id = ? AND user_id = ?",
 		$id,
 		$_USER->id
 	);
 }else{
 	$db->query(
-		"UPDATE audios SET likes = likes+1 WHERE id = ?",
+		"UPDATE audios SET favorites = favorites+1 WHERE id = ?",
 		$id
 	);
-	$db->insert("likes", array(
+	$db->insert("favorites", array(
 			$_USER->id,
 			$id,
 			time()
@@ -60,7 +60,7 @@ if( $liked ) {
 	);
 }
 $extra = array(
-		'action' => $liked ? 'dislike' : 'like',
-		'count' => $liked ? $liked - 1 : $liked + 1
+		'action' => $favorited ? 'favorited' : 'favorite',
+		'count' => $favorited ? $favorited - 1 : $favorited + 1
 	);
 _result(true, true, $extra);

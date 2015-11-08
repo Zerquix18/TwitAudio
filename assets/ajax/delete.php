@@ -27,7 +27,7 @@ if( $exists->user !== $_USER->id )
 	_result( __("You are not the author of this audio."), false);
 
 $db->query("DELETE FROM audios WHERE id = ?", $id);
-$db->query("DELETE FROM likes WHERE audio_id = ?", $id);
+$db->query("DELETE FROM favorites WHERE audio_id = ?", $id);
 $db->query("DELETE FROM plays WHERE audio_id = ?", $id);
 $db->query("DELETE FROM audios WHERE reply_to = ?", $id);
 @unlink( PATH . INC . 'audios/' . $exists->audio);

@@ -1,14 +1,14 @@
 <?php
 $u = $_BODY['user'];
-$is_like = isset($_GET['l']);
-$are_likes_visible = 
-(int) $u->likes_public || ( is_logged() && $u->id == $_USER->id );
+$is_fav = isset($_GET['l']);
+$are_favs_visible = 
+(int) $u->favs_public || ( is_logged() && $u->id == $_USER->id );
 $are_audios_visible =
 (int) $u->audios_public || ( is_logged() && $u->id == $_USER->id );
-if( ! (int) $u->likes_public )
+if( ! (int) $u->favs_public )
 	$_BODY['robots'] = false;
-$_BODY['title'] = $is_like ?
-	sprintf( __("%s likes"), $u->user )
+$_BODY['title'] = $is_fav ?
+	sprintf( __("%s favorites"), $u->user )
 :
 	$u->user;
 load_template('header');
@@ -26,17 +26,17 @@ load_template('header');
 					<div class="bio">
 					<?php echo htmlentities( $u->bio ) ?>
 					</div>
-					<?php if( $are_likes_visible || $are_audios_visible ): ?>
+					<?php if( $are_favs_visible || $are_audios_visible ): ?>
 					<ul class="sn" style="margin-top:10px">
 						<li class="right">
-							<a href="<?php echo url() . (!$is_like ? 'likes/' : 'audios/') . $u->user ?>">
+							<a href="<?php echo url() . (!$is_fav ? 'favorites/' : 'audios/') . $u->user ?>">
 								<?php
 								$con = is_logged() && $_USER->id == $u->id;
-								if( ! $is_like && $are_audios_visible )
+								if( ! $is_fav && $are_audios_visible )
 									echo $con ?
-										__('See your likes')
+										__('See your favorites')
 									:
-										sprintf( __("See %s's likes"), $u->user );
+										sprintf( __("See %s's favorites"), $u->user );
 								else
 									echo $con ?
 										__('See your audios')
@@ -51,26 +51,26 @@ load_template('header');
 					<hr>
 				</div>
 				<p class="title">
-					<?php echo sprintf( $is_like ?
+					<?php echo sprintf( $is_fav ?
 						$_BODY['title']
 					:
 						 __("%s's audios")
 					,$u->user) ?>
 				</p>
-				<div id="<?php echo $is_like ? 'likes' : 'audios'; ?>">
+				<div id="<?php echo $is_fav ? 'favorites' : 'audios'; ?>">
 					<?php
-					$call = $is_like ? 'load_likes' : 'load_audios';
-						if( $is_like ? $are_likes_visible : $are_audios_visible ):
+					$call = $is_fav ? 'load_favs' : 'load_audios';
+						if( $is_fav ? $are_favs_visible : $are_audios_visible ):
 							$call($u->id);
 						else:
 							if( ! is_logged() ):
-								if( $is_like )
-									alert_error( __("This user's likes are private. You must login to listen to them."), true);
+								if( $is_fav )
+									alert_error( __("This user's favorites are private. You must login to listen to them."), true);
 								else
 									alert_error( __("This user's audios are private. You must login to listen to them."), true);
 							elseif( ! can_listen( $u->id ) ):
-								if( $is_like )
-									alert_error( __("You must be following this account on Twitter to view their liked audios."), true );
+								if( $is_fav )
+									alert_error( __("You must be following this account on Twitter to view their favorited audios."), true );
 								else
 									alert_error( __("You must be following this account on Twitter to listen to their audios."), true );
 							else:

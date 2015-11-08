@@ -1,19 +1,20 @@
 <?php
 error_reporting(E_ALL);
-require '../load.php';
-require 'class.tacrypt.php';
+header('Content-type: application/json; charset=utf-8');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/mob/class.tacrypt.php';
 $ta = new TACrypt;
 function result_error($response, $error_code = null ) {
 	$r = array(
-		'success' => false,
-		'error' => $response,
-		'error_code' => $error_code,
+		'success' 	=> false,
+		'error' 		=> $response,
+		'error_code' 	=> $error_code,
 	);
 	exit(json_encode($r));
 }
 function result_success( $response = null, $extra = null ) {
 	$r = array(
-		'success' => true,
+		'success'   => true,
 		'response' => $response
 	);
 	if( null !== $extra )
@@ -21,23 +22,23 @@ function result_success( $response = null, $extra = null ) {
 	exit(json_encode($r));
 }
 function checkAuthorization() {
-	global $ta, $db;
+	global $ta, $db, $_USER;
 	$h = apache_request_headers();
-	if( ! isset($h['Authorization']) )
+	if( ! isset($h['Authorization']) || empty(trim($h['Authorization'])) )
 		result_error(
 			__('Authorization required'),
 			1
 		);
 	// decrypts authorization
 	$authorization = @$ta->decrypt64( $h['Authorization'] );
-	if( empty( trim($authorization) ) )
+	if( ! $authorization )
 		result_error(
 			__('Invalid authorization'),
 			2
 		);
 	// checks in the db for the decrypted result
 	$x = $db->query(
-		'SELECT user_id FROM sessions
+		'SELECT user_id,sess_id FROM sessions
 		WHERE sess_key = ?',
 		$authorization
 	);
@@ -46,8 +47,17 @@ function checkAuthorization() {
 				__('Authorization does not exist in database'),
 				3
 			);
-	// it exists in the database. it's done.
-	return $x->user_id;
+	// it exists ... replace it
+	$db->update('sessions', array(
+			'sess_key' => $sk = generate_sess_key()
+		)
+	)->where('sess_id', $x->sess_id)->_();
+	// for global use
+	$_USER = $db->query(
+		'SELECT * FROM users WHERE id = ?',
+		$x->user_id
+	);
+	return $sk;
 }
 function generate_sess_key() {
 	global $db;

@@ -14,10 +14,10 @@ $_BODY['title'] = __('Settings') and load_template('header')
 						<input type="hidden" name="audios_public" value="0">
 						<input type="checkbox" name="audios_public" value="1" <?php echo (int) $_USER->audios_public ? 'checked="checked"' : '' ?>> <?php _e('Make my audios public') ?>
 					</label>
-					<strong><?php _e('Likes') ?></strong>
+					<strong><?php _e('Favorites') ?></strong>
 					<label class="checkbox">
-						<input type="hidden" name="likes_public" value="0">
-						<input type="checkbox" name="likes_public" value="1" <?php echo (int) $_USER->likes_public ? 'checked="checked"' : '' ?>> <?php _e('Make my likes public') ?>
+						<input type="hidden" name="favs_public" value="0">
+						<input type="checkbox" name="favs_public" value="1" <?php echo (int) $_USER->favs_public ? 'checked="checked"' : '' ?>> <?php _e('Make my favorites public') ?>
 					</label>
 					<p class="info">
 					<?php

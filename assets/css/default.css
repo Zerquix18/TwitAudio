@@ -841,8 +841,8 @@ label.checkbox {
 .audiobtn.laic:hover, .audiobtn.delit:hover {
 	cursor: pointer;
 }
-.audiobtn.laic:hover, .audiobtn.laic.liked {
-	color: #FF4848;
+.audiobtn.laic:hover, .audiobtn.laic.favorited {
+	color: #E2C700;
 }
 .audiobtn.delit:hover {
 	color: #FF0000;

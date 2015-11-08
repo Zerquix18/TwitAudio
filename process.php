@@ -42,7 +42,7 @@ if( (int) $exists->size > 0 ) { // it already exists
 }else{
 	// it does not exist
 	$_SESSION['first_time'] = true;
-	$likes_public =
+	$favs_public =
 	$audios_public = (int) ! $s->protected;
 	$time = time();
 	$lang = $s->lang;
@@ -55,7 +55,7 @@ if( (int) $exists->size > 0 ) { // it already exists
 			$verified,
 			$access_token,
 			$access_token_secret,
-			$likes_public,
+			$favs_public,
 			$audios_public,
 			$time,
 			$lang

@@ -10,7 +10,7 @@
 				<?php
 				echo __('Everything was set up. ');
 				if( ! (int) $_USER->audios_public ) 
-					echo sprintf( __('Your audios and likes were set and private because your Twitter account is protected. You can change this in your <a href="%s">settings</a>.'), url() . 'settings' ) . ' ';
+					echo sprintf( __('Your audios and favorites were set and private because your Twitter account is protected. You can change this in your <a href="%s">settings</a>.'), url() . 'settings' ) . ' ';
 				echo '<br>' . __('We hope you enjoy TwitAudio. <3') . ' ';
 				?>
 				<a href="javascript:void(0)" id="close_ft"><i class="fa fa-times-circle"></i>&nbsp;<?php _e('Close') ?></a>

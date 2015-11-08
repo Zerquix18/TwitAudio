@@ -14,4 +14,4 @@ $exists = $db->query("SELECT id FROM users WHERE user = ?", $db->real_escape( $_
 if( empty($q) || ! $exists->nums )
 	_result( __('Request malformed.'), false );
 
-load_likes($exists->id, $p);
+load_favs($exists->id, $p);

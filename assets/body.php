@@ -96,13 +96,13 @@ function display_audio( $a, $big = false ) {
 	);
 	$was_played = (int) $was_played->size;
 	if( is_logged() ):
-		$is_liked = $db->query(
-			"SELECT COUNT(*) AS size FROM likes
+		$is_faved = $db->query(
+			"SELECT COUNT(*) AS size FROM favorites
 			WHERE audio_id = ? AND user_id = ?",
 			$a->id,
 			$_USER->id
 		);
-		$is_liked = (int) $is_liked->size;
+		$is_faved = (int) $is_faved->size;
 	endif;
 	$size = $big ? 'bigger' : 'normal'
 ?>
@@ -183,8 +183,8 @@ $(document).ready( function() {
 		<a class="audiobtn" id="plays_<?php echo $a->id ?>">
 			<i class="fa fa-headphones"></i> <span><?php echo $a->plays ?></span>
 		</a>
-		<a class="audiobtn <?php if( is_logged() ): echo 'laic'; if($is_liked) echo 'liked'; endif ?>" data-id="<?php echo $a->id ?>">
-			<i class="fa fa-heart like"></i> <span><?php echo $a->likes ?></span>
+		<a class="audiobtn <?php if( is_logged() ): echo 'laic'; if($is_faved) echo 'favorite'; endif ?>" data-id="<?php echo $a->id ?>">
+			<i class="fa fa-star favorite"></i> <span><?php echo $a->favorites ?></span>
 		</a>
 		<?php  if( is_logged() && $a->user == $_USER->id ): ?>
 		<a class="audiobtn delit" data-id="<?php echo $a->id ?>">
@@ -297,16 +297,14 @@ function search($search, $s, $p = 1) {
 	if( 'd' == $s )
 		$query .= ' ORDER BY time DESC';
 	elseif('l' == $s) 
-		$query .= ' ORDER BY likes DESC';
+		$query .= ' ORDER BY favorites DESC';
 	else
 		$query .= ' ORDER BY plays DESC';
 	$query .= ' LIMIT '. ($p-1) * 10 . ',10';
 	$audios = $db->query($query, $escaped );
 	while($a = $audios->r->fetch_object() ) {
-		$u = $db->query("SELECT audios_public FROM users WHERE id = ?", $a->user);
-		if( ! (int) $u->audios_public )
-			continue;
-		display_audio($a);
+		if( can_listen($a->user) )
+			display_audio($a);
 	}
 	if( $p < $total_pages )
 		load_more('search', $p+1, $s);
@@ -332,11 +330,11 @@ function load_audios( $id, $p = 1 ) {
 	if( $p < $total_pages )
 		load_more('audios', $p+1);
 }
-function load_likes( $id, $p = 1 ) {
+function load_favs( $id, $p = 1 ) {
 	global $db;
 	$q = "SELECT * FROM audios
 	WHERE id IN (
-		SELECT audio_id FROM likes
+		SELECT audio_id FROM favorites
 		WHERE user_id = ?
 		ORDER BY time DESC
 		)
@@ -344,7 +342,7 @@ function load_likes( $id, $p = 1 ) {
 	$count = $db->query(
 		"SELECT COUNT(*) AS size FROM audios
 		WHERE id IN (
-			SELECT audio_id FROM likes
+			SELECT audio_id FROM favorites
 			WHERE user_id = ?
 			)
 		AND reply_to = '0'",
@@ -352,7 +350,7 @@ function load_likes( $id, $p = 1 ) {
 	$count = (int) $count->size;
 	if( 0 === $count )
 		return alert_error(
-			__("This user has not liked audios... yet."),
+			__("This user has not favorited audios... yet."),
 			true
 		);
 	$total_pages = ceil( $count / 10 );
@@ -363,7 +361,7 @@ function load_likes( $id, $p = 1 ) {
 	while( $a = $audios->r->fetch_object() )
 		display_audio($a);
 	if( $p < $total_pages )
-		load_more('likes', $p+1);
+		load_more('favorites', $p+1);
 }
 function display_comment( $a ) {
 	global $db, $_USER;
@@ -375,14 +373,14 @@ function display_comment( $a ) {
 			$a->user
 		);
 	if( is_logged() ):
-	$is_liked = $db->query(
-		"SELECT COUNT(*) AS size FROM likes
+	$is_faved = $db->query(
+		"SELECT COUNT(*) AS size FROM favorites
 		WHERE audio_id = ?
 		AND user_id = ?",
 		$a->id,
 		$_USER->id
 	);
-	$is_liked = (int) $is_liked->size;
+	$is_faved = (int) $is_faved->size;
 	endif;
 	$size = $big ? 'bigger' : 'normal'
 ?>
@@ -403,8 +401,8 @@ function display_comment( $a ) {
 		<?php echo sanitize( $a->description ) ?>
 	</div>
 	<div class="audio_footer">
-		<a class="audiobtn <?php if( is_logged() ): echo 'laic'; if($is_liked) echo 'liked'; endif ?>" data-id="<?php echo $a->id ?>">
-			<i class="fa fa-heart like"></i> <span><?php echo $a->likes ?></span>
+		<a class="audiobtn <?php if( is_logged() ): echo 'laic'; if($is_faved) echo 'favorited'; endif ?>" data-id="<?php echo $a->id ?>">
+			<i class="fa fa-heart favorite"></i> <span><?php echo $a->favorites ?></span>
 		</a>
 		<?php  if( is_logged() && $a->user == $_USER->id ): ?>
 		<a class="audiobtn delit" data-id="<?php echo $a->id ?>">
@@ -420,7 +418,7 @@ function load_comments( $id, $p = 1 ) {
 	global $db;
 	$q = "SELECT * FROM audios
 		WHERE reply_to = ?
-		ORDER BY likes DESC";
+		ORDER BY `date` DESC";
 	$count = $db->query(
 		"SELECT COUNT(*) AS size FROM audios
 		WHERE reply_to = ?",

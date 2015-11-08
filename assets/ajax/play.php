@@ -18,7 +18,7 @@ $exists_audio = $db->query(
 	$id
 );
 if( ! (int) $exists_audio->nums )
-	_result( __("The audio you tried to like doesn't exist."), false );
+	_result( __("The audio you tried to play doesn't exist."), false );
 
 if( $exists_audio->reply_to != '0' )
 	_result( __("You cannot play a comment. LOL"), false);

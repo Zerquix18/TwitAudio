@@ -26,12 +26,12 @@ class zerdb {
 **/
 	public $tablas = array(
 			"users" => array(
-					'id', 'user', 'name', 'avatar', 'bio', 'verified', 'access_token', 'access_token_secret', 'likes_public', 'audios_public', 'time', 'lang'
+					'id', 'user', 'name', 'avatar', 'bio', 'verified', 'access_token', 'access_token_secret', 'favs_public', 'audios_public', 'time', 'lang'
 				),
 			"audios" => array(
-					'id', 'user', 'audio', 'reply_to', 'description', 'tw_id', 'time', 'plays', 'likes', 'duration'
+					'id', 'user', 'audio', 'reply_to', 'description', 'tw_id', 'time', 'plays', 'favorites', 'duration'
 				),
-			"likes" => array(
+			"favorites" => array(
 					'user_id', 'audio_id', 'time'
 				),
 			"plays" => array(

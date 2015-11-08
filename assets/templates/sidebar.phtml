@@ -14,9 +14,9 @@
 					</ul>
 					<div class="dv"></div>
 					<ul>
-						<li>						<?php echo $db->query("SELECT COUNT(*) AS size FROM audios WHERE id IN ( SELECT audio_id FROM likes WHERE user_id = ? ) AND reply_to = '0'", $_USER->id)->size ?>
+						<li>						<?php echo $db->query("SELECT COUNT(*) AS size FROM audios WHERE id IN ( SELECT audio_id FROM favorites WHERE user_id = ? ) AND reply_to = '0'", $_USER->id)->size ?>
 						</li>
-						<li><a class="nodeco" href="<?php echo url() . 'likes/' . $_USER->user ?>"><?php _e('likes') ?></a></li>
+						<li><a class="nodeco" href="<?php echo url() . 'favorites/' . $_USER->user ?>"><?php _e('favorites') ?></a></li>
 					</ul>	
 					</div>
 				</div>
@@ -31,7 +31,7 @@
 						</li>
 						<li <?php if($_BODY['sort'] == 'l') echo 'class="active"' ?>>
 							<a href="<?php echo url() . 'search?q=' . urlencode($_BODY['q']) . '&o=l' ?>">
-								<?php _e('Likes') ?>
+								<?php _e('Favorites') ?>
 							</a>
 						</li>
 						<li <?php if($_BODY['sort'] == 'p') echo 'class="active"' ?>>

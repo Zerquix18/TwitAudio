@@ -389,7 +389,7 @@ $(document).on('click', '.laic', function(e) {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'like.php',
+		url: ajaxurl + 'favorite.php',
 		data : {id: _id},
 		error: function() {
 			alert('Connection problem :(');
@@ -398,10 +398,10 @@ $(document).on('click', '.laic', function(e) {
 			result = JSON.parse(result);
 			if( ! result.success )
 				return alert(result.response);
-			if( result.extra.action == 'like' )
-				last_laic_id.addClass('liked');
+			if( result.extra.action == 'favorite' )
+				last_laic_id.addClass('favorited');
 			else
-				last_laic_id.removeClass('liked');
+				last_laic_id.removeClass('favorited');
 			last_laic_id.find('span').html(result.extra.count);
 		}
 	});
@@ -457,7 +457,7 @@ $(document).on('click', '#load_more', function() {
 		to_load = search;
 		data.o = extra;
 	}
-	else if('audios' == load || 'likes' == load)
+	else if('audios' == load || 'favorites' == load)
 		to_load = profile;
 	else if('comments' == load )
 		to_load = audio_id;
