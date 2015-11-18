@@ -44,4 +44,7 @@ $db->insert("plays", array(
 	)
 );
 
-_result(null, true, array('count' => (int) $exists_audio->plays + 1) );
+_result (null, true, array(
+		'count' => (int) $exists_audio->plays + 1
+	)
+);

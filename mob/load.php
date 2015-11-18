@@ -10,6 +10,8 @@ function result_error($response, $error_code = null ) {
 		'error' 		=> $response,
 		'error_code' 	=> $error_code,
 	);
+	if( isset($GLOBALS['sess_key']) )
+		$r['sess_key'] = $GLOBALS['sess_key'];
 	exit(json_encode($r));
 }
 function result_success( $response = null, $extra = null ) {
@@ -19,6 +21,8 @@ function result_success( $response = null, $extra = null ) {
 	);
 	if( null !== $extra )
 		$r += $extra;
+	if( isset($GLOBALS['sess_key']) )
+		$r['sess_key'] = $GLOBALS['sess_key'];
 	exit(json_encode($r));
 }
 function checkAuthorization() {
@@ -57,7 +61,7 @@ function checkAuthorization() {
 		'SELECT * FROM users WHERE id = ?',
 		$x->user_id
 	);
-	return $sk;
+	$GLOBALS['sess_key'] = $sk;
 }
 function generate_sess_key() {
 	global $db;

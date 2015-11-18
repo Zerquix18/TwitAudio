@@ -1,38 +1,35 @@
-<?php
-$_BODY['title'] = __('Settings') and load_template('header')
-?>
-	<div class="container h">
-		<div class="row">
-			<div id="le_content" class="column">
-				<div class="box" id="settings">
-					<h2><?php echo $_BODY['title'] ?></h2>
-					<hr>
-					<div id="settings_result"></div>
-					<form id="settings_form" method="POST" action="<?php echo url() . INC . 'ajax/settings.php' ?>">
-					<strong><?php _e('Audios') ?></strong>
-					<label class="checkbox">
-						<input type="hidden" name="audios_public" value="0">
-						<input type="checkbox" name="audios_public" value="1" <?php echo (int) $_USER->audios_public ? 'checked="checked"' : '' ?>> <?php _e('Make my audios public') ?>
-					</label>
-					<strong><?php _e('Favorites') ?></strong>
-					<label class="checkbox">
-						<input type="hidden" name="favs_public" value="0">
-						<input type="checkbox" name="favs_public" value="1" <?php echo (int) $_USER->favs_public ? 'checked="checked"' : '' ?>> <?php _e('Make my favorites public') ?>
-					</label>
-					<p class="info">
-					<?php
-						_e("If your audios are private, only people following you on Twitter will be able to listen to them and they won't be played in  Twitter.");
-						echo '<a href="'.url().'faq#"> ' . __('Read more.') . '</a>';
-					?>
-					</p>
-					<hr>
-					<button class="submit_btn" type="submit"><?php _e('Update settings') ?></button>
-					</form>
-				</div>
-			</div>
-			<?php load_template('sidebar') ?>
-		</div>
-	</div>
-	<?php load_template('footer') ?>
-</body>
-</html>
+<form method="POST" id="settings_form" method="POST" action="<?php echo url() . INC . 'ajax/settings.php' ?>">
+	<p class="title"><?php _e('Privacy') ?></p>
+	<input type="hidden" name="audios_public" value="0">
+	<input type="checkbox"
+	name="audios_public"
+	class="filled-in"
+	id="settings_audio"
+<?php if( (int) $_USER->audios_public ): ?>
+	checked="checked"
+<?php endif ?>
+	value="1">
+	<label for="settings_audio">
+		<?php _e('Make my audios public') ?>
+	</label>
+	<br>
+	<input type="hidden" name="favs_public" value="0">
+	<input type="checkbox"
+	name="favs_public"
+	class="filled-in"
+	id="settings_favorites"
+<?php if( (int) $_USER->favs_public ): ?>
+	checked="checked"
+<?php endif ?>
+	value="1">
+	<label for="settings_favorites">
+		<?php _e('Make my favorites public') ?>
+	</label>
+	<p><?php _e('If your audios are private, only your followers will be able to see/listen to them. On the other hand, if your favorites are private, only you will be able to see them.') ?>
+	</p>
+	<hr>
+	<button type="submit" class="btn waves-effect waves-light">
+		<?php _e('Update settings') ?>&nbsp;
+		<i class="fa fa-send"></i>
+	</button>
+</form>

@@ -10,8 +10,10 @@ $q = trim($_POST['q']);
 $p = (int) $_POST['p'];
 if( ! is_numeric($_POST['p']) || $p < 1 )
 	_result( __('Request malformed.'), false );
-$exists = $db->query("SELECT id FROM users WHERE user = ?", $db->real_escape( $_POST['q']) );
+$exists = $db->query("SELECT id, favs_public FROM users WHERE user = ?", $db->real_escape( $_POST['q']) );
 if( empty($q) || ! $exists->nums )
 	_result( __('Request malformed.'), false );
+if( ! (int) $exists->favs_public )
+	_result( __("This user's favorites are private."), false );
 
 load_favs($exists->id, $p);

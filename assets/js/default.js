@@ -5,43 +5,17 @@ function in_array( needle, haystack ) {
 			return true;
 	return false;
 }
-function display_error(error, centered) {
-	centered = centered || false;
-	centered = centered ? " center" : "";
-	return '<div class="alert error '+centered+'">'+ error + '</div>';
+function display_error( error, dissapear ) {
+	var text = '<i class="fa fa-close"></i>&nbsp;';
+	text += error;
+	dissapear = dissapear || 5000;
+	Materialize.toast(text, dissapear, 'rounded');
 }
-function display_info(info, centered) {
-	centered = centered || false;
-	centered = centered ? " center" : "";
-	return '<div class="alert info '+centered+'">'+ info + '</div>';
-}
-function post_error( error, dissapear ) {
-	if( document.getElementById("post_error") )
-		$("#post_error").remove();
-	$("#box_post > div, #box_post > form").hide();
-	dissapear = dissapear || 3;
-	dissapear = (dissapear <= 5 || dissapear >= 1) ? dissapear * 1000 : false;
-	$("#box_post").prepend('<div class="alert error center" id="post_error">' + error + '</div>');
-	if( ! dissapear )
-		return;
-	window.setTimeout( function() {
-		$("#post_error").remove();
-		$("#post").removeAttr('style');
-	}, dissapear);
-}
-function post_info( info, dissapear ) {
-	if( document.getElementById("post_info") )
-		$("#post_info").remove();
-	$("#box_post > div, #box_post > form").hide();
-	dissapear = dissapear || 3;
-	dissapear = (dissapear <= 5 || dissapear >= 1) ? dissapear * 1000 : false;
-	$("#box_post").prepend('<div class="alert info center" id="post_info">' + info + '</div>');
-	if( ! dissapear )
-		return;
-	window.setTimeout( function() {
-		$("#post_info").remove();
-		$("#post").removeAttr('style');
-	}, dissapear);
+function display_info( info, dissapear ) {
+	var text = '<i class="fa fa-check"></i>&nbsp;';
+	text += info;
+	dissapear = dissapear || 5000;
+	Materialize.toast(text, dissapear, 'rounded');
 }
 function can_record() {
 	navigator.getMedia = ( navigator.getUserMedia ||
@@ -101,9 +75,8 @@ function recording() {
 		return;
 	}
 	if( r_count === 120 ) {
-		$("#l_reached").show();
+		Materialize.toast('Time is up!', 5000, 'rounded');
 		window.setTimeout( function() {
-			$("#l_reached").hide();
 			$("#stop").trigger('click');
 		}, 2500);
 	}
@@ -111,14 +84,18 @@ function recording() {
 function up_form( voice ) {
 	$("#record_form").hide();
 	$("#post").hide();
-	$("#uploading").show();
+	$("#whatsloading").html('Uploading...');
+	$("#loading").show();
 	voice = voice || false;
 	var ajaxform = {
 		beforeSend : function() {
 			$("#player_cut").jPlayer("destroy");
 		},
 		error : function(xhr) {
-			post_error('Connection problem :(');
+			display_error('Connection problem :(');
+			$("#loading").hide();
+			$("#up_progress").width(0);
+			$("#post").show();
 		},
 		uploadProgress : function(event, position, total, percentComplete) {
 			$("#up_progress").animate({
@@ -130,14 +107,10 @@ function up_form( voice ) {
 			var result = JSON.parse(xhr.responseText);
 			if( false === result.success ) {
 				if( typeof result.extra == 'undefined' ) {
-					$("#uploading").hide();
-					$("#error_processing div").html(result.response);
-					$("#error_processing").show();
-					window.setTimeout( function() {
-						$("#error_processing").hide();
-						$("#post").show();
-						$("#error_processing div").html("");
-					}, 4000);
+					$("#loading").hide();
+					$("#up_progress").width(0);
+					$("#post").show();
+					display_error( result.response );
 					return;
 				}
 				tmp_preview_url = result.extra.tmp_url;
@@ -158,9 +131,9 @@ function up_form( voice ) {
 					remainingDuration: true,
 					toggleDuration: true
 				});
-				$("#uploading").hide();
+				$("#loading").hide();
+				$("#up_progress").width(0);
 				$("#cut_form").show();
-				$("#cut_error").hide();
 				$("#audio_id").val( result.extra.id );
 				return;
 			}
@@ -204,8 +177,9 @@ function load_post_form( id, tmp_url ) {
 		remainingDuration: true,
 		toggleDuration: true
 	});
-	$("#cutting, #uploading").hide();
+	$("#cutting, #loading").hide();
 	$("#post_form").show();
+	$("#up_progress").width(0);
 }
 function is_JSON(str) {
 	return (/^[\],:{}\s]*$/.test(str.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')));
@@ -224,6 +198,7 @@ function readCookie(name) {
 }
 function norecordsupport() {
 	$("#or, #record").hide();
+	$("#upload").css('float', 'none');
 	var g = readCookie('norecordsupport');
 	if( null !== g && '' !== g )
 		return;
@@ -231,6 +206,15 @@ function norecordsupport() {
 	document.cookie = 'norecordsupport=1';
 }
 $(document).ready( function() {
+	$('.collapsible').collapsible();
+	$('.button-collapse').sideNav({ menuWidth: 240, edge: 'left', closeOnClick: false });
+	$('select').material_select();
+	$('.modal-trigger').leanModal({
+		dismissible: true,
+		opacity: 0.5,
+		in_duration: 300,
+		out_duration: 200,
+	});
 	if( ! can_record() )
 		norecordsupport();
 	init = function() {
@@ -249,13 +233,9 @@ $(document).ready( function() {
 			$("div#record").trigger('click');
 		}, function(e) {
 			initialized = false;
-			$("div#post").hide();
 			$("div#waiting").hide();
-			$("div#error").show();
-			window.setTimeout( function() {
-				$("div#error").hide();
-				$("div#post").show();
-			}, 5000);
+			$("div#post").show();
+			display_error('Microphone access is not allowed or was blocked.');
 		});
 	};
 	$("div#record").on('click', function() {
@@ -313,7 +293,7 @@ $(document).ready( function() {
 		format = format[ format.length -1 ];
 		format = format.toLowerCase();
 		if( ! in_array(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) )
-			return post_error('Format not allowed');
+			return display_error('Format not allowed');
 		up_form();
 	});
 });
@@ -344,27 +324,27 @@ $("#cut_form").ajaxForm({
 	beforeSend : function() {
 		$("#player_preview").jPlayer('destroy');
 		$("#cut_form").hide();
-		$("#cutting").show();
-		$("#cut_error").hide();
+		$("#whatsloading").html('Cutting...');
+		$("#loading").show();
 	},
 	error : function() {
-		$("#cut_error").html("Problem while sending request... ): Please try again");
-		$("#cut_error").show();
-		$("#cutting").hide();
+		display_error('Connection problem :(');
+		$("#loading").hide();
+		$("#up_progress").width(0);
 		$("#cut_form").show();
 	},
 	uploadProgress : function(event, position, total, percentComplete) {
-		$("#cut_progress").animate({
+		$("#up_progress").animate({
 			width: percentComplete + '%'
 		});
 	},
 	complete: function(xhr) {
-		$("#cut_progress").width('100%');
+		$("#up_progress").width('100%');
 		var result = JSON.parse(xhr.responseText);
 		if( ! result.success ) {
-			$("#cut_error").html(result.response);
-			$("#cut_error").show();
-			$("#cutting").hide();
+			display_error(result.response);
+			$("#loading").hide();
+			$("#up_progress").width(0);
 			$("#cut_form").show();
 			return;
 		}
@@ -373,14 +353,17 @@ $("#cut_form").ajaxForm({
 });
 $("#post_form").ajaxForm({
 	error : function() {
-		post_error('Connection problem :(');
+		display_error('Connection problem :(');
 	},
 	complete : function(xhr) {
 		var result = JSON.parse(xhr.responseText);
 		$("#desc").val("");
+		$("#loading, #post_form").hide();
+		$("#up_progress").width(0);
+		$("#post").show();
 		if( ! result.success )
-			return post_error( result.response, 3 );
-		return post_info(result.response, 3);
+			return display_error( result.response );
+		return display_info(result.response);
 	},
 });
 $(document).on('click', '.laic', function(e) {
@@ -392,12 +375,12 @@ $(document).on('click', '.laic', function(e) {
 		url: ajaxurl + 'favorite.php',
 		data : {id: _id},
 		error: function() {
-			alert('Connection problem :(');
+			display_error('Connection problem :(');
 		},
 		success: function(result) {
 			result = JSON.parse(result);
 			if( ! result.success )
-				return alert(result.response);
+				return display_error(result.response);
 			if( result.extra.action == 'favorite' )
 				last_laic_id.addClass('favorited');
 			else
@@ -432,12 +415,12 @@ $(document).on('click', '.delit', function(e) {
 		url: ajaxurl + 'delete.php',
 		data : {id: _id},
 		error: function() {
-			alert('Connection error :(');
+			display_error('Connection error :(');
 		},
 		success: function(result) {
 			result = JSON.parse(result);
 			if( ! result.success )
-				return alert(result.response);
+				return display_error(result.response);
 			if( typeof is_audio === 'boolean' )
 				return window.location.replace('/');
 			$("#" + result.response ).fadeOut(1000, function() {
@@ -455,11 +438,11 @@ $(document).on('click', '#load_more', function() {
 	var data = {};
 	if( 'search' == load ){
 		to_load = search;
-		data.o = extra;
-	}
-	else if('audios' == load || 'favorites' == load)
+		data.s = sort;
+		data.t  = type;
+	} else if('audios' == load || 'favorites' == load )
 		to_load = profile;
-	else if('comments' == load )
+	else if('replies' == load )
 		to_load = audio_id;
 	else
 		return;
@@ -480,7 +463,7 @@ $(document).on('click', '#load_more', function() {
 		success : function( result ) {
 			if( is_JSON(result) ) {
 				result = JSON.parse(result);
-				return alert(result.response);
+				return display_error(result.response);
 			}
 			$( '#' + load_more[0] ).append( result );
 			load_more = null;
@@ -489,34 +472,34 @@ $(document).on('click', '#load_more', function() {
 });
 $("#settings_form").ajaxForm({
 	error : function() {
-		$("#settings_result").html( display_error('Connection problem :('), true);
+		display_error('Connection problem :(');
 	},
 	complete : function(xhr) {
 		var result = JSON.parse(xhr.responseText);
 		if( result.success )
-			return $("#settings_result").html( display_info( result.response), true );
-		$("#settings_result").html( display_error( result.response), true );
+			return display_info( result.response );
+		display_error( result.response );
 	}
 });
-$("#form_comment").ajaxForm({
+$("#form_reply").ajaxForm({
 	error : function() {
-		$("#comments_error").html( display_error('Connection problem :(', true) );
+		display_error('Connection problem :(');
 	},
 	complete : function( xhr ) {
 		var result = xhr.responseText;
 		if( is_JSON(result) ) {
 			result = JSON.parse(result);
-			return $("#comments_error").html( display_error( result.response ) );
+			return display_error( result.response );
 		}
-		$("#comment_box").val("");
-		$("#no_comments").remove();
+		$("#reply_box").val("");
+		$("#noreplies").remove();
 		if( null === document.getElementById("load_more") )
-			$("#comments").append(result);
+			$("#replies").append(result);
 		else
 			$("#load_more").before(result);
 	}
 });
-$("#comment_box").on('keyup keydown', function(e) {
+$("#replies_box").on('keyup keydown', function(e) {
 	var val = $(this).val();
 	if( $.trim(val).length > 0 )
 		$("#c_submit").removeAttr('disabled');
@@ -525,4 +508,13 @@ $("#comment_box").on('keyup keydown', function(e) {
 });
 $("#close_ft").on('click', function() {
 	$("#firstime").hide();
+});
+$( "#search_type").on( 'change', function() {
+	if( $(this).val() == 'a' ) {
+		$("#search_sort").removeAttr('disabled');
+		$('#search_sort').material_select();
+	}else{
+		$('#search_sort').material_select('destroy');
+		$("#search_sort").attr('disabled', 'disabled');
+	}
 });

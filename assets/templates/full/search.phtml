@@ -3,44 +3,91 @@ $_BODY['q'] =
 $q = validate_args(@$_GET['q']) ? htmlentities(trim($_GET['q'])) : '';
 $_BODY['title'] = $q . ' ' . __('Search');
 load_template('header');
-$_BODY['sort'] =
-$s = validate_args( @$_GET['o'] )
-	&& in_array($_GET['o'], array("d", "l", "p") ) ?
-		$_GET['o']
+$s = validate_args( @$_GET['s'] )
+	&& in_array($_GET['s'], array("d", "p") ) ?
+		$_GET['s']
 	:
-		'd'
+		'd';
+$t = validate_args( @$_GET['t'] )
+	&& in_array($_GET['t'], array('u', 'a') ) ?
+		$_GET['t']
+	:
+		'a';
 ?>
-	<div class="container h">
-		<div class="row">
-			<div id="le_content" class="column">
-				<div class="box">
-				<div class="sb">
-				<?php if( ! empty($q) )
-					_e("You're looking for...");
-				else
-					_e("Type something to search")
-				?>
+<div class="content" id="main">
+	<div class="row">
+		<div class="col l9 m12 s12">
+			<div class="box">
 				<form method="GET" action="<?php echo url() . 'search' ?>">
-					<input type="text" name="q" id="s">
-				</form>
+				<div class="input-field">
+					<input type="text" class="validate" name="q" id="s">
+					<label for="s">
+						<i class="fa fa-search"></i>
+						&nbsp;<?php _e('Search...') ?>
+					</label>
 				</div>
-				<hr>
-				<div id="search">
+				<div id="search_options">
+				<div class="input-field col s3 left">
+				<select id="search_type" name="t">
+					<option value="a"
+					<?php if( 'a' == $t )
+					echo 'selected="selected"'
+					?>><?php _e('Audios') ?></option>
+					<option value="u"
+					<?php if( 'u' == $t )
+					echo 'selected="selected"'
+					?>><?php _e('Users') ?></option>
+				</select>
+				<label><?php _e('Type') ?></label>
+				</div>
+				<div class="input-field col s3 right">
+				<select id="search_sort" name="s"
 				<?php
-				!empty($_GET['q']) and search($_GET['q'], $s, 1)
-				?>
+				if( 'u' == $t )
+					echo 'disabled="disabled"';
+				?>>
+					<option value="d"
+					<?php if( 'd' == $s )
+					echo 'selected="selected"'
+					?>><?php _e('Date') ?></option>
+					<option value="p"
+					<?php if( 'p' == $s )
+					echo 'selected="selected"'
+					?>><?php _e('Plays') ?></option>
+				</select>
+				<label><?php _e('Sort') ?></label>
 				</div>
-				</div>
-			</div>
+  				</div>
+  				<button id="search_button" type="submit" class="waves-effect waves-light btn blue lighten-1">
+  					<?php _e('Search') ?>
+  				</button>
+  				</form>
+  				<div class="divider search"></div>
+  				<p class="title"><?php _e('Results') ?></p>
+  				<div id="search">
+  				<?php
+  				if( ! empty($q) )
+  					search( $q, $s, $t, 1)
+  						//query,sort,type,page
+  				?>
+  				</div>
+  			</div>
+		</div>
+		<div class="col l3 m12 s12">
 			<?php load_template('sidebar') ?>
 		</div>
 	</div>
-	<?php if( ! empty($q) ): ?>
-	<script type="text/javascript">
+</div>
+<?php if( ! empty($q) ): ?>
+<script type="text/javascript">
+window.onload = function() {
 	$("#q, #s").val("<?php echo addslashes($_GET['q']) ?>");
-	var search = "<?php echo urlencode($_GET['q']) ?>";
-	</script>
-	<?php endif ?>
-	<?php load_template('footer') ?>
-</body>
-</html>
+	$("#q, #s").addClass('valid');
+	$("label[for='s'], label[for='q']").addClass('active');
+};
+var search = "<?php echo urlencode($_GET['q']) ?>";
+var type = "<?php echo $t ?>";
+var sort = "<?php echo $s ?>";
+</script>
+<?php
+endif; load_template('footer');

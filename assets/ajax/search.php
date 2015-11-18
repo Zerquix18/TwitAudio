@@ -12,10 +12,16 @@ $s = validate_args( @$_POST['o'] )
 		$_POST['o']
 	:
 		'd';
+$t = validate_args( @$_GET['t'] )
+	&& in_array($_GET['t'], array('u', 'a') ) ?
+		$_GET['t']
+	:
+		'a';
 $p = (int) $_POST['p'];
-if( ! is_numeric($_POST['p']) || $p < 1 )
+if( ! is_numeric($_POST['p']) || $p < 2 )
 	_result( __('Request malformed.'), false );
 if( empty($q) )
 	_result( __('Request malformed.'), false );
 
-search($q, $s, $p);
+search( $q, $s, $t, $p);
+//     query,search,type,page

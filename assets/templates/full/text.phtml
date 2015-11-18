@@ -1,19 +1,22 @@
 <?php
+$_BODY['page'] = 'txt';
 $rplc = array(
-		'about' => __('About'),
-		'tos' => __('Terms of Service'),
-		'privacy' => __('Privacy Policy'),
-		'faq' => 'FAQ',
-		'contact' =>__('Contact')
+		'about' 		=> __('About'),
+		'tos' 		=> __('Terms of Service'),
+		'privacy' 	=> __('Privacy Policy'),
+		'faq' 		=> 'FAQ',
+		'contact' 	=>__('Contact')
 	);
-$_BODY['title'] = str_replace( array_keys($rplc), array_values($rplc), $_BODY['txt']);
+$_BODY['title'] = str_replace(
+		array_keys($rplc),
+		array_values($rplc),
+		$_BODY['txt']
+	);
 load_template('header')
 ?>
-	<div class="container h">
-		<div class="box txt">
-			<?php echo file_get_contents( PATH . INC . 'txt/' . $_BODY['txt'] . '.txt') ?>
-		</div>
-		<?php load_template('footer') ?>
+<div class="container">
+	<div id="alltxt">
+		<?php echo file_get_contents( PATH . INC . 'txt/' . $_BODY['txt'] . '.txt' ) ?>
 	</div>
-</body>
-</html>
+</div>
+<?php load_template('footer');

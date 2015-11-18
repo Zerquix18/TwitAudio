@@ -1,23 +1,21 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
-$error = __("There was an error while processing your data :(");
-$denied =  __("You denied our request, so there's nothing we can do. :/");
-$_BODY['page'] = __('Processing');
-$_BODY['meta']['robots'] = false;
 if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 	|| ! validate_args(
 		$_SESSION['access_token'],
 		$_SESSION['access_token_secret']
 		)
 	) {
-	$_BODY['error'] = $den ? $denied : $error;
-	load_full_template('process');
+	$_SESSION[ $den ? 'login_denied' : 'login_error' ] = true;
+	header('Location: ' . url() );
 	exit();
 }
 $twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
 $s = $twitter->tw->get('account/verify_credentials');
 if( ! is_object($s) || array_key_exists('error', $s) )
-	$_BODY['error'] = $error and exit( load_full_template('process') );
+	$_SESSION['login_error'] and exit(
+			header('Location: ' . url() )
+		);
 load_full_template('process');
 $user = $s->screen_name;
 $name = $s->name;

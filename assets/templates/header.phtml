@@ -6,39 +6,130 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="title" content="<?php echo $_BODY['meta']['title'] ?>">
 	<meta name="robots" content="<?php echo $_BODY['meta']['robots'] ? 'index,follow' : 'noindex,nofollow' ?>">
-	<link rel="stylesheet" href="<?php echo $_BODY['css_url'] . 'default.css' ?>">
-	<?php if( ! in_array($_BODY['page'], array("index") ) ): ?>
-	<link rel="stylesheet" href="<?php echo $_BODY['css_url'] ?>font-awesome.css">
-	<?php endif ?>
-	<link rel="apple-touch-icon" href="<?php echo $_BODY['img_url'] ?>apple-icon.png">
-	<link rel="icon" href="<?php echo $_BODY['img_url'] ?>favicon.ico">
-	<?php if( ! in_array($_BODY['page'], array("index", "process") ) ): ?>
-	<script src="<?php echo $_BODY['js_url'] ?>jquery-1.11.3.min.js"></script>
-	<?php endif ?>
-	<?php if('audio' === $_BODY['page'] && $_BODY['robots']): ?>
-		<meta name="twitter:player" content="<?php echo 'https://twitaudio.com/frame/' . $_BODY['audio']->id ?>">
-		<meta name="twitter:player:height" content="47">
-		<meta name="twitter:player:width" content="435">
-		<meta name="twitter:card" content="player">
-		<meta name="twitter:site" content="@twit_audio">
-		<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $_BODY['user']->user) ?>">
-		<meta name="twitter:image" content="https://twitaudio.com/assets/img/image.jpg">
-		<meta name="twitter:url" content="https://twitaudio.com/<?php echo $_BODY['audio']->id ?>">
-		<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
+	<link rel="stylesheet" href="<?php load_style('materialize.css') ?>">
+	<link rel="stylesheet" href="<?php load_style('default.css') ?>">
+	<link rel="stylesheet" href="<?php load_style('font-awesome.css') ?>">
+	<link rel="apple-touch-icon" href="<?php load_img('apple-icon.png') ?>">
+	<link rel="icon" href="<?php load_img('favicon.ico') ?>">
+	<?php if( ! is('index') ): ?>
+	<script src="<?php load_script('jquery-1.11.3.min.js') ?>"></script>
+	<?php endif;
+	if( is('audio') && $_BODY['robots']): ?>
+	<meta name="twitter:player" content="<?php echo 'https://twitaudio.com/frame/' . $_BODY['audio']->id ?>">
+	<meta name="twitter:player:height" content="47">
+	<meta name="twitter:player:width" content="435">
+	<meta name="twitter:card" content="player">
+	<meta name="twitter:site" content="@twit_audio">
+	<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $_BODY['user']->user) ?>">
+	<meta name="twitter:image" content="https://twitaudio.com/assets/img/image.jpg">
+	<meta name="twitter:url" content="https://twitaudio.com/<?php echo $_BODY['audio']->id ?>">
+	<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
 	<?php endif ?>
 	<meta property="og:title" content="TwitAudio">
 	<meta property="og:image" content="https://twitaudio.com/assets/img/logo-md.png">
 </head>
-<body<?php if( in_array($_BODY['page'], array("index", "process") ) ) echo ' id="h"' ?>>
-	<nav id="nav">
-		<div class="container">
-			<div id="logo-sm" class="left">
-				<a href="<?php echo url() ?>">
-					<img src="<?php echo $_BODY['img_url'] ?>logo-sm.png" alt="TwitAudio">
-				</a>
-			</div>
-			<form method="GET" id="srch" action="<?php echo url() . 'search' ?>">
-				<input type="text" maxlength="60" id="q" name="q" placeholder="Search for popular audios...">
-			</form>
+<body <?php
+if( is('txt') ) echo 'id="txt"';
+if( is('404') ) echo 'id="p404"';
+if( is('index') ) echo 'class="white"';
+?>>
+<?php
+$show_sidebar = ! is('404', 'txt');
+if( ! is('index') ): // do I show navbar? if it not home page
+if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
+?>
+<div id="slide-out" class="side-nav fixed  grey darken-3">
+	<form method="GET" action="<?php echo url() . 'search' ?>">
+		<div class="input-field">
+			<input type="text" class="validate" id="q" name="q">
+			<label for="q">
+				<i class="fa fa-search"></i>
+				&nbsp;Search...
+			</label>
+		</div>
+	</form>
+	<ul id="userthings">
+		<li>
+			<a href="<?php echo url() ?>">
+				<i class="fa fa-home"></i>
+				<?php _e('Home') ?>
+			</a>
+		</li>
+	<?php if( ! is_logged() ): ?>
+		<li>
+			<a href="<?php echo url() . 'signin.php' ?>">
+				<i class="fa fa-twitter"></i>
+				<?php _e('Sign in with Twitter') ?>
+			</a>
+		</li>
+	<?php else:
+	$audios = $db->query(
+			'SELECT COUNT(*) AS size FROM audios
+			WHERE reply_to = \'0\' AND user = ?',
+			$_USER->id
+		);
+	$favorites = $db->query(
+			'SELECT COUNT(*) AS size FROM favorites
+			WHERE user_id = ?',
+			$_USER->id
+		);
+	$audios = (int) $audios->size;
+	$favorites = (int) $favorites->size;
+	?>
+		<li>
+			<a href="<?php echo url() . 'audios/' . $_USER->user ?>">
+				<img id="pp" class="circle" width="25" height="25" src="<?php echo $_USER->avatar ?>">&nbsp;
+				<?php echo htmlentities( $_USER->name ) ?>
+			</a>
+		</li>
+		<li>
+			<a href="<?php echo url() . 'audios/' . $_USER->user ?>">
+				<i class="fa fa-headphones"></i>
+				Audios
+				<?php if( $audios ): ?>
+				<span class="right bdge blue lighten-2">
+					<?php echo $audios ?>
+				</span>
+				<?php endif ?>
+			</a>
+		</li>
+		<li>
+			<a href="<?php echo url() . 'favorites/' . $_USER->user ?>">
+				<i class="fa fa-star"></i>
+				<?php _e('Favorites') ?>
+				<?php if( $favorites ): ?>
+				<span class="right bdge yellow darken-2">
+					<?php echo $favorites ?>
+				</span>
+				<?php endif ?>
+			</a>
+		</li>
+		<li>
+			<a href="#settings" class="modal-trigger waves-effect waves-light">
+				<i class="fa fa-cog"></i>
+				<?php _e('Settings') ?>
+			</a>
+		</li>
+		<li>
+			<a href="<?php echo url() . '?logout=1' ?>">
+				<i class="fa fa-sign-out"></i>
+				<?php _e('Log out') ?>
+			</a>
+		</li>
+		<?php endif ?>
+	</ul>
+</div>
+<?php
+endif;
+?>
+<div class="navbar-fixed">
+	<nav class="blue lighten-2 <?php if($show_sidebar) echo 'content' ?>">
+	<?php if( $show_sidebar ): ?>
+		<a href="javascript:void(0);" data-activates="slide-out" class="button-collapse" id="open_sidebar"><i class="mdi-navigation-menu"></i></a>
+	<?php endif ?>
+		<div class="nav-wrapper">
+			<a href="<?php echo url() ?>" class="brand-logo center logo">TwitAudio</a>
 		</div>
 	</nav>
+</div>
+<?php endif ?>

@@ -1,58 +1,73 @@
 <?php load_template('header') ?>
-	<div class="container h">
-		<div class="row">
-			<div id="le_content" class="column">
-			<?php if( isset($_SESSION['first_time']) ): ?>
-				<div id="firstime" class="prompt">
-				<div class="welcome_text">
-					<?php _e('Welcome to TwitAudio!'); ?>
-				</div><hr>
-				<?php
-				echo __('Everything was set up. ');
-				if( ! (int) $_USER->audios_public ) 
-					echo sprintf( __('Your audios and favorites were set and private because your Twitter account is protected. You can change this in your <a href="%s">settings</a>.'), url() . 'settings' ) . ' ';
-				echo '<br>' . __('We hope you enjoy TwitAudio. <3') . ' ';
-				?>
-				<a href="javascript:void(0)" id="close_ft"><i class="fa fa-times-circle"></i>&nbsp;<?php _e('Close') ?></a>
-				</div>
-			<?php unset($_SESSION['first_time']); endif ?>
-				<div id="norecordsupport" class="prompt" style="display:none;">
-					<?php echo sprintf( __('Your current browser does not support audio recording. Read <a href="%s">here</a> how to solve it.'), url() . 'faq#q1');
-					?>
-				</div>
-			<?php load_template('post') ?>
-				<div class="box down">
-					<p class="title"><?php _e('Your recent audios') ?></p>
-					<?php
-					$audios = $db->query("SELECT * FROM audios WHERE user = ? AND reply_to = '0' ORDER BY time DESC LIMIT 3", $_USER->id);
-					if( $audios->nums == 0 ):
-						alert_error( __("You haven't recorded or uploaded audios... yet. "), true );
-					else:
-						while($a = $audios->r->fetch_object() )
-							display_audio($a);
-						?>
-						<?php
-					endif;
-					?>
-					<ul class="sn">
-						<li class="left">
-							<a href="<?php echo url() . 'settings' ?>">&larr;
-								<?php _e('Go to settings') ?>
-							</a>
-						</li>
-						<?php if($audios->nums > 0): ?>
-						<li class="right">
-							<a href="<?php echo url() . 'audios/' . $_USER->user ?>">
-								<?php _e('See all your audios') ?>
-							&rarr;</a>
-						</li>
-						<?php endif ?>
-					</ul>
-				</div>
+<div class="content" id="main">
+	<div class="row">
+		<div class="col l9 m12 s12">
+			<div id="norecordsupport" class="red-text" style="display:none;">
+	<?php echo sprintf( __('Your current browser does not support audio recording. Read <a href="%s">here</a> how to solve it.'), url() . 'faq#q1')
+	?>
 			</div>
+			<?php load_template('post') ?>
+			<div class="box">
+				<p class="title">
+					<?php _e('Your recent audios') ?>
+				</p>
+			<?php
+			$audios = $db->query(
+					'SELECT * FROM audios
+					WHERE reply_to = \'0\'
+					AND user = ?
+					ORDER BY `time` DESC
+					LIMIT 3',
+					$_USER->id
+				);
+			if( $audios->nums == 0 ):
+				alert_info( __("Here we'll show you your most recent audios. Why not starting with an audio about you signing?") );
+			else:
+				while( $a = $audios->r->fetch_object() )
+					display_audio( $a );
+			endif;
+			?>
+			</div>
+		</div>
+		<div class="col l3 m12 s12">
 			<?php load_template('sidebar') ?>
 		</div>
 	</div>
-	<?php load_template('footer') ?>
-</body>
-</html>
+</div>
+<?php
+if( isset($_SESSION['first_time']) ): unset($_SESSION['first_time']) ?>
+ <div id="welcome" class="modal bottom-sheet">
+	<div class="modal-content">
+		<h4>
+			<?php _e('Welcome') ?>
+		</h4>
+		<p>
+			<?php _e('Welcome to TwitAudio! We hope you enjoy your experiencie here!') ?>
+		</p>
+		<p>
+<?php
+	$status = (int) $_USER->audios_public ? __('public') : __('private');
+	echo sprintf(
+		__('Your audios were set as %1$s because your tweets are also %1$s. You can change this on your <a href="#settings" class="modal-trigger">Settings</a>.'), $status
+		);
+?>
+		</p>
+		<p>
+<?php
+	echo sprintf(
+			__('By using TwitAudio, you agree with our <a href="%s">terms and conditions</a>.'),
+			url() . 'tos'
+		);
+?>
+		</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+	</div>
+</div>
+<script>
+window.onload = function() {
+	$("#welcome").openModal();
+};
+</script>
+<?php endif; load_template('footer');

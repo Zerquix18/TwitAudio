@@ -6,7 +6,8 @@ switch($p):
 		if( ! preg_match("/^[A-Za-z0-9]{6}$/", $_GET['id']) )
 			exit(load_full_template('404'));
 		$a = $db->query(
-			"SELECT * FROM audios WHERE id = ?",
+			"SELECT * FROM audios
+			WHERE reply_to = '0' AND id = ?",
 			$_GET['id']
 		);
 		if( $a->nums == 0 )
@@ -69,7 +70,6 @@ switch($p):
 					'privacy',
 					'tos',
 					'faq',
-					'contact'
 					)
 				)
 			)
@@ -79,7 +79,13 @@ switch($p):
 		break;
 	default:
 		is_logged() ?
-			$_BODY['page'] = 'default' and load_full_template('default')
+			isset($_GET['logout']) ?
+				$_BODY['page'] = 'index'
+				and load_full_template('index')
+			:
+				$_BODY['page'] = 'default'
+				and load_full_template('default')
 		:
-			$_BODY['page'] = 'index' and load_full_template('index');
+			$_BODY['page'] = 'index'
+			and load_full_template('index');
 endswitch;

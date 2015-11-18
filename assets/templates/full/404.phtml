@@ -1,25 +1,34 @@
 <?php
-$_BODY['title'] = __('Error 404')
-and $_BODY['page'] = '404'
-and $_BODY['robots'] = false
-or load_template('header')
+$_BODY['title'] = __('Error 404');
+$_BODY['page'] = '404';
+$_BODY['robots'] = false;
+load_template('header')
 ?>
-	<div class="container h">
-		<div id="processing" class="box">
-			<div id="pl">
-				<h2><?php echo $_BODY['title'] ?></h2>
-				<hr>
-				<?php _e('We could not find that. Try using the search box.') ?>
-				<ul id="options404">
-					<li>
-						<a href="#" onclick="javascript:history.back();">
-						<?php _e('Go back to the previous page') ?>
-						</a>
-					</li>
-				</ul>
-			</div>
+<div class="container">
+	<img src="<?php load_img('p404.png') ?>">
+	<h3>
+		<?php _e('We could not find that!') ?>
+	</h3>
+	<form method="GET" action="<?php echo url() . 'search/' ?>">
+		<div class="input-field">
+			<input type="text" name="q">
+			 <label class="active">
+			 	<i class="fa fa-search"></i>
+			 	&nbsp;<?php _e('Search') ?>
+			 </label>
 		</div>
-		<?php load_template('footer') ?>
-	</div>
-</body>
-</html>
+	</form>
+	<ul>
+		<li>
+			<a href="javascript:history.back();">
+				<?php _e('Back') ?>
+			</a>
+		</li>
+		<li>
+			<a href="<?php echo url() ?>">
+				<?php _e('Home') ?>
+			</a>
+		</li>
+	</ul>
+</div>
+<?php load_template('footer');

@@ -1,32 +1,92 @@
 <?php load_template('header') ?>
-	<div class="container h">
-		<div id="welcome">
-			<div id="logo-full">
-				<img src="<?php echo $_BODY['img_url'] ?>logo-full.png" alt="TwitAudio" title="TwitAudio">
-			</div>
-			<div class="ksyo">
-				<?php _e('Share voice notes and audio files using Twitter') ?>
-			</div>
-		</div>
-		<div id="guide">
-			<div class="step si">
-				<div class="stepn"><?php _e('Step 1') ?></div>
-				<a href="<?php echo url() . 'signin.php' ?>">
-					<img src="<?php echo $_BODY['img_url'] ?>signin.png" alt="Sign in with Twitter" title="Sign in with Twitter">
-				</a>
-			</div>
-			<div class="step">
-				<div class="stepn"><?php _e('Step 2') ?></div>
-					<img src="<?php echo $_BODY['img_url'] ?>step2.png">
-					<?php _e('Record or upload an audio') ?>
-			</div>
-			<div class="step">
-				<div class="stepn"><?php _e('Step 3') ?></div>
-					<img src="<?php echo $_BODY['img_url'] ?>step3.png">
-					<?php _e('Share it to Twitter!') ?>
-			</div>
-		</div>
-		<?php load_template('footer') ?>
+<div id="home">
+	<div class="container" id="logo">
+		<img class="logo-full" src="<?php load_img('logo-full.png') ?>">
+		<h2>
+		<?php _e('Share voice notes and audio files using Twitter') ?>
+		</h2>
+		<a href="<?php echo url() . 'signin.php' ?>">
+			<img src="<?php load_img('signin.png') ?>">
+		</a>
 	</div>
-</body>
-</html>
+</div>
+<div class="container white" id="features">
+	<div class="row">
+		<div class="col s12 m4 l4">
+			<p class="center-align"><i class="fa fa-microphone fa-5x"></i></p>
+			<p class="center-align"><?php _e('Record') ?></p>
+			<p>
+				<?php _e("Sing, scream, talk, or just transmit what's around you. You can record up to 2 minutes unlimited audios and share them.") ?>
+			</p>
+		</div>
+		<div class="col s12 m4 l4">
+			<p class="center-align"><i class="fa fa-upload fa-5x"></i></p>
+			<p class="center-align">
+				<?php _e('Upload') ?>
+			</p>
+			<p>
+				<?php _e("Don't want to share your voice? Upload the song that you're listening. Sure your followers will love it.") ?>
+			</p>
+		</div>
+		<div class="col s12 m4 l4">
+			<p class="center-align"><i class="fa fa-twitter fa-5x"></i></p>
+			<p class="center-align">
+				<?php _e('Share to Twitter') ?>
+			</p>
+			<p>
+				<?php _e("After an audio is uploaded, you can share it directly to Twitter and play them through the Twitter website.") ?>
+			</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col s12 m4 l4 offset-m2 offset-l2">
+			<p class="center-align"><i class="fa fa-star fa-5x"></i></p>
+			<p class="center-align">
+				<?php _e('Favorite everything') ?>
+			</p>
+			<p>
+				<?php _e("You can favorite audios to save them for later, say you like them, or even just to make people know you listened to them.") ?>
+			</p>
+		</div>
+		<div class="col s12 m4 l4">
+			<p class="center-align"><i class="fa fa-comment fa-5x"></i></p>
+			<p class="center-align">
+				<?php _e('Express yourself') ?>
+			</p>
+			<p>
+				<?php _e("Reply to other's people audios. and interact with them.") ?>
+			</p>
+		</div>
+	</div>
+</div>
+<?php
+$logout_request = is_logged() && isset($_GET['logout']);
+$login_denied = isset($_SESSION['login_denied']);
+$login_error = isset($_SESSION['login_error']);
+if( !( $logout_request && $login_denied && $login_error) ):
+	if( $logout_request):
+		$db->query(
+			'DELETE FROM sessions WHERE sess_id = ?',
+			session_id()
+		);
+		session_destroy();
+		unset($_SESSION);
+		setcookie('ta_session', '', time() - 3600);
+	?>
+<script>window.onload = function() {
+	display_info("<?php _e('You are now logged out.') ?>", 10000);
+};</script>
+<?php	elseif( $login_error ): ?>
+<script>window.onload = function() {
+	display_error("<?php _e('There was an error while logging you... Please, try again.') ?>", 10000);
+};</script>
+<?php elseif( $login_denied ): ?>
+<script>window.onload = function() {
+	display_error("<?php _e('You denied our request. So we can do nothing.') ?>", 10000);
+};</script>
+<?php endif ?>
+<script src="<?php load_script('jquery-1.11.3.min.js') ?>"></script>
+<script src="<?php load_script('materialize.js') ?>"></script>
+<script src="<?php load_script('default.js') ?>"></script>
+
+<?php endif; load_template('footer');

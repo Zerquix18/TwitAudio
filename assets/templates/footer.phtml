@@ -1,67 +1,104 @@
-	<?php if( ! in_array($_BODY['page'], array("txt", "index") ) ): ?>
-		<div class="ads_footer">
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-1967021427191293"
-     data-ad-slot="1547888976"
-     data-ad-format="auto"></ins>
+<?php if( ! is('index', 'txt', '404') ): ?>
+<div class="box ads_footer">
+	<p class="title"><?php _e('Advertising') ?></p>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Responsive -->
+	<ins class="adsbygoogle"
+		style="display:block"
+		data-ad-client="ca-pub-1967021427191293"
+		data-ad-slot="1547888976"
+		data-ad-format="auto">
+	</ins>
+	<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+	</script>
+</div>
+<?php endif ?>
 <script>
-(adsbygoogle = window.adsbygoogle || []).push({});
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-69290712-1', 'auto');
+ga('send', 'pageview');
+workerpath 	= "<?php load_script('recorderWorker.js') ?>";
+lamepath 	= "<?php load_script('lame.all.js') ?>";
+ajaxurl 		= '<?php echo url() . INC . "ajax/" ?>';
+swfpath 	= '<?php echo url() . INC . "swf/" ?>';
 </script>
+<?php if( is('index', 'txt') ): // index or any text page (terms,about,etc) ?>
+<footer class="page-footer grey darken-3">
+	<div class="container">
+		<div class="row">
+			<div class="col l6 s12">
+				<h5 class="white-text">
+					<?php _e("We've reached the end") ?>
+				</h5>
+				<p class="grey-text text-lighten-4">
+					Developed with love by <a target="_blank" href="//twitter.com/zerquix18">@Zerquix18</a>
+				</p>
+			</div>
+			<div class="col l4 offset-l2 s12">
+				<h5 class="white-text">
+					<?php _e("More info") ?>
+				</h5>
+				<ul>
+					<li>
+						<a class="grey-text text-lighten-4" href="<?php echo url() . 'about' ?>">
+							<?php _e("About") ?>
+						</a>
+					</li>
+					<li>
+						<a class="grey-text text-lighten-4" href="<?php echo url() . 'tos' ?>">
+							<?php _e("Terms and conditions") ?>
+						</a>
+					</li>
+					<li>
+						<a class="grey-text text-lighten-4" href="<?php echo url() . 'privacy' ?>">
+							<?php _e("Policy Privacy") ?>
+						</a>
+					</li>
+					<li>
+						<a class="grey-text text-lighten-4" href="<?php echo url() . 'faq' ?>">
+							<?php _e("FAQ") ?>
+						</a>
+					</li>
+				</ul>
+			</div>
 		</div>
-	<?php endif ?>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-69290712-1', 'auto');
-  ga('send', 'pageview');
-
-</script>
-		<footer class="container <?php if( $_BODY['page'] == 'index') echo 'home'; else echo 'center' ?>">
-		<?php if( $_BODY['page'] == 'index' && count($lenguajeso) > 1 ): ?>
-			<ul class="left">
-			<?php foreach($lenguajeso as $a => $b ): ?>
-				<li><a href="<?php echo url() . '?l=' . $a ?>"><?php echo $b ?></a></li>
-			<?php endforeach ?>
-			</ul>
-		<?php endif ?>
-			<ul<?php if($_BODY['page'] == 'index') echo ' class="right"' ?>>
-				<li>
-					<a href="<?php echo url() ?>about"><?php _e('About') ?>
-					</a></li>
-				<li>
-					<a href="<?php echo url() ?>tos"><?php _e('Terms') ?>
-					</a></li>
-				<li>
-					<a href="<?php echo url() ?>privacy">	<?php _e('Privacy') ?>
-					</a></li>
-				<li>
-					<a href="<?php echo url() ?>faq"><?php _e('FAQ') ?>
-					</a></li>
-				<li>
-					<a href="<?php echo url() ?>contact">	<?php _e('Contact') ?>
+		</div>
+		  <div class="footer-copyright grey darken-4">
+			<div class="container">
+			© 2015 Copyright TwitAudio
+				<div class="right">
+					<a class="grey-text text-lighten-4" href="//twitter.com/twit_audio">
+						<i class="fa fa-twitter"></i>
+					</a>&nbsp;
+					<a class="grey-text text-lighten-4" href="//fb.com/twitaudio">
+						<i class="fa fa-facebook"></i>
 					</a>
-				</li>
-			</ul>
-		</footer>
-		<script>
-			workerpath = "<?php echo $_BODY['js_url'] . 'recorderWorker.js' ?>";
-			lamepath = "<?php echo $_BODY['js_url'] . 'lame.all.js' ?>";
-			ajaxurl = '<?php echo url() . INC . "ajax/" ?>';
-			swfpath = '<?php echo url() . INC . "swf/" ?>';
-		</script>
-		<script src="<?php echo $_BODY['js_url'] ?>ajaxform.js"></script>
-		<?php if( ! in_array($_BODY['page'], array("process", "index", "settings") ) ): ?>
-		<script src="<?php echo $_BODY['js_url'] ?>jquery.jplayer.min.js"></script>
-		<?php endif;
-		if( $_BODY['post_box'] ):
-		?>
-		<script src="<?php echo $_BODY['js_url'] ?>lame.all.js"></script>
-		<script src="<?php echo $_BODY['js_url'] ?>recorder.js"></script>
-		<?php endif;
-		if( !in_array($_BODY['page'], array("index", "process") ) ): ?>
-		<script src="<?php echo $_BODY['js_url'] . 'default.js' ?>"></script>
-		<?php endif;
+				</div>
+			</div>
+		</div>
+</footer>
+<?php endif ?>
+<?php if( ! is('index', 'txt', '404') ): ?>
+
+<div id="settings" class="modal">
+	<div class="modal-content">
+		<h4><?php _e('Settings') ?></h4>
+		<?php load_full_template('settings') ?>
+	</div>
+	<div class="modal-footer">
+		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat"><?php _e('Close') ?></a>
+	</div>
+</div>
+
+<script src="<?php load_script('ajaxform.js') ?>"></script>
+<script src="<?php load_script('jquery.jplayer.min.js') ?>"></script>
+
+<?php endif; if( is('default') ): ?>
+<script src="<?php load_script('recorder.js') ?>"></script>
+<?php endif; if( ! is( 'txt', 'index') ): ?>
+<script src="<?php load_script('default.js') ?>"></script>
+<script src="<?php load_script('materialize.js') ?>"></script>
+<?php endif ?>
+</body>
+</html>

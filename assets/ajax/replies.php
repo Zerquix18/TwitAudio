@@ -7,7 +7,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 $q = trim($_POST['q']);
 $p = (int) $_POST['p'];
-if( ! is_numeric($_POST['p']) || $p < 1 )
+if( ! is_numeric($_POST['p']) || $p < 2 )
 	_result( __('Request malformed.'), false );
 $a = $db->query(
 	"SELECT user,id FROM audios WHERE id = ?",
@@ -15,7 +15,7 @@ $a = $db->query(
 );
 if( empty($q) || ! $a->nums )
 	_result( __('Request malformed.'), false );
-if( ! can_listen($a->user) )
-	_result( __('You cannot read to the comments from this audio.'), false);
+if( ! can_listen($a->user) ) // Well try! :D
+	_result( __('You cannot read to the replies from this audio.'), false);
 
-load_comments($a->id, $p);
+load_replies($a->id, $p);
