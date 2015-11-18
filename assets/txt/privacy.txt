@@ -1,11 +1,11 @@
-<h2>Policy Privacy</h2>
-<strong>This Policy Privacy is effective as of October 25, 2015.</strong>
+<h2>Privacy Policy</h2>
+<strong>This Privacy Policy is effective as of October 25, 2015.</strong>
 
-<p>Twitaudio knows that you care about how your information is used and shared. This Policy Privacy sets out how your information is used and shared. When you visit Twitaudio located at twitaudio.com, any linked pages, applications, features or content offered by Twitaudio, you acknowledge that you accept the practices and policies outlined in this Privacy Policy.</p>
+<p>Twitaudio knows that you care about how your information is used and shared. This Privacy Policy sets out how your information is used and shared. When you visit Twitaudio located at twitaudio.com, any linked pages, applications, features or content offered by Twitaudio, you acknowledge that you accept the practices and policies outlined in this Privacy Policy.</p>
 
-<p>This Policy Privacy may be updated with the time. We'll notify you in case it's updated, by posting it in our website or blog. You're also advised to consult this Privacy Policy regularly for any updates.</p>
+<p>This Privacy Policy may be updated with the time. We'll notify you in case it's updated, by posting it in our website or blog. You're also advised to consult this Privacy Policy regularly for any updates.</p>
 
-<p>This Policy Privacy does not apply to the practices of third parties that we do not own or control, including but not limited to any third party websites, services and applications (“Third Party Services”) that you elect to access through the Service or to individuals that we do not manage or employ. While we attempt to facilitate access only to those Third Party Services that share our respect for your privacy, we cannot take responsibility for the content or privacy policies of those Third Party Services. We encourage you to carefully review the privacy policies of any Third Party Services you access.</p>
+<p>This Privacy Policy does not apply to the practices of third parties that we do not own or control, including but not limited to any third party websites, services and applications (“Third Party Services”) that you elect to access through the Service or to individuals that we do not manage or employ. While we attempt to facilitate access only to those Third Party Services that share our respect for your privacy, we cannot take responsibility for the content or privacy policies of those Third Party Services. We encourage you to carefully review the privacy policies of any Third Party Services you access.</p>
 <h3>Basic account information</h3>
 <p>If you desire to access to some features of the website, you must register an account in our website using Twitter API. The information included in the registration includes your IP address, and the data shown in the profiles (excepting posted audios and favorited audios). This information is provided by you when you authorize TwitAudio's application using your Twitter account. On Twitaudio's services, some information like your Twitter profile picture, biography, username and name are listed publicly, just as it is on Twitter. This information is re-updated everytime you log in on Twitaudio.</p>
 <h3>Log Data</h3>
