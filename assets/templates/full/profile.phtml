@@ -54,7 +54,7 @@ load_template('header');
 						href="<?php
 			echo url() . 'audios/' . $u->user
 						?>">
-						<?php _e('Audios') ?>
+						<?php _e('Audios') ?>&nbsp;
 		<?php if( $audios_count && $are_audios_visible  ): ?>
 							<span class="bdge blue lighten-2">
 				<?php echo $audios_count ?>
@@ -68,7 +68,7 @@ load_template('header');
 						href="<?php
 			echo url() . 'favorites/' . $u->user
 						?>">
-						<?php _e('Favorites') ?>
+						<?php _e('Favorites') ?>&nbsp;
 			<?php if( $favs_count && $are_favs_visible ): ?>
 							<span class="bdge yellow darken-2">
 				<?php echo $favs_count ?>
