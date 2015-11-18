@@ -115,8 +115,7 @@ function display_audio( $a, $big = false ) {
 	<?php endif; if( ! empty( $a->audio ) ):  // if its not a reply?>
 	<div class="audio_play">
 	<script>
-	//<![CDATA[
-	$(document).ready( function() {
+$(document).ready( function() {
 		$("#player_<?php echo $a->id ?>").jPlayer({
 		ready: function(event) {
 		$(this).jPlayer("setMedia", {
@@ -135,7 +134,6 @@ function display_audio( $a, $big = false ) {
 		toggleDuration: true
 	});
 });
-//]]>
 </script>
 <div id="player_<?php echo $a->id ?>" class="jp-jplayer"></div>
     <div id="container_<?php echo $a->id ?>" class="jp-audio sm">
