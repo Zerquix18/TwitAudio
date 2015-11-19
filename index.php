@@ -18,13 +18,6 @@ switch($p):
 		$_BODY['user'] = $u;
 		load_full_template('audio');
 		break;
-	case "settings":
-		if( ! is_logged() )
-			return load_full_template('404');
-		$_BODY['page'] = 'settings';
-		$_BODY['robots'] = false;
-		load_full_template('settings');
-	break;
 	case "search":
 		$_BODY['page'] = 'search';
 		load_full_template('search');

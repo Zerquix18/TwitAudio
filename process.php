@@ -16,7 +16,6 @@ if( ! is_object($s) || array_key_exists('error', $s) )
 	$_SESSION['login_error'] and exit(
 			header('Location: ' . url() )
 		);
-load_full_template('process');
 $user = $s->screen_name;
 $name = $s->name;
 $bio = $s->description;
