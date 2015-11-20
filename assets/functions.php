@@ -200,3 +200,12 @@ function sanitize( $str ) {
        	$str );
 	return $str;
 }
+function format_number( $count ) {
+	$count = (int) $count; // just in case
+	if( $count >= 1000 &&  $count < 1000000 ) 
+		return number_format( $count/1000, 1 ) . 'k';
+	elseif( $count >= 1000000 ) 
+		return number_format( $count/1000000, 1 ) . "m"; 
+	else
+        		return $count;
+}

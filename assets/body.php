@@ -169,7 +169,10 @@ $(document).ready( function() {
 	<div class="audio_footer">
 	<?php if( ! empty($a->audio) ): # if not a reply ?>
 		<a class="audiobtn" id="plays_<?php echo $a->id ?>">
-			<i class="fa fa-headphones"></i> <span><?php echo $a->plays ?></span>
+			<i class="fa fa-headphones"></i>
+			<span>
+				<?php echo format_number($a->plays) ?>
+			</span>
 		</a>
 	<?php endif ?>
 		<a class="audiobtn
@@ -179,13 +182,17 @@ $(document).ready( function() {
 				echo ' favorited';
 			endif ?>" data-id="<?php echo $a->id ?>">
 			<i class="fa fa-star"></i>&nbsp;
-			<span><?php echo $a->favorites ?></span>
+			<span>
+				<?php echo format_number($a->favorites) ?>
+			</span>
 		</a>
 	<?php if( ! empty($a->audio) ): # if not a reply ?>
 		<a class="audiobtn"
 		href="<?php echo url() . $a->id ?>#replies">
 			<i class="fa fa-reply"></i>&nbsp;
-			<span><?php echo $replies_count ?></span>
+			<span>
+				<?php echo format_number($replies_count) ?>
+			</span>
 		</a>
 	<?php endif ?>
 		<?php  if( is_logged() && $a->user == $_USER->id ): ?>

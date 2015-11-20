@@ -88,7 +88,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				Audios
 				<?php if( $audios ): ?>
 				<span class="right bdge blue lighten-2">
-					<?php echo $audios ?>
+				<?php echo format_number($audios) ?>
 				</span>
 				<?php endif ?>
 			</a>
@@ -99,7 +99,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				<?php _e('Favorites') ?>
 				<?php if( $favorites ): ?>
 				<span class="right bdge yellow darken-2">
-					<?php echo $favorites ?>
+				<?php echo format_number($favorites) ?>
 				</span>
 				<?php endif ?>
 			</a>
