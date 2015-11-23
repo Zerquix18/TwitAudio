@@ -194,8 +194,8 @@ $(document).ready( function() {
 				<?php echo format_number($replies_count) ?>
 			</span>
 		</a>
-	<?php endif ?>
-		<?php  if( is_logged() && $a->user == $_USER->id ): ?>
+	<?php endif;
+		if( is_logged() && $a->user == $_USER->id ): ?>
 		<a href="javascript:void(0);"
 		class="audiobtn delit" data-id="<?php echo $a->id ?>">
 			<i class="fa fa-times"></i> <?php _e('Delete') ?>

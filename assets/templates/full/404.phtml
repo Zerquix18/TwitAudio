@@ -1,4 +1,5 @@
 <?php
+header("HTTP/1.1 404 Not Found");
 $_BODY['title'] = __('Error 404');
 $_BODY['page'] = '404';
 $_BODY['robots'] = false;
@@ -29,6 +30,13 @@ load_template('header')
 				<?php _e('Home') ?>
 			</a>
 		</li>
+		<?php if( ! is_logged() ): ?>
+		<li>
+			<a href="<?php echo url() . 'signin.php' ?>">
+				<?php _e('Sign In') ?>
+			</a>
+		</li>
+		<?php endif ?>
 	</ul>
 </div>
 <?php load_template('footer');
