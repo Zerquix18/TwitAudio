@@ -34,7 +34,9 @@ load_template('header');
 					__("%s's profile picture"),
 					$u->user
 				)
-				?>">
+				?>"
+				onerror="this.src='<?php echo url() . INC . IMG . 'unknown.png' ?>'; $(this).removeClass('materialboxed')"
+				>
 				<h5 id="name">
 					<?php
 					echo htmlspecialchars($u->name);

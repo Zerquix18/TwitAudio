@@ -93,7 +93,17 @@ function display_audio( $a, $big = false ) {
 <div class="audio <?php if($big) echo 'big' ?>" id="<?php echo $a->id ?>">
 	<div class="audio_header">
 		<a href="<?php echo url() . 'audios/'. $u->user ?>">
-			<img class="circle" src="<?php echo get_image($u->avatar, $size) ?>">
+			<img class="circle"
+			src="<?php echo get_image($u->avatar, $size) ?>"
+			onerror="this.src='<?php echo url() . INC . IMG . 'unknown.png' ?>'"
+		<?php if($big): ?>
+			height="73"
+			width="73"
+		<?php else: ?>
+			height="48"
+			width="48"
+		<?php endif ?>
+			>
 		</a>
 		<span class="name"><?php echo htmlentities($u->name) ?></span>
 		<span class="uname">@<?php echo $u->user ?></span>
@@ -210,7 +220,12 @@ function display_user( $u ) { ?>
 <ul class="user">
 	<li>
 		<a href="<?php echo url() . 'audios/' . $u->user ?>">
-			<img class="circle" src="<?php echo $u->avatar ?>">
+			<img class="circle"
+			src="<?php echo $u->avatar ?>"
+			onerror="this.src='<?php echo url() . INC . IMG . 'unknown.png' ?>'"
+			height="48"
+			width="48"
+			>
 		</a>
 	</li>
 	<li class="name">
