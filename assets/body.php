@@ -169,7 +169,7 @@ $(document).ready( function() {
 	<div class="audio_footer">
 	<?php if( ! empty($a->audio) ): # if not a reply ?>
 		<a class="audiobtn" id="plays_<?php echo $a->id ?>">
-			<i class="fa fa-headphones"></i>
+			<i class="fa fa-headphones"></i>&nbsp;
 			<span>
 				<?php echo format_number($a->plays) ?>
 			</span>
