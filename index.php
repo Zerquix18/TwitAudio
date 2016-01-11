@@ -49,7 +49,7 @@ switch($p):
 			$db->real_escape($_GET['u'])
 		);
 		if( $u->nums === 0 )
-			load_full_template('404');
+			return load_full_template('404');
 		$_BODY['page'] = $p;
 		$_BODY['user'] = $u;
 		load_full_template('profile');
