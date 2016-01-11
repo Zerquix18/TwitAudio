@@ -29,7 +29,7 @@ class zerdb {
 					'id', 'user', 'name', 'avatar', 'bio', 'verified', 'access_token', 'access_token_secret', 'favs_public', 'audios_public', 'time', 'lang'
 				),
 			"audios" => array(
-					'id', 'user', 'audio', 'reply_to', 'description', 'tw_id', 'time', 'plays', 'favorites', 'duration'
+					'id', 'user', 'audio', 'reply_to', 'description', 'tw_id', 'time', 'plays', 'favorites', 'duration', 'is_voice'
 				),
 			"favorites" => array(
 					'user_id', 'audio_id', 'time'

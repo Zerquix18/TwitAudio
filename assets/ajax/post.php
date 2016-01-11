@@ -45,7 +45,8 @@ $db->insert("audios", array(
 		time(),
 		0,
 		0,
-		(string) $_SESSION[$id]['duration']
+		(string) $_SESSION[$id]['duration'],
+		(string) (int) $_SESSION[$id]['is_voice']
 	)
 );
 unset($_SESSION[$id]);
