@@ -232,6 +232,10 @@ footer.notop .footer-copyright {
 	color: #CBCBCB;
 	font-size: 18px;
 }
+#linked {
+	font-weight: bold;
+	text-transform: uppercase;
+}
 /* CONTROLS */
 div.jp-interface{
 	position:relative;

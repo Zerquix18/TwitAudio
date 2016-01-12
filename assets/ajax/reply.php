@@ -46,7 +46,7 @@ $db->insert("audios", array(
 	)
 );
 if( $_POST['s_twitter'] === '1' ) {
-	$tweet = ' - https://twitaudio.com/'. $_POST['id'];
+	$tweet = ' - https://twitaudio.com/'. $a_id;
 	$len = strlen($tweet);
 	$at = $db->query(
 		"SELECT user FROM users WHERE id = ?",

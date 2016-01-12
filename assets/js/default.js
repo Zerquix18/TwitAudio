@@ -442,9 +442,10 @@ $(document).on('click', '#load_more', function() {
 		data.t  = type;
 	} else if('audios' == load || 'favorites' == load )
 		to_load = profile;
-	else if('replies' == load )
+	else if('replies' == load ) {
 		to_load = audio_id;
-	else
+		data.reply_to = linked;
+	}else
 		return;
 	data.p = page;
 	data.q = to_load;

@@ -69,5 +69,6 @@ load_template('header')
 <script type="text/javascript">
 var is_audio = true,
 audio_id = '<?php echo $a->id ?>';
+linked = "<?php if( defined('LINKED') ) echo constant('LINKED') ?>";
 </script>
 <?php load_template('footer');

@@ -7,11 +7,15 @@ switch($p):
 			exit(load_full_template('404'));
 		$a = $db->query(
 			"SELECT * FROM audios
-			WHERE reply_to = '0' AND id = ?",
+			WHERE id = ?",
 			$_GET['id']
 		);
 		if( $a->nums == 0 )
 			return load_full_template('404');
+		if( $a->reply_to != '0' )
+			return header('Location: ' .
+				url() . $a->reply_to . '?reply_id=' . $a->id 
+			);
 		$u = $db->query("SELECT * FROM users WHERE id = ?", $a->user);
 		$_BODY['page'] = $p;
 		$_BODY['audio'] = $a;

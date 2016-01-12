@@ -108,15 +108,27 @@ function display_audio( $a, $big = false ) {
 		<span class="name"><?php echo htmlentities($u->name) ?></span>
 		<span class="uname">@<?php echo $u->user ?></span>
 		<span class="adate">
-		<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
-		<?php if( ! empty($a->audio) ): ?>
-			<a href="<?php echo url() . $a->id ?>" class="nodeco">
+			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
+			<a href="<?php
+			echo url();
+			if( $a->reply_to != '0' )
+				echo $a->reply_to . '?reply_id=' . $a->id;
+			else
+				echo $a->id
+			?>" class="nodeco">
 				<?php echo d_diff( $a->time ) ?>
 			</a>
-		<?php else: ?>
-			<?php echo d_diff( $a->time ) ?>
-		<?php endif ?>
 		</span>
+		<?php
+		if( defined('LINKED')
+			&& $a->id === constant('LINKED') 
+			):
+		?>
+		<div class="chip" id="linked">
+			<i class="fa fa-link"></i>&nbsp;
+			<?php _e('Linked reply') ?>
+		</div>
+		<?php endif ?>
 	</div>
 	<?php if( ! empty($a->description) ): ?>
 		<div class="audio_desc">
@@ -380,9 +392,29 @@ function load_replies( $id, $p = 1 ) {
 	if( $p > $total_pages )
 		return;
 	$q .= ' LIMIT '. ($p-1) * 10 . ',10';
-	$audios = $db->query($q, $id) or die($db->error);
-	while( $a = $audios->r->fetch_object() )
+	$audios = $db->query($q, $id);
+	$is_reply = isset($_REQUEST['reply_id']) &&
+	preg_match(
+		'/^[A-Za-z0-9]{6}$/',
+		$_REQUEST['reply_id']
+	);
+	if( is('audio') && $is_reply ) {
+		$r = $db->query(
+			'SELECT * FROM audios
+			WHERE id = ? AND reply_to = ?',
+			$_REQUEST['reply_id'],
+			$id
+		);
+		if( $r->nums > 0 ) {
+			define('LINKED', $_REQUEST['reply_id']);
+			display_audio($r);
+		}
+	}
+	while( $a = $audios->r->fetch_object() ):
+		if( $is_reply && $_REQUEST['reply_id'] == $a->id )
+			continue;
 		display_audio($a);
+	endwhile;
 	if( $p < $total_pages )
 		load_more('replies', $p+1);
 }
