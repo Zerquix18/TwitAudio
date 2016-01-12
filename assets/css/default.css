@@ -419,7 +419,8 @@ div.jp-play-bar{
 .audio.big ul.jp-controls {
 	height: 35px;
 }
-.audio.big div.jp-volume-bar {
+.audio.big div.jp-volume-bar,
+.audio.big div.jp-progress {
 	top: 13px;
 	height:11px;
 }
