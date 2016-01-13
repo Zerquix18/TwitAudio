@@ -80,7 +80,7 @@ swfpath 	= '<?php echo url() . INC . "swf/" ?>';
 </footer>
 <?php endif ?>
 <?php if( ! is('index', 'txt', '404') ): ?>
-
+<?php if( is_logged() ): ?>
 <div id="settings" class="modal">
 	<div class="modal-content">
 		<h4><?php _e('Settings') ?></h4>
@@ -90,7 +90,7 @@ swfpath 	= '<?php echo url() . INC . "swf/" ?>';
 		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat"><?php _e('Close') ?></a>
 	</div>
 </div>
-
+<?php endif ?>
 <script src="<?php load_script('ajaxform.js') ?>"></script>
 <script src="<?php load_script('jquery.jplayer.min.js') ?>"></script>
 
