@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="<?php echo $_BODY['css_url'] . 'default.css' ?>">
-	<link rel="stylesheet" href="<?php echo $_BODY['css_url'] ?>font-awesome.css">
-	<link rel="apple-touch-icon" href="<?php echo $_BODY['img_url'] ?>apple-icon.png">
-	<link rel="icon" href="<?php echo $_BODY['img_url'] ?>favicon.ico">
-	<script src="<?php echo $_BODY['js_url'] ?>jquery-1.11.3.min.js"></script>
+	<link rel="stylesheet" href="<?php load_style('default.css') ?>">
+	<link rel="stylesheet" href="<?php load_style('font-awesome.css') ?>">
+	<link rel="apple-touch-icon" href="<?php load_img('apple-icon.png') ?>">
+	<link rel="icon" href="<?php load_img('favicon.ico') ?>">
+	<script src="<?php load_script('jquery-1.11.3.min.js') ?>"></script>
 	<style type="text/css">
 	body{background:none;}
 	</style>
@@ -69,7 +69,7 @@ $(document).ready( function() {
     <script>
     ajaxurl = '<?php echo url() . INC . "ajax/" ?>';
     </script>
-   <script src="<?php echo $_BODY['js_url'] ?>jquery.jplayer.min.js"></script>
-    <script src="<?php echo $_BODY['js_url'] . 'default.js' ?>"></script>
+   <script src="<?php load_script('jquery.jplayer.min.js') ?>"></script>
+    <script src="<?php load_script('default.js') ?>"></script>
     </body>
     </html>
