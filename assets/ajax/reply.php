@@ -42,7 +42,8 @@ $db->insert("audios", array(
 		time(),
 		0,
 		0,
-		0
+		0,
+		'0'
 	)
 );
 if( $_POST['s_twitter'] === '1' ) {
