@@ -710,3 +710,6 @@ b.caret {
 #open_sidebar {
 	margin-left: 10px;
 }
+.share_buttons {
+	text-align: right;
+}

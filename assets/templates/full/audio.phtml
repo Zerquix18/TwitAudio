@@ -18,6 +18,26 @@ load_template('header')
 		<div class="col l9 m12 s12">
 			<div class="box">
 				<?php display_audio($a, true) ?>
+				<div class="share_buttons">
+					<script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
+					<a
+					class="twitter-share-button"
+					data-size="large"
+					href="https://twitter.com/intent/tweet?<?php
+echo http_build_query( array(
+			'text' => sprintf(
+					__("Listen to @%s's audio"),
+					$u->user
+					),
+			'via' => 'twit_audio',
+			'related' => 'twit_audio,zerquix18,superjd10_,chusen'
+			)
+		)
+					?>">
+					<i class="fa fa-twitter"></i>&nbsp;
+						Tweet
+					</a>
+				</div>
 				<hr>
 				<p class="title">
 					<?php _e('Replies') ?>
