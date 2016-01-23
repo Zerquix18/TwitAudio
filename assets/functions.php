@@ -51,7 +51,9 @@ function d_diff( $time ) {
 	$n = new Datetime('@'.$time);
 	$f = new DateTime();
 	$diff = $f->diff($n);
-	$diff->w = round( $diff->days / 7 );
+	$diff->w = floor( $diff->days / 7 );
+	if( $diff->w > 4 )
+		return date('d/m/Y', $time);
 	if( $diff->w >= 1)
 		return sprintf( $diff->w == 1 ?
 			__('%d week')
