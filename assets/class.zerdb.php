@@ -41,7 +41,7 @@ class zerdb {
 					'user_id', 'blocked_id', 'time'
 				),
 			"sessions" => array(
-					'user_id', 'sess_id', 'time', 'ip'
+					'user_id', 'sess_id', 'time', 'ip', 'is_mobile'
 				),
 			"following_cache" => array(
 					'user_id', 'following', 'time', 'result'

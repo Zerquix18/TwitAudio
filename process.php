@@ -67,7 +67,8 @@ $db->insert("sessions", array(
 		$_SESSION['id'],
 		session_id(),
 		time(),
-		getip()
+		getip(),
+		'0'
 	)
 );
 header("Location: ". url() );

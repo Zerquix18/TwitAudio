@@ -10,8 +10,6 @@ function result_error($response, $error_code = null ) {
 		'error' 		=> $response,
 		'error_code' 	=> $error_code,
 	);
-	if( isset($GLOBALS['sess_key']) )
-		$r['sess_key'] = $GLOBALS['sess_key'];
 	exit(json_encode($r));
 }
 function result_success( $response = null, $extra = null ) {
@@ -21,8 +19,6 @@ function result_success( $response = null, $extra = null ) {
 	);
 	if( null !== $extra )
 		$r += $extra;
-	if( isset($GLOBALS['sess_key']) )
-		$r['sess_key'] = $GLOBALS['sess_key'];
 	exit(json_encode($r));
 }
 function checkAuthorization() {
@@ -42,35 +38,18 @@ function checkAuthorization() {
 		);
 	// checks in the db for the decrypted result
 	$x = $db->query(
-		'SELECT user_id,sess_id FROM sessions
-		WHERE sess_key = ?',
+		'SELECT user_id FROM sessions
+		WHERE sess_id = ? AND is_mobile = \'1\'',
 		$authorization
 	);
 	if( $x->nums === 0 )
 		result_error(
-				__('Authorization does not exist in database'),
+				__("Could not find sess id"),
 				3
 			);
-	// it exists ... replace it
-	$db->update('sessions', array(
-			'sess_key' => $sk = generate_sess_key()
-		)
-	)->where('sess_id', $x->sess_id)->_();
 	// for global use
 	$_USER = $db->query(
 		'SELECT * FROM users WHERE id = ?',
 		$x->user_id
 	);
-	$GLOBALS['sess_key'] = $sk;
-}
-function generate_sess_key() {
-	global $db;
-	while(
-		( $x = $db->query(
-				"SELECT * FROM sessions WHERE sess_key = ?",
-				$key = md5(uniqid().rand(1,100))
-			)
-		) && $x->nums > 0
-	);
-	return $key;
 }

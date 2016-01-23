@@ -4,7 +4,7 @@ function _is_logged() {
 	if( ! isset($_COOKIE['ta_session']) )
 		return 0;
 	$x = $db->query(
-		"SELECT user_id FROM sessions WHERE sess_id = ? AND sess_key = ''",
+		"SELECT user_id FROM sessions WHERE sess_id = ? AND is_mobile = '0'",
 		session_id() // protected by regex
 	);
 	return $x->nums > 0 ? (int) $x->user_id : 0;
