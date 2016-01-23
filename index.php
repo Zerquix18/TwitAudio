@@ -13,7 +13,7 @@ switch($p):
 		if( $a->nums == 0 )
 			return load_full_template('404');
 		if( $a->reply_to != '0' )
-			return header('Location: ' .
+			ta_redirect(
 				url() . $a->reply_to . '?reply_id=' . $a->id 
 			);
 		$u = $db->query("SELECT * FROM users WHERE id = ?", $a->user);

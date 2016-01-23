@@ -7,15 +7,13 @@ if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 		)
 	) {
 	$_SESSION[ $den ? 'login_denied' : 'login_error' ] = true;
-	header('Location: ' . url() );
+	ta_redirect( url() );
 	exit();
 }
 $twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
 $s = $twitter->tw->get('account/verify_credentials');
 if( ! is_object($s) || array_key_exists('error', $s) )
-	$_SESSION['login_error'] and exit(
-			header('Location: ' . url() )
-		);
+	$_SESSION['login_error'] and ta_redirect( url() );
 $user = $s->screen_name;
 $name = $s->name;
 $bio = $s->description;
@@ -71,4 +69,4 @@ $db->insert("sessions", array(
 		'0'
 	)
 );
-header("Location: ". url() );
+ta_redirect( url() );

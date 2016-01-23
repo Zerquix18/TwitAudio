@@ -209,3 +209,7 @@ function format_number( $count ) {
 	else
         		return $count;
 }
+function ta_redirect( $url, $status = 302 ) {
+	header('Location: ' . $url, true, $status);
+	exit;
+}
