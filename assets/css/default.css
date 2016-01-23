@@ -235,6 +235,7 @@ footer.notop .footer-copyright {
 #linked {
 	font-weight: bold;
 	text-transform: uppercase;
+	margin-left: 5px;
 }
 /* CONTROLS */
 div.jp-interface{
