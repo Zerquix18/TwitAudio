@@ -319,6 +319,7 @@ $("#cut_cancel, #post_cancel").on('click', function() {
 		return false;
 	$("#cut_form, #post_form").hide();
 	$("#post").show();
+	$.jPlayer.pause();
 });
 $("#cut_form").ajaxForm({
 	beforeSend : function() {
@@ -326,6 +327,7 @@ $("#cut_form").ajaxForm({
 		$("#cut_form").hide();
 		$("#whatsloading").html('Cutting...');
 		$("#loading").show();
+		$.jPlayer.pause();
 	},
 	error : function() {
 		display_error('Connection problem :(');
@@ -352,6 +354,9 @@ $("#cut_form").ajaxForm({
 	}
 });
 $("#post_form").ajaxForm({
+	beforeSend: function() {
+		$.jPlayer.pause();
+	},
 	error : function() {
 		display_error('Connection problem :(');
 	},
