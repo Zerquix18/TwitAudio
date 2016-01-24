@@ -256,7 +256,7 @@ ul.jp-controls{
 	margin:0;
 	padding:0;
 	width:auto;
-	height:20px;
+	height:22px;
 	background-color: #EDEDED;
 	-webkit-box-shadow:inset 0 1px 0 0 #fff;
 	-moz-box-shadow:inset 0 1px 0 0 #fff;
@@ -346,7 +346,7 @@ div.jp-volume-bar{
 	}
 div.jp-volume-bar-value{
 	width:0px;
-	height:6px;
+	height:7px;
 	background: #009AFF;
 	background: -moz-linear-gradient(top, #009AFF 0, #0088D5 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0,#009AFF), color-stop(100%,#0088D5));
@@ -389,7 +389,7 @@ div.jp-seek-bar.jp-seeking-bg{
 }
 div.jp-play-bar{
 	width:0px;
-	height:6px;
+	height:8px;
 	background: #009AFF;
 	background: -moz-linear-gradient(top, #009AFF 0, #0088D5 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0,#009AFF), color-stop(100%,#0088D5));
