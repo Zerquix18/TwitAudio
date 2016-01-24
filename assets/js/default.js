@@ -298,19 +298,23 @@ $(document).ready( function() {
 	});
 });
 $("#end, #start").on('keyup', function() {
-	val = $(this).val();
-	var btn = $("#cut_button");
-	isnum = /^[\d]+$/.test(val);
-	if( isnum && ( parseInt(val) < 0 || parseInt(val) > 120 ) )
-		return btn.attr('disabled', 'disabled');
-	else if( isnum )
-		return btn.removeAttr('disabled');
-	if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test(val) )
-		return btn.attr('disabled', 'disabled');
-	val = val.split(':');
-	if( parseInt(val[0]) > 2 || parseInt(val[1]) > 60 )
-		return btn.attr('disabled', 'disabled');
-	if( parseInt( val[0] == 2 && parseInt(val[1] > 0 ) ) )
+	var lel, btn = $("#cut_button"),
+	start = $("#start").val(),
+	end = $("#end").val();
+	if( ! $.isNumeric( start ) ) {
+		if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test( start ) )
+			return btn.attr('disabled', 'disabled');
+		lel = start.split(':');
+		start = ( parseInt(lel[0]) * 60 ) + parseInt(lel[1]);
+	}
+	if( ! $.isNumeric( end ) ) {
+		if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test( end ) )
+			return btn.attr('disabled', 'disabled');
+		lel = end.split(':');
+		end = ( parseInt(lel[0]) * 60 ) + parseInt(lel[1]);
+	}
+	var diff = end-start;
+	if( (start >= end) || diff > 120 || diff < 0 )
 		return btn.attr('disabled', 'disabled');
 	return btn.removeAttr('disabled');
 });
