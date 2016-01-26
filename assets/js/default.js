@@ -1,4 +1,4 @@
-var recorder, context, initialized = null, init, cancel = false, cleft_i, cleft = 3, r_count = null, r_i, is_recording = false, tmp_preview_url, playeds = [], tmp_post_preview, load_more, first_second = false;
+var recorder, context, initialized = null, init, cancel = false, cleft_i, cleft = 3, r_count = null, r_i, is_recording = false, tmp_preview_url, playeds = [], tmp_post_preview, load_more, first_second = false, unloaded = false;
 function in_array( needle, haystack ) {
 	for(var i = 0; i < haystack.length; i++)
 		if( needle == haystack[i])
@@ -113,6 +113,7 @@ function up_form( voice ) {
 					display_error( result.response );
 					return;
 				}
+				unfinishedaudio('start');
 				tmp_preview_url = result.extra.tmp_url;
 				$("#player_cut").jPlayer({
 					ready: function(event) {
@@ -137,6 +138,7 @@ function up_form( voice ) {
 				$("#audio_id").val( result.extra.id );
 				return;
 			}
+			unfinishedaudio('start');
 			load_post_form(result.extra.id, result.extra.tmp_url);
 		}
 	};
@@ -205,6 +207,28 @@ function norecordsupport() {
 	$("#norecordsupport").show();
 	document.cookie = 'norecordsupport=1';
 }
+function unfinishedaudio_helper( e ) {
+	var confirmationMessage = "You haven't finished uploading your audio. Are you sure you want to leave?";
+	(e || window.event).returnValue = confirmationMessage;
+	return confirmationMessage;
+}
+function unfinishedaudio( action ) {
+	if( 'start' === action && ! unloaded ) {
+		unloaded = true;
+		return window.addEventListener(
+				'beforeunload',
+				unfinishedaudio_helper
+			);
+	}
+	else if( 'stop' === action && unloaded ) {
+		unloaded = false;
+		return window.removeEventListener(
+				'beforeunload',
+				unfinishedaudio_helper
+			);
+	}
+	return void 0;
+}
 $(document).ready( function() {
 	$('.collapsible').collapsible();
 	$('.button-collapse').sideNav({ menuWidth: 240, edge: 'left', closeOnClick: false });
@@ -253,6 +277,7 @@ $(document).ready( function() {
 		$("#record_form").show();
 		$("#cleft").show();
 		startRecording();
+		unfinishedaudio('start');
 	});
 	$("#stop").on('click', function() {
 		if( ! is_recording )
@@ -283,6 +308,7 @@ $(document).ready( function() {
 		$("#count").html("0:00");
 		$("#record_form").hide();
 		$("div#post").show();
+		unfinishedaudio('stop');
 	});
 	$("#upload").on('click', function() {
 		$("#up_file").trigger('click');
@@ -324,6 +350,7 @@ $("#cut_cancel, #post_cancel").on('click', function() {
 	$("#cut_form, #post_form").hide();
 	$("#post").show();
 	$.jPlayer.pause();
+	unfinishedaudio('stop');
 });
 $("#cut_form").ajaxForm({
 	beforeSend : function() {
@@ -372,6 +399,7 @@ $("#post_form").ajaxForm({
 		$("#post").show();
 		if( ! result.success )
 			return display_error( result.response );
+		unfinishedaudio('stop');
 		return display_info(result.response);
 	},
 });
