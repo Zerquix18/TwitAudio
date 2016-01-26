@@ -74,7 +74,10 @@ echo http_build_query( array(
 		<?php else: ?>
 			<a
 			class="signin"
-			href="<?php echo url() . 'signin.php' ?>"
+			href="<?php
+			echo url() . 'signin.php?back_to=' .
+			urlencode( url() . $_SERVER['REQUEST_URI'] )
+			?>"
 			>
 				<img src="<?php load_img('signin.png') ?>">
 			</a>

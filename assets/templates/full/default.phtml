@@ -35,39 +35,4 @@
 	</div>
 </div>
 <?php
-if( isset($_SESSION['first_time']) ): unset($_SESSION['first_time']) ?>
- <div id="welcome" class="modal bottom-sheet">
-	<div class="modal-content">
-		<h4>
-			<?php _e('Welcome') ?>
-		</h4>
-		<p>
-			<?php _e('Welcome to TwitAudio! We hope you enjoy your experiencie here!') ?>
-		</p>
-		<p>
-<?php
-	$status = (int) $_USER->audios_public ? __('public') : __('private');
-	echo sprintf(
-		__('Your audios were set as %1$s because your tweets are also %1$s. You can change this on your <a href="#settings" class="modal-trigger">Settings</a>.'), $status
-		);
-?>
-		</p>
-		<p>
-<?php
-	echo sprintf(
-			__('By using TwitAudio, you agree with our <a href="%s">terms and conditions</a>.'),
-			url() . 'tos'
-		);
-?>
-		</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
-	</div>
-</div>
-<script>
-window.onload = function() {
-	$("#welcome").openModal();
-};
-</script>
-<?php endif; load_template('footer');
+load_template('footer');

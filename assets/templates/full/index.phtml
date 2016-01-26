@@ -59,34 +59,4 @@
 		</div>
 	</div>
 </div>
-<?php
-$logout_request = is_logged() && isset($_GET['logout']);
-$login_denied = isset($_SESSION['login_denied']);
-$login_error = isset($_SESSION['login_error']);
-if( !( $logout_request && $login_denied && $login_error) ):
-	if( $logout_request):
-		$db->query(
-			'DELETE FROM sessions WHERE sess_id = ?',
-			session_id()
-		);
-		session_destroy();
-		unset($_SESSION);
-		setcookie('ta_session', '', time() - 3600);
-	?>
-<script>window.onload = function() {
-	display_info("<?php _e('You are now logged out.') ?>", 10000);
-};</script>
-<?php	elseif( $login_error ): ?>
-<script>window.onload = function() {
-	display_error("<?php _e('There was an error while logging you... Please, try again.') ?>", 10000);
-};</script>
-<?php elseif( $login_denied ): ?>
-<script>window.onload = function() {
-	display_error("<?php _e('You denied our request. So we can do nothing.') ?>", 10000);
-};</script>
-<?php endif ?>
-<script src="<?php load_script('jquery-1.11.3.min.js') ?>"></script>
-<script src="<?php load_script('materialize.js') ?>"></script>
-<script src="<?php load_script('default.js') ?>"></script>
-
-<?php endif; load_template('footer');
+<?php load_template('footer');

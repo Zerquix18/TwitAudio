@@ -1,5 +1,10 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
+if( isset($_SESSION['back_to']) ) {
+	$redirect = $_SESSION['back_to'];
+	unset($_SESSION['back_to']);
+}else
+	$redirect = url();
 if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 	|| ! validate_args(
 		$_SESSION['access_token'],
@@ -7,13 +12,13 @@ if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 		)
 	) {
 	$_SESSION[ $den ? 'login_denied' : 'login_error' ] = true;
-	ta_redirect( url() );
+	ta_redirect( $redirect );
 	exit();
 }
 $twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
 $s = $twitter->tw->get('account/verify_credentials');
 if( ! is_object($s) || array_key_exists('error', $s) )
-	$_SESSION['login_error'] and ta_redirect( url() );
+	$_SESSION['login_error'] and ta_redirect( $redirect );
 $user = $s->screen_name;
 $name = $s->name;
 $bio = $s->description;
@@ -69,4 +74,4 @@ $db->insert("sessions", array(
 		'0'
 	)
 );
-ta_redirect( url() );
+ta_redirect( $redirect );
