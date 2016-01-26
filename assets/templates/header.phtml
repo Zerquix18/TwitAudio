@@ -59,7 +59,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		<li>
 			<a href="<?php
 			echo url() . 'signin.php?back_to=' .
-			urlencode( url() . $_SERVER['REQUEST_URI'] )
+			urlencode( url() . substr($_SERVER['REQUEST_URI'], 1) )
 			?>">
 				<i class="fa fa-twitter"></i>
 				<?php _e('Sign in with Twitter') ?>
