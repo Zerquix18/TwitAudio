@@ -7,10 +7,12 @@
 	?>
 			</div>
 			<?php load_template('post') ?>
-			<div class="box">
-				<p class="title">
+			<div class="row">
+				<div class="col l6 m12 s12">
+					<div class="box">
+						<p class="title">
 					<?php _e('Your recent audios') ?>
-				</p>
+						</p>
 			<?php
 			$audios = $db->query(
 					'SELECT * FROM audios
@@ -27,6 +29,36 @@
 					display_audio( $a );
 			endif;
 			?>
+					</div>
+				</div>
+				<div class="col l6 m12 s12">
+					<div class="box">
+						<p class="title">
+				<?php _e('Popular audios right now') ?>
+						</p>
+			<?php
+$recents = $db->query(
+			'SELECT * FROM audios
+			WHERE user NOT IN (
+					SELECT id
+					FROM users
+					WHERE audios_public = \'0\'
+					)
+			AND `time` BETWEEN ? AND ?
+			ORDER BY plays DESC
+			LIMIT 3',
+			time() - strtotime('-30 days'),
+			time()
+	);
+	if( $recents->nums === 0 ):
+		alert_info( __("We'll show you here the most recent popular audios when available!") );
+	else:
+		while( $r = $recents->r->fetch_object() )
+			display_audio($r);
+	endif;
+			?>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="col l3 m12 s12">
