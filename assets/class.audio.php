@@ -112,6 +112,14 @@ class Audio {
 	public function cut( $start, $end ) {
 		if( $this->error )
 			return false;
+		// full time
+		$t = floor($this->info['playtime_seconds']);
+		if( $start < 0 || $end > $t ) {
+			// cannot be cut m8
+			$this->error = __("The audio could not be cut because the start or end doesn't match with the audio.");
+			$this->error_code = 8;
+			return false;
+		}
 		$d = $end-$start;
 		// trims...
 		$new_name = $this->generate_name( $this->audio );

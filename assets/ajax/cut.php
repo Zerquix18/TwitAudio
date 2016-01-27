@@ -34,11 +34,13 @@ if( is_numeric($_POST['end']) ) {
 }
 $diff = $end-$start;
 if( ($start >= $end) || $diff > 120 || $diff < 0 )
-	result( __('Request malformed.') );
+	result( __('Request malformed.'), false );
 
 $id = $_POST['id'];
 $a = new Audio($_SESSION[$id]['tmp_url'], true);
 $n = $a->cut( $start, $end );
+if( ! $n )
+	_result( $a->error, false );
 $_SESSION[$id]['tmp_url'] = $n;
 $_SESSION[$id]['duration'] = floor($a->info['playtime_seconds']);
 _result( true, true,

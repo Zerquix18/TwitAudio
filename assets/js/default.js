@@ -392,13 +392,13 @@ $("#post_form").ajaxForm({
 		display_error('Connection problem :(');
 	},
 	complete : function(xhr) {
-		var result = JSON.parse(xhr.responseText);
-		$("#desc").val("");
-		$("#loading, #post_form").hide();
 		$("#up_progress").width(0);
-		$("#post").show();
+		var result = JSON.parse(xhr.responseText);
 		if( ! result.success )
 			return display_error( result.response );
+		$("#desc").val("");
+		$("#loading, #post_form").hide();
+		$("#post").show();
 		unfinishedaudio('stop');
 		return display_info(result.response);
 	},
