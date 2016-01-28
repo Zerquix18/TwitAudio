@@ -1,7 +1,8 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
-('POST' !== getenv('REQUEST_METHOD') ) and exit();
+if ('POST' !== getenv('REQUEST_METHOD') )
+	exit;
 
 if( ! is_logged() )
 	_result( __("Authentication required."), false);
@@ -18,7 +19,7 @@ if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
 
 $exists = $db->query(
 	"SELECT user,audio FROM audios WHERE id = ?",
-	$id
+	$id // regex protected m8
 );
 
 if( $exists->nums === 0 )

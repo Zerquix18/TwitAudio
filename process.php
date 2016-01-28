@@ -13,12 +13,13 @@ if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 	) {
 	$_SESSION[ $den ? 'login_denied' : 'login_error' ] = true;
 	ta_redirect( $redirect );
-	exit();
 }
 $twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
 $s = $twitter->tw->get('account/verify_credentials');
-if( ! is_object($s) || array_key_exists('error', $s) )
-	$_SESSION['login_error'] and ta_redirect( $redirect );
+if( ! is_object($s) || array_key_exists('error', $s) ) {
+	$_SESSION['login_error'] = true;
+	ta_redirect( $redirect );
+}
 $user = $s->screen_name;
 $name = $s->name;
 $bio = $s->description;

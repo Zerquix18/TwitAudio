@@ -1,7 +1,8 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
-('POST' !== getenv('REQUEST_METHOD') ) and exit();
+if('POST' !== getenv('REQUEST_METHOD') )
+	exit;
 
 if( ! validate_args( @$_POST['id'] ) )
 	_result( __('Request malformed.'), false );
@@ -15,13 +16,13 @@ if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
 
 $exists_audio = $db->query(
 	"SELECT plays,reply_to FROM audios WHERE id = ?",
-	$id
+	$id // regex protected
 );
 if( ! (int) $exists_audio->nums )
 	_result( __("The audio you tried to play doesn't exist."), false );
 
 if( $exists_audio->reply_to != '0' )
-	_result( __("You cannot play a comment. LOL"), false);
+	_result( __("You cannot play a comment."), false);
 
 $ip = getip();
 
@@ -36,6 +37,7 @@ $was_played = $db->query(
 $was_played = (int) $was_played->size;
 if( $was_played )
 	_result(null, false);
+
 $db->query("UPDATE audios SET plays = plays+1 WHERE id = ?", $id);
 $db->insert("plays", array(
 		$ip,

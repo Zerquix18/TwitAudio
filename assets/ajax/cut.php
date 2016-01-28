@@ -2,7 +2,8 @@
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 require PATH . INC . 'class.audio.php';
 
-('POST' !== getenv('REQUEST_METHOD') ) and exit();
+if( 'POST' !== getenv('REQUEST_METHOD') )
+	exit;
 
 if( ! is_logged() )
 	_result( __("Authentication required."), false);

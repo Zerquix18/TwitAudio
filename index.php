@@ -4,11 +4,11 @@ $p = isset($_GET['_p']) && is_string($_GET['_p']) ? $_GET['_p'] : '';
 switch($p):
 	case "audio":
 		if( ! preg_match("/^[A-Za-z0-9]{6}$/", $_GET['id']) )
-			exit(load_full_template('404'));
+			return load_full_template('404');
 		$a = $db->query(
 			"SELECT * FROM audios
 			WHERE id = ?",
-			$_GET['id']
+			$_GET['id'] // protected by regex
 		);
 		if( $a->nums == 0 )
 			return load_full_template('404');
@@ -33,17 +33,19 @@ switch($p):
 			return load_full_template('404');
 		$a = $db->query(
 			"SELECT * FROM audios WHERE id = ?",
-			$_GET['id']
+			$_GET['id'] // protected by regex
 		);
 		if( $a->nums == 0 )
 			return load_full_template('404');
 		$u = $db->query(
-			"SELECT audios_public FROM users WHERE id = ?",
+			"SELECT audios_public FROM users
+			WHERE id = ?",
 			$a->user
 		);
 		if( $u->audios_public == '0' )
 			return load_full_template('404');
-		$_BODY['audio'] = $a and load_full_template('frame');
+		$_BODY['audio'] = $a;
+		load_full_template('frame');
 		break;
 	case "profile":
 		if( ! validate_args(@$_GET['u']) )
@@ -70,11 +72,11 @@ switch($p):
 					)
 				)
 			)
-		return load_full_template('404');
+			return load_full_template('404');
 		$_BODY['txt'] = $_GET['txt'];
 		load_full_template('text');
 		break;
-	default:
+	default: # its hard to read but funny :v
 		is_logged() ?
 			isset($_GET['logout']) ?
 				$_BODY['page'] = 'index'

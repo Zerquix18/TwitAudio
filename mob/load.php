@@ -52,4 +52,5 @@ function checkAuthorization() {
 		'SELECT * FROM users WHERE id = ?',
 		$x->user_id
 	);
+	$GLOBALS['sess_id'] = $authorization;
 }

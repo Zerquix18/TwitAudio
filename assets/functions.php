@@ -86,6 +86,7 @@ function d_diff( $time ) {
 			, $diff->s);
 	return __('now');
 }
+# this is for ajax requests
 function _result( $response, $success, $extra = null ) {
 	$arr = array(
 			'response' => $response,
@@ -123,6 +124,9 @@ function extract_hashtags($text) {
 	}
 	$db->query($query);
 }
+# PHP script standards
+# only variables per reference
+#bla blabla
 function last( array $arr ) {
 	return end($arr);
 }
@@ -186,7 +190,7 @@ function can_listen( $id2 ) {
 function sanitize( $str ) {
 	if( mb_strlen( $str, 'utf8' ) < 1 )
 		return '';
-	$str = htmlspecialchars( $str );
+	$str = htmlspecialchars( $str ); # you mamma wants xss
 	$str = str_replace( array( chr( 10 ), chr( 13 ) ), '' , $str );
 	$str = preg_replace(
 		'/https?:\/\/[\w\-\.!~#?&=+%;:\*\'"(),\/]+/u',

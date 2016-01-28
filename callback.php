@@ -1,11 +1,14 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
-if( isset($_GET['denied']) )
-	$_GET['denied'] === $_SESSION['oauth_token'] ?
-		session_destroy() and
-			ta_redirect('process.php?denied=1')
-	:
-		ta_redirect('proccess.php?err=1');
+if( isset($_GET['denied']) ) {
+	if( $_GET['denied'] === $_SESSION['oauth_token'] ) {
+		unset($_SESSION);
+		session_destroy();
+		ta_redirect('process.php?denied=1');
+	}else{
+		ta_redirect('process.php?err=1');
+	}
+}
 if( ! validate_args(
 		$_GET['oauth_token'],
 		$_GET['oauth_verifier'],

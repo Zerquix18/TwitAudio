@@ -16,14 +16,14 @@ function load_template( $name ) {
 	$f = PATH . INC . TEMP . $name . '.phtml';
 	if( ! file_exists($f) )
 		return false;
-	require($f);
+	require $f;
 }
 function load_full_template( $name ) {
 	global $db, $_BODY, $_USER, $lenguajeso, $lenguajest;
 	$f = PATH . INC . FULL_TEMP . $name . '.phtml';
 	if( ! file_exists($f) )
 		return false;
-	require($f);
+	require $f;
 }
 function load_style( $style, $return = false ) {
 	if( $return )
@@ -292,7 +292,8 @@ function search($search, $s, $t, $p = 1) {
 		);
 	endif;
 	$count = (int) $count->size;
-	if( ! $count )
+	# min 3
+	if( mb_strlen( $search, 'utf-8') < 3 || ! $count )
 		alert_error( __("No results were found... Maybe if my mom comes she may find something.") );
 	$total_pages = ceil( $count / 10 );
 	if( $p > $total_pages )
@@ -325,7 +326,8 @@ function load_audios( $id, $p = 1 ) {
 	WHERE user = ?
 	AND reply_to = '0'
 	ORDER BY time DESC";
-	$count = $db->query("SELECT COUNT(*) AS size FROM audios
+	$count = $db->query(
+		"SELECT COUNT(*) AS size FROM audios
 	WHERE user = ? AND reply_to = '0'", $id);
 	$count = (int) $count->size;
 	if( 0 === $count )
@@ -393,6 +395,7 @@ function load_replies( $id, $p = 1 ) {
 		return;
 	$q .= ' LIMIT '. ($p-1) * 10 . ',10';
 	$audios = $db->query($q, $id);
+	# linked replies:
 	$is_reply = isset($_REQUEST['reply_id']) &&
 	preg_match(
 		'/^[A-Za-z0-9]{6}$/',
@@ -418,6 +421,9 @@ function load_replies( $id, $p = 1 ) {
 	if( $p < $total_pages )
 		load_more('replies', $p+1);
 }
+/**
+* @deprecated until the future ... :o
+**/
 function load_trendings() {
 	global $db;
 	$time1 = time() - 432000;
