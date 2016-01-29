@@ -1,5 +1,5 @@
 <?php
-require_once('load.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 $p = isset($_GET['_p']) && is_string($_GET['_p']) ? $_GET['_p'] : '';
 switch($p):
 	case "audio":
@@ -17,13 +17,11 @@ switch($p):
 				url() . $a->reply_to . '?reply_id=' . $a->id 
 			);
 		$u = $db->query("SELECT * FROM users WHERE id = ?", $a->user);
-		$_BODY['page'] = $p;
 		$_BODY['audio'] = $a;
 		$_BODY['user'] = $u;
 		load_full_template('audio');
 		break;
 	case "search":
-		$_BODY['page'] = 'search';
 		load_full_template('search');
 		break;
 	case "frame":
@@ -56,7 +54,6 @@ switch($p):
 		);
 		if( $u->nums === 0 )
 			return load_full_template('404');
-		$_BODY['page'] = $p;
 		$_BODY['user'] = $u;
 		load_full_template('profile');
 		break;
@@ -73,18 +70,14 @@ switch($p):
 				)
 			)
 			return load_full_template('404');
-		$_BODY['txt'] = $_GET['txt'];
 		load_full_template('text');
 		break;
 	default: # its hard to read but funny :v
 		is_logged() ?
 			isset($_GET['logout']) ?
-				$_BODY['page'] = 'index'
-				and load_full_template('index')
+				load_full_template('index')
 			:
-				$_BODY['page'] = 'default'
-				and load_full_template('default')
+				load_full_template('default')
 		:
-			$_BODY['page'] = 'index'
-			and load_full_template('index');
+			load_full_template('index');
 endswitch;

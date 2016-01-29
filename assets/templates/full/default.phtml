@@ -1,9 +1,12 @@
-<?php load_template('header') ?>
+<?php
+$_BODY['page'] = 'default';
+load_template('header')
+?>
 <div class="content" id="main">
 	<div class="row">
 		<div class="col l9 m12 s12">
 			<div id="norecordsupport" class="red-text" style="display:none;">
-	<?php echo sprintf( __('Your current browser does not support audio recording. Read <a href="%s">here</a> how to solve it.'), url() . 'faq#q1')
+	<?php echo sprintf( __('Your current browser does not support audio recording. See which <a href="%s">browsers support audio recording</a>.'), url() . 'faq#q1')
 	?>
 			</div>
 			<?php load_template('post') ?>

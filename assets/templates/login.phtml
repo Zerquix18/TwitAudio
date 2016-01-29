@@ -64,7 +64,7 @@ if( ! is('404', 'txt') && !( $logout_request && $login_denied && $login_error) )
 };</script>
 <?php elseif( $login_denied ): unset($_SESSION['login_denied']) ?>
 <script>window.onload = function() {
-	display_error("<?php _e('You denied our request. So we can do nothing.') ?>", 10000);
+	display_error("<?php _e('There was an error. Please, try again.') ?>", 10000);
 };</script>
 <?php endif;
 if( is('index') ):

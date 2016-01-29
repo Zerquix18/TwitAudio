@@ -88,6 +88,11 @@ endif;
 function __( $texto ) {
 	return $GLOBALS['tr']->translate( $texto );
 }
+function _n( $sing, $plur, $numb ) {
+	if( (int) $numb == 1 )
+		return sprintf($sing, $numb);
+	return sprintf($plur, $numb);
+}
 function _e( $texto ) {
 	echo __($texto);
 }

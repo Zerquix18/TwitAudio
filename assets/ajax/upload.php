@@ -2,7 +2,8 @@
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 require PATH . INC . 'class.audio.php';
 
-('POST' !== getenv('REQUEST_METHOD') ) and exit();
+if('POST' !== getenv('REQUEST_METHOD') )
+	exit;
 
 if( !is_logged() ) _result( __("Authentication required."), false);
 
@@ -10,7 +11,10 @@ if( ! array_key_exists('is_voice', $_POST)
 	|| ! is_string($_POST['is_voice'])
 	|| ! in_array($_POST['is_voice'], array('true', 'false'), true )
 	)
-	_result( __("Request malformed."), false);
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 $is_voice = 'true' === $_POST['is_voice'];
 if( $is_voice ): // validation if it's voice
@@ -33,14 +37,14 @@ else: // validation for a normal file, which is not voice
 		strtolower($format),
 		array("mp3", "m4a", "aac", "ogg", "wav")
 		) )
-		_result( __("That format is not allowed"), false );
+		_result( __("The format of the uploaded audio is not allowed"), false );
 	$fs = ( ( $_FILES['up_file']['size'] / 1024) / 1024);
 	if( $fs <= 0 || $fs > 50 )
-		 _result( __("The file is too small or too big :( The maximum size is 50mb"), false );
+		 _result( __("The file size is invalid. The maximum size is 50mb"), false );
 	move_uploaded_file(
 		$_FILES['up_file']['tmp_name'],
 		$file = PATH . INC . TMP . uniqid() . '.' . $format
-	) or _result( __("There was a problem while processing the file."), false);
+	) or _result( __("There was an error while processing the file..."), false);
 endif;
 // now $file needs to be validated
 $a = new Audio($file);

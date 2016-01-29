@@ -1,13 +1,17 @@
 <div class="box">
 	<div class="row" id="post">
-		<div class="col" id="record">
+		<div class="col" id="record" title="<?php _e('Record audio with your microphone') ?>">
 			<i class="fa fa-microphone blue-text lighten-3-text"></i>
-			<div class="a_text">record</div>
+			<div class="a_text">
+				record
+			</div>
 		</div>
 		<div class="col c" id="or">or</div>
-		<div class="col" id="upload">
+		<div class="col" id="upload" title="<?php _e('Upload a file from your computer') ?>">
 			<i class="fa fa-upload blue-text lighten-3-text"></i>
-			<div class="a_text">upload</div>
+			<div class="a_text">
+				upload
+			</div>
 		</div>
 	</div>
 	<div id="waiting" class="valign-wrapper" style="display:none">
@@ -46,7 +50,7 @@
 	action="<?php echo url() . INC . 'ajax/cut.php' ?>"
 	id="cut_form" style="display:none">
 		<p class="center">
-			I'm sorry! That audio is too long :( Would you like to cut it a bit?
+			<?php _e('This audio is longer than 2 minutes. Please, cut it.') ?>
 		</p>
 		<div id="player_cut" class="jp-jplayer"></div>
 		<div id="cut_container" class="jp-audio sm audio_preview">

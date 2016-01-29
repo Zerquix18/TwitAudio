@@ -8,18 +8,30 @@ if( ! is_logged() )
 	_result( __("Authentication required."), false);
 
 if( ! validate_args( $_POST['id'], $_POST['description']) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 if( ! array_key_exists('s_twitter', $_POST) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 if( ! array_key_exists($_POST['id'], $_SESSION) )
-	_result( __("Request malformed."), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 $id = $_POST['id'];
 
 if( $_SESSION[$id]['duration'] > 120 )
-	_result( __('Nope.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 if( mb_strlen($_POST['description'], 'utf-8') > 200 )
 	_result( __("The description can't be longer than 200 characters"), false );
@@ -65,4 +77,4 @@ if( $_POST['s_twitter'] === '1' ) {
 			)
 		)->where("id", $a_id)->_();
 }
-_result( __("Audio posted!"), true);
+_result( __("Audio successfully posted!"), true);

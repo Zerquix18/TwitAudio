@@ -19,9 +19,15 @@ $t = validate_args( @$_GET['t'] )
 		'a';
 $p = (int) $_POST['p'];
 if( ! is_numeric($_POST['p']) || $p < 2 )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 if( empty($q) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 search( $q, $s, $t, $p);
 //     query,search,type,page

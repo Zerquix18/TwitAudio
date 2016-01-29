@@ -10,12 +10,18 @@ if( ! is_logged() )
 if( ! array_key_exists( 'audios_public', $_POST )
  || ! array_key_exists('favs_public', $_POST)
 	)
-	_result( __("Request malformed."), false);
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 if( ! in_array($_POST['audios_public'], array("1", "0") )
  || ! in_array($_POST['favs_public'], array("0", "1") )
  	)
-	_result( __('Request malformed.'), false);
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 $db->update("users", array(
 	"audios_public" => $_POST['audios_public'],

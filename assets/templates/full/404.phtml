@@ -12,7 +12,11 @@ load_template('header')
 	</h3>
 	<form method="GET" action="<?php echo url() . 'search/' ?>">
 		<div class="input-field">
-			<input type="text" name="q">
+			<input
+				type="text"
+				name="q"
+				title="<?php _e('Type something to search') ?>"
+				>
 			 <label class="active">
 			 	<i class="fa fa-search"></i>
 			 	&nbsp;<?php _e('Search') ?>

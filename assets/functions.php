@@ -190,7 +190,7 @@ function can_listen( $id2 ) {
 function sanitize( $str ) {
 	if( mb_strlen( $str, 'utf8' ) < 1 )
 		return '';
-	$str = htmlspecialchars( $str ); # you mamma wants xss
+	$str = htmlspecialchars( $str, ENT_QUOTES, 'utf-8' );
 	$str = str_replace( array( chr( 10 ), chr( 13 ) ), '' , $str );
 	$str = preg_replace(
 		'/https?:\/\/[\w\-\.!~#?&=+%;:\*\'"(),\/]+/u',

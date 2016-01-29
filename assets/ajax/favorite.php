@@ -8,12 +8,18 @@ if( ! is_logged() )
 	_result( __("Authentication required."), false);
 
 if( ! validate_args( @$_POST['id'] ) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 $id = $_POST['id'];
 
 if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 // does audio exist ?
 
@@ -22,9 +28,12 @@ $exists_audio = $db->query(
 	$id
 );
 if( ! (int) $exists_audio->nums )
-	_result( __("The audio you tried to favorite doesn't exist."), false );
+	_result(
+		__("The audio you tried to favorite was deleted or is no longer available."),
+		false
+	);
 if( ! can_listen( $exists_audio->user ) )
-	_result( __("You can't listen to this user's audios, so you can neither favorite them."), false );
+	_result( __("This user's audios are private."), false );
 
 // already faved?
 

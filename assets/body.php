@@ -88,7 +88,8 @@ function display_audio( $a, $big = false ) {
 			$a->id
 		);
 	$replies_count = (int) $replies_count->size;
-	$size = $big ? 'bigger' : 'normal'
+	$size = $big ? 'bigger' : 'normal';
+	$profile_url = url() . 'audios/' . $u->user
 ?>
 <div class="audio <?php if($big) echo 'big' ?>" id="<?php echo $a->id ?>">
 	<div class="audio_header">
@@ -105,8 +106,27 @@ function display_audio( $a, $big = false ) {
 		<?php endif ?>
 			>
 		</a>
-		<span class="name"><?php echo htmlentities($u->name) ?></span>
-		<span class="uname">@<?php echo $u->user ?></span>
+		<span class="name">
+			<a
+			class="nodeco"
+			href="<?php echo $profile_url ?>"
+			>
+				<?php echo htmlspecialchars(
+					$u->name,
+					ENT_QUOTES,
+					'utf-8'
+				)
+				?>
+			</a>
+		</span>
+		<span class="uname">
+			<a
+			class="nodeco"
+			href="<?php echo $profile_url ?>"
+			>
+				@<?php echo $u->user ?>
+			</a>
+		</span>
 		<span class="adate">
 			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
 			<a href="<?php
@@ -115,7 +135,7 @@ function display_audio( $a, $big = false ) {
 				echo $a->reply_to . '?reply_id=' . $a->id;
 			else
 				echo $a->id
-			?>" class="nodeco">
+			?>">
 				<?php echo d_diff( $a->time ) ?>
 			</a>
 		</span>
@@ -190,7 +210,17 @@ $(document).ready( function() {
 	<?php endif # / if its not a reply ?>
 	<div class="audio_footer">
 	<?php if( ! empty($a->audio) ): # if not a reply ?>
-		<a class="audiobtn" id="plays_<?php echo $a->id ?>">
+		<a
+		class="audiobtn"
+		id="plays_<?php echo $a->id ?>"
+		title="<?php
+		echo _n(
+				__('%d person played this'),
+				__('%d people have played this'),
+				$a->plays
+			);
+		?>"
+		>
 			<i class="fa fa-headphones"></i>&nbsp;
 			<span>
 				<?php echo format_number($a->plays) ?>
@@ -202,7 +232,9 @@ $(document).ready( function() {
 			echo 'laic';
 			if($is_faved)
 				echo ' favorited';
-			endif ?>" data-id="<?php echo $a->id ?>">
+			endif ?>"
+		data-id="<?php echo $a->id ?>"
+		title="<?php _e('Mark as favorite') ?>">
 			<i class="fa fa-star"></i>&nbsp;
 			<span>
 				<?php echo format_number($a->favorites) ?>
@@ -210,7 +242,9 @@ $(document).ready( function() {
 		</a>
 	<?php if( ! empty($a->audio) ): # if not a reply ?>
 		<a class="audiobtn"
-		href="<?php echo url() . $a->id ?>#replies">
+		      href="<?php echo url() . $a->id ?>#replies"
+		      title="<?php _e('Leave a reply') ?>"
+		      >
 			<i class="fa fa-reply"></i>&nbsp;
 			<span>
 				<?php echo format_number($replies_count) ?>
@@ -218,8 +252,12 @@ $(document).ready( function() {
 		</a>
 	<?php endif;
 		if( is_logged() && $a->user == $_USER->id ): ?>
-		<a href="javascript:void(0);"
-		class="audiobtn delit" data-id="<?php echo $a->id ?>">
+		<a
+		href="javascript:void(0);"
+		class="audiobtn delit"
+		data-id="<?php echo $a->id ?>"
+		title="<?php _e('Delete this audio') ?>"
+		>
 			<i class="fa fa-times"></i> <?php _e('Delete') ?>
 		</a>
 		<?php endif ?>
@@ -243,7 +281,11 @@ function display_user( $u ) { ?>
 	<li class="name">
 		<a href="<?php echo url() . 'audios/' . $u->user ?>">
 			<?php
-			echo htmlentities($u->name);
+			echo htmlspecialchars(
+				$u->name,
+				ENT_QUOTES,
+				'utf-8'
+			);
 			verified($u->verified);
 			?>
 		</a>

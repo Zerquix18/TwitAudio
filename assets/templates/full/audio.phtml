@@ -1,8 +1,8 @@
 <?php
+$_BODY['page'] = 'audio';
 $a = $_BODY['audio'];
 $u = $_BODY['user'];
-$can_listen = can_listen($u->id);
-if( ! $can_listen )
+if( ! can_listen($u->id) )
 	return load_full_template('404'); // u cannot get here
 $t = $u->user . ': ';
 if( strlen($a->description) > 10 )
@@ -53,7 +53,7 @@ echo http_build_query( array(
 				?>">
 				<input type="hidden" name="id" value="<?php echo $a->id ?>">
 					<div class="input-field">
-   						<textarea class="materialize-textarea" name="reply" maxlength="200" id="reply_box" maxlength="200"></textarea>
+   						<textarea class="materialize-textarea" name="reply" maxlength="200" id="reply_box" maxlength="200" required="required"></textarea>
 						<label>
 						<i class="fa fa-pencil"></i>
 					&nbsp;<?php _e('Write a reply') ?>
@@ -65,7 +65,7 @@ echo http_build_query( array(
 						<label for="twsent">
 					<?php _e('Send to Twitter') ?>
 						</label>
-						<button type="submit" class="btn right waves-effect waves-light" required="required">
+						<button type="submit" class="btn right waves-effect waves-light">
 					<?php _e('Reply') ?>&nbsp;
 						<i class="fa fa-send"></i>
 						</button>
@@ -74,6 +74,7 @@ echo http_build_query( array(
 		<?php else: ?>
 			<a
 			class="signin"
+			title="<?php _e('You must be logged in to leave a reply') ?>"
 			href="<?php
 			echo url() . 'signin.php?back_to=' .
 			urlencode( url() . substr($_SERVER['REQUEST_URI'], 1) )

@@ -52,7 +52,7 @@ class Audio {
 			$l = $this->exec("sox $this->audio $new_name");
 			if( trim($l) !== '' ) { // <-- MALFORMED
 				unlink($this->audio);
-				$this->error = __("There was a problem while proccessing audio");
+				$this->error = __("There was a problem while proccessing the audio");
 				$this->error_code = 2;
 				return false;
 			}
@@ -69,7 +69,7 @@ class Audio {
 		}else
 			return false;
 		if( trim($r) !== '' ) { // <-- malformed, a warning was thrown
-			$this->error = __("There was a problem while proccessing audio...");
+			$this->error = __("There was a problem while proccessing the audio...");
 			$this->error_code = 2;
 			return false;
 		}else{
@@ -116,7 +116,7 @@ class Audio {
 		$t = floor($this->info['playtime_seconds']);
 		if( $start < 0 || $end > $t ) {
 			// cannot be cut m8
-			$this->error = __("The audio could not be cut because the start or end doesn't match with the audio.");
+			$this->error = __("There was an error while cutting your audio...");
 			$this->error_code = 8;
 			return false;
 		}
@@ -126,7 +126,7 @@ class Audio {
 		$r = $this->exec($l="sox $this->audio $new_name trim $start $d");
 		$r = trim($r);
 		if( ! in_array($r, array("", "sox WARN mp3: MAD lost sync" ) ) ) {
-			$this->error = __("There was an error while cutting audio :(");
+			$this->error = __("Oh snap! There was an error while cutting your audio...");
 			$this->error_code = 6;
 			return false;
 		}
@@ -143,7 +143,7 @@ class Audio {
 			$new_name = $this->generate_name($this->audio);
 			$r = $this->exec("sox $this->audio -C $condition $new_name");
 			if( trim($r) !== '' ){
-				$this->error = __("Error while processing audio");
+				$this->error = __("There was an error while processing your audio");
 				$this->error_code = 7;
 				return false;
 			}

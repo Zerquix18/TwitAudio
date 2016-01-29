@@ -5,12 +5,18 @@ if('POST' !== getenv('REQUEST_METHOD') )
 	exit;
 
 if( ! validate_args( @$_POST['id'] ) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 $id = $_POST['id'];
 
 if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
-	_result( __('Request malformed.'), false );
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 // does audio exist ?
 
@@ -19,10 +25,15 @@ $exists_audio = $db->query(
 	$id // regex protected
 );
 if( ! (int) $exists_audio->nums )
-	_result( __("The audio you tried to play doesn't exist."), false );
-
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 if( $exists_audio->reply_to != '0' )
-	_result( __("You cannot play a comment."), false);
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
 
 $ip = getip();
 

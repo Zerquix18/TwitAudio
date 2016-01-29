@@ -1,4 +1,5 @@
 <?php
+$_BODY['page'] = 'search';
 $_BODY['q'] =
 $q = validate_args(@$_GET['q']) ? htmlentities(trim($_GET['q'])) : '';
 $_BODY['title'] = $q . ' ' . __('Search');

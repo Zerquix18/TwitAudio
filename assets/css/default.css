@@ -714,3 +714,12 @@ b.caret {
 .share_buttons {
 	text-align: right;
 }
+a.nodeco,
+a.nodeco:hover,
+a.nodeco:visited,
+a.nodeco:active {
+	text-decoration: none !important;
+	color: inherit !important;
+	font-size: inherit !important;
+	font-weight: inherit !important;
+}
