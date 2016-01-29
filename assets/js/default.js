@@ -452,13 +452,16 @@ $(document).on('click', '.delit', function(e) {
 		url: ajaxurl + 'delete.php',
 		data : {id: _id},
 		error: function() {
-			display_error('Connection error :(');
+			display_error('There was an error while deleting your audio');
 		},
 		success: function(result) {
 			result = JSON.parse(result);
 			if( ! result.success )
 				return display_error(result.response);
-			if( typeof is_audio === 'boolean' )
+			// redirect to home if the deleted audio
+			// was in the audio page AND
+			// was not a reply
+			if( typeof audio_id !== 'undefined' && result.response == audio_id )
 				return window.location.replace('/');
 			$("#" + result.response ).fadeOut(1000, function() {
 				$(this).remove();
