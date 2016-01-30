@@ -2,6 +2,11 @@
 $_BODY['page'] = 'default';
 load_template('header')
 ?>
+<?php if( ! isset($_COOKIE['noscript']) && ! isset($_GET['_ta_script']) ): ?>
+<noscript>
+	<meta http-equiv="refresh" content="0; URL=/?_ta_noscript=1">
+</noscript>
+<?php endif ?>
 <div class="content" id="main">
 	<div class="row">
 		<div class="col l9 m12 s12">
@@ -9,6 +14,18 @@ load_template('header')
 	<?php echo sprintf( __('Your current browser does not support audio recording. See which <a href="%s">browsers support audio recording</a>.'), url() . 'faq#q1')
 	?>
 			</div>
+			<?php if( isset($_GET['_ta_noscript']) && ! isset($_COOKIE['noscript']) ) {
+				setcookie('noscript', '1', time()+3600);
+				// a user without js wont last too much
+				?>
+			<div class="red-text">
+		<?php
+		_e('Your current browser does not support Javascript or is disactivated for this page. Some features may not work without Javascript.');
+		?>
+			</div>
+				<?php
+			}
+			?>
 			<?php load_template('post') ?>
 			<div class="row">
 				<div class="col l6 m12 s12">
