@@ -76,9 +76,7 @@ function recording() {
 	}
 	if( r_count === 120 ) {
 		Materialize.toast('Time is up!', 5000, 'rounded');
-		window.setTimeout( function() {
-			$("#stop").trigger('click');
-		}, 2500);
+		$("#stop").trigger('click');
 	}
 }
 function up_form( voice ) {
