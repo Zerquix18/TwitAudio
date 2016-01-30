@@ -1,10 +1,34 @@
-var recorder, context, initialized = null, init, cancel = false, cleft_i, cleft = 3, r_count = null, r_i, is_recording = false, tmp_preview_url, playeds = [], tmp_post_preview, load_more, first_second = false, unloaded = false;
+// Hi, I'm called Javascript.
+var	recorder, // recorder object
+	context, //AudioContext object
+	init, // the function to put the microphone to record
+	/** intervals **/
+	cleft_i,
+	r_i,
+	tmp_preview_url,
+	tmp_post_preview,
+	load_more,
+	initialized = null, // if everything with the mic was ok
+	cancel = false, // did the user canceled the recording?
+	cleft = 3, // counter to star recording
+	r_count = null,
+	is_recording = false, // it says it all
+	playeds = [], // played audios in page
+	first_second = false,
+	unloaded = false;
+
+/**
+* Checks if needle is in haystack
+* in_array('lol', ['asd', 'lol']) = true
+*
+**/
 function in_array( needle, haystack ) {
 	for(var i = 0; i < haystack.length; i++)
 		if( needle == haystack[i])
 			return true;
 	return false;
 }
+// displays a toast
 function display_error( error, dissapear ) {
 	var text = '<i class="fa fa-close"></i>&nbsp;';
 	text += error;
@@ -17,12 +41,13 @@ function display_info( info, dissapear ) {
 	dissapear = dissapear || 5000;
 	Materialize.toast(text, dissapear, 'rounded');
 }
+// returns (bool)
 function can_record() {
 	navigator.getMedia = ( navigator.getUserMedia ||
                        navigator.webkitGetUserMedia ||
                        navigator.mozGetUserMedia ||
                        navigator.msGetUserMedia );
-	if( ! (navigator.getMedia) )
+	if( ! (navigator.getMedia) ) // none of them worked
 		return false;
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	context = new AudioContext();
@@ -359,7 +384,10 @@ $("#cut_form").ajaxForm({
 		$.jPlayer.pause();
 	},
 	error : function() {
-		display_error('Connection problem :(');
+		display_error(
+			'There was a problem while cutting your audio. Please check your Internet connection',
+			10000
+		);
 		$("#loading").hide();
 		$("#up_progress").width(0);
 		$("#cut_form").show();
@@ -387,7 +415,7 @@ $("#post_form").ajaxForm({
 		$.jPlayer.pause();
 	},
 	error : function() {
-		display_error('Connection problem :(');
+		display_error("Unable to post. Please check your Internet connection.");
 	},
 	complete : function(xhr) {
 		$("#up_progress").width(0);
@@ -534,6 +562,7 @@ $(document).on('click', '#load_more', function() {
 		error : function() {
 			$( '#' + load_more[0] ).append( load_more[1] );
 			load_more = null;
+			display_error('There was an error while loading the content... Please check your Internet connection.');
 		},
 		success : function( result ) {
 			if( is_JSON(result) ) {
@@ -546,10 +575,15 @@ $(document).on('click', '#load_more', function() {
 	});
 });
 $("#settings_form").ajaxForm({
+	beforeSend: function() {
+		$("#settings_form button").attr('disabled', 'disabled');
+	},
 	error : function() {
-		display_error('Connection problem :(');
+		$("#settings_form button").removeAttr('disabled');
+		display_error('Could not update your settings. Please check your Internet connection.');
 	},
 	complete : function(xhr) {
+		$("#settings_form button").removeAttr('disabled');
 		var result = JSON.parse(xhr.responseText);
 		if( result.success )
 			return display_info( result.response );
@@ -585,9 +619,6 @@ $("#replies_box").on('keyup keydown', function(e) {
 		$("#c_submit").removeAttr('disabled');
 	else
 		$("#c_submit").attr('disabled', 'disabled');
-});
-$("#close_ft").on('click', function() {
-	$("#firstime").hide();
 });
 $( "#search_type").on( 'change', function() {
 	if( $(this).val() == 'a' ) {
