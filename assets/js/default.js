@@ -557,11 +557,16 @@ $("#settings_form").ajaxForm({
 	}
 });
 $("#form_reply").ajaxForm({
+	beforeSend: function() {
+		$("#reply_box").attr('disabled', 'disabled');
+	},
 	error : function() {
-		display_error('Connection problem :(');
+		display_error('There was an error while adding your reply.');
+		$("#reply_box").removeAttr('disabled');
 	},
 	complete : function( xhr ) {
 		var result = xhr.responseText;
+		$("#reply_box").removeAttr('disabled');
 		if( is_JSON(result) ) {
 			result = JSON.parse(result);
 			return display_error( result.response );
