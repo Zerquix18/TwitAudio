@@ -432,11 +432,11 @@ $(document).on('click', '.laic', function(e) {
 			if( last_laic_id.hasClass('favorited') ){ // back to normal
 				last_laic_id.removeClass('favorited');
 				att.text( String(c - 1) ); // decrease 1
-				display_error('There was a problem while unfavoriting the audio...');
+				display_error('There was a problem while favoriting the audio...');
 			}else{
 				last_laic_id.addClass('favorited');
 				att.text( String(c + 1) ); // increase 1
-				display_error('There was a problem while favoriting the audio...');
+				display_error('There was a problem while unfavoriting the audio...');
 			}
 		},
 		success: function(result) {
