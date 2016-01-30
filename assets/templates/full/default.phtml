@@ -47,6 +47,7 @@ $recents = $db->query(
 					FROM users
 					WHERE audios_public = \'0\'
 					)
+			AND reply_to = \'0\'
 			AND `time` BETWEEN ? AND ?
 			ORDER BY plays DESC
 			LIMIT 3',
