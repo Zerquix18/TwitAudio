@@ -24,7 +24,7 @@ if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
 // does audio exist ?
 
 $exists_audio = $db->query(
-	"SELECT user FROM audios WHERE id = ?",
+	"SELECT user,favorites FROM audios WHERE id = ?",
 	$id
 );
 if( ! (int) $exists_audio->nums )
@@ -47,7 +47,16 @@ $favorited = $db->query(
 
 $favorited = (int) $favorited->size;
 
-if( $favorited ) {
+$action = isset($_POST['action']) && in_array($_POST['action'],
+	array(
+		'fav', 'unfav' ) ) ? $_POST['action'] : false;
+if( ! $action )
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
+
+if( $favorited && 'unfav' == $action ) {
 	$db->query(
 		"UPDATE audios SET favorites = favorites-1 WHERE id = ?",
 		$id
@@ -57,7 +66,7 @@ if( $favorited ) {
 		$id,
 		$_USER->id
 	);
-}else{
+}else if( ! $favorited && 'fav' == $action ) {
 	$db->query(
 		"UPDATE audios SET favorites = favorites+1 WHERE id = ?",
 		$id
@@ -68,9 +77,15 @@ if( $favorited ) {
 			time()
 		)
 	);
-}
+}else
+	_result( true, true, array(
+			'count' => $exists_audio->favorites
+		)
+	);
 $extra = array(
-		'action' => $favorited ? 'favorited' : 'favorite',
-		'count' => $favorited ? $favorited - 1 : $favorited + 1
+		'count' => $favorited ?
+			(int) $exists_audio->favorites - 1
+		:
+			(int) $exists_audio->favorites + 1
 	);
 _result(true, true, $extra);

@@ -404,22 +404,49 @@ $("#post_form").ajaxForm({
 $(document).on('click', '.laic', function(e) {
 	var _id = $(this).data('id');
 	last_laic_id = $(this);
+	var parms = {
+		id: _id,
+		action: $(this).hasClass('favorited') ? // faved already?
+			'unfav' : 'fav'
+	};
 	$.ajax({
 		type: "POST",
 		cache: false,
 		url: ajaxurl + 'favorite.php',
-		data : {id: _id},
+		data : parms,
+		beforeSend: function() {
+			// FAKE AJAX
+			var att = last_laic_id.find('span');
+			var c = parseInt(att.text());
+			att.text( String(c + 1) ); // increase 1
+			if( last_laic_id.hasClass('favorited') ) // already faved?
+				last_laic_id.removeClass('favorited');
+			else
+				last_laic_id.addClass('favorited');
+		},
 		error: function() {
-			display_error('Connection problem :(');
+			var att = last_laic_id.find('span');
+			var c = parseInt(att.text());
+			att.text( String(c - 1) ); // decrease 1
+			if( last_laic_id.hasClass('favorited') ) // back to normal
+				last_laic_id.removeClass('favorited');
+			else
+				last_laic_id.addClass('favorited');
+			display_error('There was a problem while favoriting the audio...');
 		},
 		success: function(result) {
 			result = JSON.parse(result);
-			if( ! result.success )
+			if( ! result.success ) {
+				var att = last_laic_id.find('span');
+				var c = parseInt(att.text());
+				att.text( String(c - 1) ); // decrease 1
+				if( last_laic_id.hasClass('favorited') )
+					// back to normal
+					last_laic_id.removeClass('favorited');
+				else
+					last_laic_id.addClass('favorited');
 				return display_error(result.response);
-			if( result.extra.action == 'favorite' )
-				last_laic_id.addClass('favorited');
-			else
-				last_laic_id.removeClass('favorited');
+			}
 			last_laic_id.find('span').html(result.extra.count);
 		}
 	});
