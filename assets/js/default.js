@@ -477,6 +477,8 @@ $(document).on('click', '.plei', function(e) {
 	});
 });
 $(document).on('click', '.delit', function(e) {
+	if( true !== confirm('Are you sure you want to delete this audio?') )
+		return false;
 	var _id = $(this).data('id');
 	$.ajax({
 		type: "POST",
@@ -495,7 +497,7 @@ $(document).on('click', '.delit', function(e) {
 			// was not a reply
 			if( typeof audio_id !== 'undefined' && result.response == audio_id )
 				return window.location.replace('/');
-			$("#" + result.response ).fadeOut(1000, function() {
+			$(".audio_" + result.response ).fadeOut(1000, function() {
 				$(this).remove();
 			});
 		}

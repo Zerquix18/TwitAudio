@@ -91,7 +91,10 @@ function display_audio( $a, $big = false ) {
 	$size = $big ? 'bigger' : 'normal';
 	$profile_url = url() . 'audios/' . $u->user
 ?>
-<div class="audio <?php if($big) echo 'big' ?>" id="<?php echo $a->id ?>">
+<div class="audio <?php
+	if($big) echo 'big';
+	echo 'audio_' . $a->id;
+	?>" id="<?php echo $a->id ?>">
 	<div class="audio_header">
 		<a href="<?php echo url() . 'audios/'. $u->user ?>">
 			<img class="circle"
