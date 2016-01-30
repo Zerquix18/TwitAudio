@@ -418,33 +418,40 @@ $(document).on('click', '.laic', function(e) {
 			// FAKE AJAX
 			var att = last_laic_id.find('span');
 			var c = parseInt(att.text());
-			att.text( String(c + 1) ); // increase 1
-			if( last_laic_id.hasClass('favorited') ) // already faved?
+			if( last_laic_id.hasClass('favorited') ) { // already faved?
 				last_laic_id.removeClass('favorited');
-			else
+				att.text( String(c - 1) ); // decrease 1
+			}else{
 				last_laic_id.addClass('favorited');
+				att.text( String(c + 1) ); // increase 1
+			}
 		},
 		error: function() {
 			var att = last_laic_id.find('span');
 			var c = parseInt(att.text());
-			att.text( String(c - 1) ); // decrease 1
-			if( last_laic_id.hasClass('favorited') ) // back to normal
+			if( last_laic_id.hasClass('favorited') ){ // back to normal
 				last_laic_id.removeClass('favorited');
-			else
+				att.text( String(c - 1) ); // decrease 1
+				display_error('There was a problem while unfavoriting the audio...');
+			}else{
 				last_laic_id.addClass('favorited');
-			display_error('There was a problem while favoriting the audio...');
+				att.text( String(c + 1) ); // increase 1
+				display_error('There was a problem while favoriting the audio...');
+			}
 		},
 		success: function(result) {
 			result = JSON.parse(result);
 			if( ! result.success ) {
 				var att = last_laic_id.find('span');
 				var c = parseInt(att.text());
-				att.text( String(c - 1) ); // decrease 1
-				if( last_laic_id.hasClass('favorited') )
+				if( last_laic_id.hasClass('favorited') ){
 					// back to normal
 					last_laic_id.removeClass('favorited');
-				else
+					att.text( String(c - 1) ); // decrease 1
+				}else{
+					att.text( String(c + 1) ); // increase 1
 					last_laic_id.addClass('favorited');
+				}
 				return display_error(result.response);
 			}
 			last_laic_id.find('span').html(result.extra.count);
