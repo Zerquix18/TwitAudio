@@ -500,7 +500,8 @@ $(document).on('click', '.plei', function(e) {
 			result = JSON.parse(result);
 			if( ! result.success )
 				return;
-			$( '#plays_' + playeds[ playeds.length - 1 ] ).find('span').html( result.extra.count );
+			$( '#plays_' + playeds[ playeds.length - 1 ] )
+				.find('span').html( result.extra.count );
 		}
 	});
 });
