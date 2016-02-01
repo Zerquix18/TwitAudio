@@ -15,7 +15,8 @@ var	recorder, // recorder object
 	is_recording = false, // it says it all
 	playeds = [], // played audios in page
 	first_second = false,
-	unloaded = false;
+	unloaded = false,
+	progressives = [];
 
 /**
 * Checks if needle is in haystack
@@ -107,7 +108,15 @@ function recording() {
 function up_form( voice ) {
 	$("#record_form").hide();
 	$("#post").hide();
-	$("#whatsloading").html('Uploading...');
+	show_progressive('#whatsloading', [
+			'Uploading...',
+			'Stalking my ex on Twitter...',
+			"Looking for Jhon Cena but I can't see him...",
+			'Pushing it up...',
+			'This is a really long audio...',
+			"I'll have to use a lift to upload this",
+			'Uploading...'
+		], 5);
 	$("#loading").show();
 	voice = voice || false;
 	var ajaxform = {
@@ -115,10 +124,11 @@ function up_form( voice ) {
 			$("#player_cut").jPlayer("destroy");
 		},
 		error : function(xhr) {
-			display_error('Connection problem :(');
+			display_error('There was an error while uploading your audio. Please check your Internet connection');
 			$("#loading").hide();
 			$("#up_progress").width(0);
 			$("#post").show();
+			stop_progressive();
 		},
 		uploadProgress : function(event, position, total, percentComplete) {
 			$("#up_progress").animate({
@@ -126,6 +136,7 @@ function up_form( voice ) {
 			});
 		},
 		complete : function(xhr) {
+			stop_progressive();
 			$("#up_progress").width("100%");
 			var result = JSON.parse(xhr.responseText);
 			if( false === result.success ) {
@@ -251,6 +262,23 @@ function unfinishedaudio( action ) {
 			);
 	}
 	return void 0;
+}
+function show_progressive( selector, texts, time ) {
+	if( typeof texts !== 'object' )
+		return;
+	time = time || 5;
+	var taim;
+	for( var i = 0; i < texts.length; i++ ) {
+		taim = time * (i * 1000);
+		var id = window.setTimeout( function( selector, text) {
+			$(selector).text(text);
+		}, taim, selector, texts[i] );
+		progressives.push(id);
+	}
+}
+function stop_progressive() {
+	for( var i = 0; i < progressives.length; i++)
+		window.clearTimeout( progressives[i] );
 }
 $(document).ready( function() {
 	$('.collapsible').collapsible();
@@ -379,31 +407,39 @@ $("#cut_form").ajaxForm({
 	beforeSend : function() {
 		$("#player_preview").jPlayer('destroy');
 		$("#cut_form").hide();
-		$("#whatsloading").html('Cutting...');
+		$("#up_progress").removeClass('determinate')
+				     .addClass('indeterminate');
+		show_progressive( '#whatsloading', [
+				'Cutting...',
+				'Looking for my scissors...',
+				'Nice audio by the way...',
+				'Have you considered to take singing classes?',
+				'This audio is so deep I see Adele rolling on it',
+				'This is taking too long...',
+				'Cutting...'
+			], 3);
 		$("#loading").show();
 		$.jPlayer.pause();
 	},
 	error : function() {
+		stop_progressive();
 		display_error(
 			'There was a problem while cutting your audio. Please check your Internet connection',
 			10000
 		);
 		$("#loading").hide();
-		$("#up_progress").width(0);
+		$("#up_progress").removeClass('indeterminate')
+				.addClass('determinate');
 		$("#cut_form").show();
 	},
-	uploadProgress : function(event, position, total, percentComplete) {
-		$("#up_progress").animate({
-			width: percentComplete + '%'
-		});
-	},
 	complete: function(xhr) {
-		$("#up_progress").width('100%');
+		stop_progressive();
+		$("#up_progress").removeClass('indeterminate')
+				.addClass('determinate');
 		var result = JSON.parse(xhr.responseText);
 		if( ! result.success ) {
 			display_error(result.response);
 			$("#loading").hide();
-			$("#up_progress").width(0);
 			$("#cut_form").show();
 			return;
 		}
@@ -593,20 +629,21 @@ $("#settings_form").ajaxForm({
 });
 $("#form_reply").ajaxForm({
 	beforeSend: function() {
-		$("#reply_box").attr('disabled', 'disabled');
+		$("#reply_box, #reply_options button").attr('disabled', 'disabled');
 	},
 	error : function() {
 		display_error('There was an error while adding your reply.');
-		$("#reply_box").removeAttr('disabled');
+		$("#reply_box, #reply_options button").removeAttr('disabled');
 	},
 	complete : function( xhr ) {
 		var result = xhr.responseText;
-		$("#reply_box").removeAttr('disabled');
+		$("#reply_box, #reply_options button").removeAttr('disabled');
 		if( is_JSON(result) ) {
 			result = JSON.parse(result);
 			return display_error( result.response );
 		}
 		$("#reply_box").val("");
+		$("#label_reply").removeClass('active');
 		$("#noreplies").remove();
 		if( null === document.getElementById("load_more") )
 			$("#replies").append(result);
