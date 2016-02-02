@@ -16,7 +16,8 @@ var	recorder, // recorder object
 	playeds = [], // played audios in page
 	first_second = false,
 	unloaded = false,
-	progressives = [];
+	progressives = [],
+	can_scroll = true;
 
 /**
 * Checks if needle is in haystack
@@ -568,11 +569,22 @@ $(document).on('click', '.delit', function(e) {
 		}
 	});
 });
-$(document).on('click', '#load_more', function() {
-	var load = $(this).data('load');
-	var page = $(this).data('page');
-	var extra = $(this).data('extra');
-	load_more = [ load, $(this).clone() ];
+$(window).scroll( function() {
+	if( (
+		( $(window).scrollTop() + $(window).height() ) >
+		( $(document).height() - 50 ) 
+		) === false
+	)
+	return false;
+	if( null === document.getElementById("load_more") )
+			return false;
+	if( ! can_scroll )
+		return false;
+	_lm = $("#load_more"); // lm = load more
+	var load = _lm.data('load');
+	var page = _lm.data('page');
+	var extra = _lm.data('extra');
+	load_more = [ load, _lm.clone() ];
 	var to_load;
 	var data = {};
 	if( 'search' == load ){
@@ -600,6 +612,7 @@ $(document).on('click', '#load_more', function() {
 			$( '#' + load_more[0] ).append( load_more[1] );
 			load_more = null;
 			display_error('There was an error while loading the content... Please check your Internet connection.');
+			can_scroll = true;
 		},
 		success : function( result ) {
 			if( is_JSON(result) ) {
@@ -608,6 +621,7 @@ $(document).on('click', '#load_more', function() {
 			}
 			$( '#' + load_more[0] ).append( result );
 			load_more = null;
+			can_scroll = true;
 		}
 	});
 });

@@ -3,6 +3,7 @@ html, body {
 }
 body {
 	background-color: #EEEEEE;
+	height: 100%;
 }
 @font-face {
 	font-family: Coolvetica;

@@ -303,11 +303,9 @@ function display_user( $u ) { ?>
 }
 function load_more( $what, $p, $extra = '' ) {
 	$extra = !empty($extra) ? 'data-extra="'. $extra . '"' : '';
-	echo '<button class="btn waves-effect waves-light blue lighten-1"
-	title="'. __("There is more!") .'" type="button" id="load_more"
-	data-load="'.$what.'" data-page="'.$p.'" '. $extra .'>'
-		. __('Load more') .
-	'</button>';
+	echo '<div id="load_more"
+	data-load="'.$what.'"
+	data-page="'.$p.'" '. $extra .'></div>';
 }
 function search($search, $s, $t, $p = 1) {
 	global $db;
@@ -339,7 +337,7 @@ function search($search, $s, $t, $p = 1) {
 	$count = (int) $count->size;
 	# min 3
 	if( mb_strlen( $search, 'utf-8') < 3 || ! $count )
-		alert_error( __("No results were found... Maybe if my mom comes she may find something.") );
+		return alert_error( __("No results were found... Maybe if my mom comes she may find something.") );
 	$total_pages = ceil( $count / 10 );
 	if( $p > $total_pages )
 		return;
