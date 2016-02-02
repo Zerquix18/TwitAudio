@@ -10,13 +10,13 @@ $rplc = array(
 $_BODY['title'] = str_replace(
 		array_keys($rplc),
 		array_values($rplc),
-		$_BODY['txt']
+		$_GET['txt']
 	);
 load_template('header')
 ?>
 <div class="container">
 	<div id="alltxt">
-		<?php echo file_get_contents( PATH . INC . 'html/' . $_BODY['txt'] . '.html' ) ?>
+		<?php echo file_get_contents( PATH . INC . 'html/' . $_GET['txt'] . '.html' ) ?>
 	</div>
 </div>
 <?php load_template('footer');
