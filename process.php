@@ -1,10 +1,19 @@
 <?php
+/**
+* This file processes the data after a login
+* @author Zerquix18 <zerquix18@hotmail.com>
+* @copyright Copyright (c) 2015 Luis A. Martínez
+* @todo Avoid multiple users with the same username
+**/
+// get everything we need
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
+// Where will we redirect after login ?
 if( isset($_SESSION['back_to']) ) {
 	$redirect = $_SESSION['back_to'];
 	unset($_SESSION['back_to']);
 }else
 	$redirect = url();
+// if something failed
 if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 	|| ! validate_args(
 		$_SESSION['access_token'],
@@ -15,6 +24,11 @@ if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 	ta_redirect( $redirect );
 }
 $twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
+/**
+*
+* Get the data from Twitter
+* @link https://dev.twitter.com/rest/reference/get/account/verify_credentials
+**/
 $s = $twitter->tw->get('account/verify_credentials');
 if( ! is_object($s) || array_key_exists('error', $s) ) {
 	$_SESSION['login_error'] = true;

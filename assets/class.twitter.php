@@ -5,7 +5,7 @@
 * @author Zerquix18
 *
 **/
-require PATH . INC . 'tw/TwitterOAuth.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/assets/tw/TwitterOAuth.php';
 
 class Twitter {
 	const CONSUMER_KEY = 'jM8rVR9XiDRTuiV0qh7ULmi9b';

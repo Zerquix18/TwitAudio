@@ -6,10 +6,10 @@
  */
 spl_autoload_register( function($class) {
     // fuck namespaces
-    if( file_exists( PATH . INC . 'tw/' . $class. '.php') )
-        require PATH . INC . 'tw/' . $class. '.php';
+    if( file_exists( $_SERVER['DOCUMENT_ROOT'] . '/assets/tw/' . $class. '.php') )
+        require $_SERVER['DOCUMENT_ROOT'] . '/assets/tw/' . $class. '.php';
     else
-        require PATH . INC . 'tw/Util/' . $class. '.php';
+        require $_SERVER['DOCUMENT_ROOT'] . '/assets/tw/Util/' . $class. '.php';
 });
 /**
  * TwitterOAuth class for interacting with the Twitter API.

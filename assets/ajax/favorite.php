@@ -1,4 +1,11 @@
 <?php
+/**
+* AJAX favorite file
+* This file should be only be requested in an AJAX request
+* @author Zerquix18 <zerquix18@hotmail.com>
+* @copyright Copyright 2015 - Luis A. Martínez
+*
+**/
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 if( 'POST' !== getenv('REQUEST_METHOD') )

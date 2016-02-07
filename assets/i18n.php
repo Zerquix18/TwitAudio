@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* Archivo de traducciones
+* Translations file
 *
 * @author Zerquix18
 * @package TrackYourPenguin
@@ -9,13 +9,9 @@
 *
 **/
 
-$preg = sprintf("#%s#", basename(__FILE__) );
-if( preg_match($preg, $_SERVER['PHP_SELF'])) exit();
-
-
-//archivos necesarios para la traduccion
-require PATH . INC . 'i18n/gettext.php';
-require PATH . INC . 'i18n/streams.php';
+//needed files
+require $_SERVER['DOCUMENT_ROOT'] . '/assets/i18n/gettext.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/assets/i18n/streams.php';
 
 $lenguajes = array("en");
 
@@ -77,9 +73,14 @@ function getlang() {
 // requerimos al lenguaje, dando excepción de que no sea el default.
 
 if( getlang() !== "en"
-	&& file_exists(PATH . INC . 'leng/'. getlang() . '.mo')
+	&& file_exists(
+			$_SERVER['DOCUMENT_ROOT'] .
+				'/assets/leng/'. getlang() . '.mo'
+			)
 	):
-	$tr = new gettext_reader( new CachedFileReader( PATH . INC . 'leng/' . getlang() . '.mo' ) );
+	$tr = new gettext_reader( new CachedFileReader(
+			$_SERVER['DOCUMENT_ROOT'] .
+				'/assets/leng/' . getlang() . '.mo' ) );
 	$tr->load_tables();
 	#_textdomain('default');
 else:

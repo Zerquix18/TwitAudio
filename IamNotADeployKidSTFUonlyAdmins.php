@@ -7,8 +7,8 @@ shell_exec('git pull origin master');
 // devuelve los permisos
 shell_exec('chmod -R 777 .');
 require_once('./load.php');
-$css_path = PATH . INC . CSS . 'default.css';
-$js_path = PATH . INC . JS . 'default.js';
+$css_path = $_SERVER['DOCUMENT_ROOT'] . '/assets/css/default.css';
+$js_path = $_SERVER['DOCUMENT_ROOT'] . '/assets/js/default.js';
 /*------------------------- css ---------------------*/
 $url = 'http://cssminifier.com/raw';
 $css = file_get_contents($css_path);

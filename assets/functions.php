@@ -1,16 +1,25 @@
 <?php
 /**
 *
-* Funciones para el sistema
+* Functions file
 *
 * @author Zerquix18
+* @copyright Copyright (c) 2015 - Luis A. Martínez
+**/
+/**
+* Returns the URL
+* @return string
 **/
 function url() {
-	global $_USER;
 	if('localhost' == $_SERVER['HTTP_HOST'])
-		return 'http://localhost/TwitAudio/';
+		return 'http://localhost/TwitAudio/'; //:)
 	return 'https://twitaudio.com/';
 }
+/**
+* All the arguments passed by this function
+* MUST be existing variables and must be strings
+* This is to avoid the typical lol[]='xd' in get/post methods
+**/
 function validate_args() {
 	$args = func_get_args();
 	foreach($args as $a)
@@ -18,8 +27,12 @@ function validate_args() {
 			return false;
 	return true;
 }
-// session = true will generate an ID for a session
-// false = will generate an id for an audio
+/**
+* Will return an ID for a session or an audio
+* This ID is unique. It doesn't exist in the database
+* @param $session bool (true for sessions, false for audios)
+* @return string
+**/
 function generate_id($session=false) {
 	global $db;
 	$chars = 
@@ -40,6 +53,10 @@ function generate_id($session=false) {
 	);
 	return $id;
 }
+/**
+* Tries to the real user IP (even if it's using proxies)
+* @return string 
+**/
 function getip() {
 	if( ! empty($_SERVER['HTTP_CLIENT_IP']) )
 		return $_SERVER['HTTP_CLIENT_IP'];
@@ -47,6 +64,12 @@ function getip() {
 		return $_SERVER['HTTP_X_FORWARDED_FOR'];
 	return $_SERVER['REMOTE_ADDR'];
 }
+/**
+* Will return the differences between $time and the current time
+* @todo just use javascript and delete this shit
+* @param string $time (the old time)
+* @return string
+**/
 function d_diff( $time ) {
 	$n = new Datetime('@'.$time);
 	$f = new DateTime();
@@ -86,7 +109,13 @@ function d_diff( $time ) {
 			, $diff->s);
 	return __('now');
 }
-# this is for ajax requests
+/**
+* Will exit a JSON code in AJAX requests
+* @param mixed $response
+* @param bool success
+* @param array $extra
+* @return void
+**/
 function _result( $response, $success, $extra = null ) {
 	$arr = array(
 			'response' => $response,
@@ -98,6 +127,10 @@ function _result( $response, $success, $extra = null ) {
 		$arr;
 	exit( json_encode($arr) );
 }
+/**
+* will extract 3 hashtags and insert them
+* @deprecated
+**/
 function extract_hashtags($text) {
 	global $db, $_USER;
 	preg_match_all('~([#])([^\s#!\"\$\%&\'\(\)\*\+\,\-./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~', $text, $matches );
@@ -124,16 +157,31 @@ function extract_hashtags($text) {
 	}
 	$db->query($query);
 }
-# PHP script standards
-# only variables per reference
-#bla blabla
+/**
+* Will return the last value of an array
+* @param array $arr
+* @return mixed
+**/
 function last( array $arr ) {
+	# PHP script standards
+	# only variables per reference
 	return end($arr);
 }
+/**
+* Checks if the current page is one of the sent
+* in the params
+* @return bool
+**/
 function is() {
 	global $_BODY;
 	return in_array( $_BODY['page'], func_get_args() );
 }
+/**
+* Checks if the logged user can listen to
+* @id2's audios
+* @param string $id2
+* @return bool
+**/
 function can_listen( $id2 ) {
 	global $db, $twitter, $_USER;
 	$l = $_USER !== NULL; // check if logged in
@@ -187,6 +235,13 @@ function can_listen( $id2 ) {
 	);
 	return $check;
 }
+/**
+* Sanitizes a text
+* Prevents XSS, replaces links for clickable links
+* and replaces @mentions by clickable links
+* @param string $str (wow)
+* @return string
+**/
 function sanitize( $str ) {
 	if( mb_strlen( $str, 'utf8' ) < 1 )
 		return '';
@@ -206,6 +261,11 @@ function sanitize( $str ) {
        	$str );
 	return $str;
 }
+/**
+* The name says it all
+* @param int $count
+* @return string
+**/
 function format_number( $count ) {
 	$count = (int) $count; // just in case
 	if( $count >= 1000 &&  $count < 1000000 ) 
@@ -215,6 +275,12 @@ function format_number( $count ) {
 	else
         		return $count;
 }
+/**
+* Redirects to $url
+* @param string $url
+* @param bool $status
+* @return void
+**/
 function ta_redirect( $url, $status = 302 ) {
 	header('Location: ' . $url, true, $status);
 	exit;

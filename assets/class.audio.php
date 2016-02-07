@@ -5,21 +5,64 @@
 * Requires getID3, SoX & FFMEPG
 *
 * @author Zerquix18 <zerquix18@outlook.com>
+* @copyright Copyright (c) 2015 Luis A. Martínez
 * @since {27/9/2015}
-*
 **/
+
+// consider that without this the entire class will fail
 require dirname(__FILE__) . '/getid3/getid3.php';
+
 class Audio {
+	/**
+	* Contains the path of the audio
+	* @access public
+	* @param string
+	*
+	**/
 	public $audio;
+	/**
+	* Contains the original path of the audio
+	* @access public
+	* @param string
+	*
+	**/
 	public $original_name;
+	/**
+	* All the info of getid3
+	* @access public
+	* @param array
+	*
+	**/
 	public $info;
+	/**
+	* Max duration of the audio
+	* @access public
+	* @param integer
+	* @todo deprecate this for the premium version
+	*
+	**/
 	public $max_duration = 120; // 2 mins
-	public $default_rate = 128;
+	/**
+	* The string with the error
+	* @access public
+	* @param string
+	*
+	**/
 	public $error = false;
+	/**
+	* Error code. Random numbers I put
+	* @access public
+	* @param string
+	*
+	**/
 	public $error_code;
+
 	public $allowed_formats = array('aac', 'mp4', 'mp3', 'ogg', 'wav');
+
 	public $is_voice;
+
 	private $format;
+
 	public function __construct($audio_path, $valid = false, $is_voice = false) {
 		$id3 = new getID3();
 		$this->info = $id3->analyze($audio_path);
@@ -29,8 +72,18 @@ class Audio {
 		if( ! $valid )
 			$this->prepare();
 	}
+	/**
+	* PHP doesn't let me pass expressions
+	* with the end function.
+	* I can't do this: end( array('lol') )
+	* But I can do this $this->last( array('lol') )
+	* @access private
+	* @return mixed
+	*
+	**/
 	private function last( array $array ) {
-#PHP Strict Standards:  Only variables should be passed by reference
+	#PHP Strict Standards:
+		#Only variables should be passed by reference
 		return end($array); // <- fak u
 	}
 	private function prepare() {
@@ -49,6 +102,8 @@ class Audio {
 		if( 'mp3' === $this->format ) {
 			// if mp3, check it's not malformed ...
 			$new_name = $this->generate_name($this->audio);
+			// remake the file just to see
+			// it there's not an EOF
 			$l = $this->exec("sox $this->audio $new_name");
 			if( trim($l) !== '' ) { // <-- MALFORMED
 				unlink($this->audio);
@@ -87,6 +142,12 @@ class Audio {
 			return false;
 		}
 	}
+	/**
+	* Gets the name of the file
+	* By removing format
+	* @access private
+	* @return string
+	**/
 	private function get_name($name) {
 		// get the path without the format
 		$name = explode(".", $this->audio);
@@ -94,8 +155,12 @@ class Audio {
 		$name = implode($name); // get the name
 		return $name;
 	}
+	/**
+	* Generates a new filename
+	* @access private
+	* @return string
+	**/
 	private function generate_name( $base ) {
-		// create a new file name
 		// get the path
 		$path = explode("/", $base);
 		array_pop($path);
@@ -105,10 +170,20 @@ class Audio {
 		$path .= $name . '.' . $this->format;
 		return $path;
 	}
+	/**
+	* Executes $command in the shell
+	* @access private
+	* @return string
+	**/
 	private function exec( $command ) {
 		exec($command . " 2>&1", $output);
 		return implode("\n", $output);
 	}
+	/**
+	* Cuts an audio from $start to $end
+	* @access public
+	* @return string|bool
+	**/
 	public function cut( $start, $end ) {
 		if( $this->error )
 			return false;
@@ -136,7 +211,13 @@ class Audio {
 		$this->info = $id3->analyze($this->audio);
 		return $this->audio;
 	}
-	private function proccess( $dir ) {
+	/**
+	* Decreases the bit rate (filesize)
+	* 
+	* @access private
+	* @return bool
+	**/
+	private function proccess() {
 		// everything is ok
 		$condition = $this->is_voice ? 64 : 128;
 		if( ($this->info['bitrate'] / 1000) > $condition ) {

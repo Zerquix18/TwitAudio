@@ -16,7 +16,10 @@ load_template('header')
 ?>
 <div class="container">
 	<div id="alltxt">
-		<?php echo file_get_contents( PATH . INC . 'html/' . $_GET['txt'] . '.html' ) ?>
+		<?php echo file_get_contents(
+			$_SERVER['DOCUMENT_ROOT']
+				. '/html/' . $_GET['txt'] . '.html'
+			) ?>
 	</div>
 </div>
 <?php load_template('footer');

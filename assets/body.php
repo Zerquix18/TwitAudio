@@ -1,44 +1,82 @@
 <?php
-define("TEMP", "templates/");
-define("FULL_TEMP", "templates/full/");
+/**
+* Body file
+* Functions related to HTML and front-end
+*
+**/
+/**
+* Stores all the info about the logged user
+*
+* @var array
+*
+**/
 $_USER = ( $id = is_logged() ) ?
 	$db->query("SELECT * FROM users WHERE id = ?", $id )
 :
 	NULL;
+/**
+* All the front-end / HTML related data
+**/
 $_BODY = array();
 $_BODY['meta'] = array(
 		'title' => __('TwitAudio - Share voice notes and audio files using Twitter'),
 		'robots' => true
 	);
-$_BODY['post_box'] = false;
+/**
+* Loads a template from assets/templates
+* These templates are partial, ex: header, footer
+* And not for entire pages
+**/
 function load_template( $name ) {
 	global $db, $_BODY, $_USER, $lenguajeso, $lenguajest;
-	$f = PATH . INC . TEMP . $name . '.phtml';
+	$f = $_SERVER['DOCUMENT_ROOT'] .
+		'/assets/templates/' . $name . '.phtml';
 	if( ! file_exists($f) )
 		return false;
 	require $f;
 }
+/**
+* Loads a template from assets/full/templates
+* These templates are for whole pages
+* Ex: audios, frame, etc.
+* And they require the header/footer template
+**/
 function load_full_template( $name ) {
 	global $db, $_BODY, $_USER, $lenguajeso, $lenguajest;
-	$f = PATH . INC . FULL_TEMP . $name . '.phtml';
+	$f = $_SERVER['DOCUMENT_ROOT'] .
+		'/assets/templates/full/' . $name . '.phtml';
 	if( ! file_exists($f) )
 		return false;
 	require $f;
 }
+/**
+* Returns the full url to a style in assets/css directory
+* It must end with .css
+* @return string|void
+**/
 function load_style( $style, $return = false ) {
 	if( $return )
-		return url() . INC . CSS . $style;
-	echo url() . INC . CSS . $style;
+		return url() . 'assets/css/' . $style;
+	echo url() . 'assets/css/' . $style;
 }
+/**
+* Returns the full url to a script in assets/js directory
+* It must end with .js
+* @return string|void
+**/
 function load_script( $js, $return = false ) {
 	if( $return )
-		return url() . INC . JS . $js;
-	echo url() . INC . JS . $js;
+		return url() . 'assets/js/' . $js;
+	echo url() . 'assets/js/' . $js;
 }
+/**
+* Returns the full url to a style in assets/img directory
+* @return string|void
+**/
 function load_img( $img, $return = false ) {
 	if( $return )
-		return url() . INC . IMG . $img;
-	echo url() . INC . IMG . $img;
+		return url() . 'assets/img/' . $img;
+	echo url() . 'assets/img/' . $img;
 }
 function alert_error($error) {
 	echo '<div class="alert error">'. $error . '</div>';
@@ -99,7 +137,7 @@ function display_audio( $a, $big = false ) {
 		<a href="<?php echo url() . 'audios/'. $u->user ?>">
 			<img class="circle"
 			src="<?php echo get_image($u->avatar, $size) ?>"
-			onerror="this.src='<?php echo url() . INC . IMG . 'unknown.png' ?>'"
+			onerror="this.src='<?php echo url() . 'assets/img/unknown.png' ?>'"
 		<?php if($big): ?>
 			height="73"
 			width="73"
@@ -164,7 +202,9 @@ $(document).ready( function() {
 		$("#player_<?php echo $a->id ?>").jPlayer({
 		ready: function(event) {
 		$(this).jPlayer("setMedia", {
-			mp3: "<?php echo url() . INC . 'audios/' . $a->audio ?>",
+			mp3: "<?php
+			echo url() . 'assets/audios/' . $a->audio
+			?>",
 		});
 	},
 		cssSelectorAncestor : '#container_<?php echo $a->id ?>',
@@ -275,7 +315,7 @@ function display_user( $u ) { ?>
 		<a href="<?php echo url() . 'audios/' . $u->user ?>">
 			<img class="circle"
 			src="<?php echo $u->avatar ?>"
-			onerror="this.src='<?php echo url() . INC . IMG . 'unknown.png' ?>'"
+			onerror="this.src='<?php load_img('unknowin.png') ?>'"
 			height="48"
 			width="48"
 			>

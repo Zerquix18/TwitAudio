@@ -1,4 +1,12 @@
 <?php
+/**
+* AJAX delete file
+* This deletes the audio sent in the param 'id'
+* This file should be only be requested in an AJAX request
+* @author Zerquix18 <zerquix18@hotmail.com>
+* @copyright Copyright 2015 - Luis A. Martínez
+*
+**/
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 if ('POST' !== getenv('REQUEST_METHOD') )
@@ -43,6 +51,9 @@ $db->query("DELETE FROM audios WHERE id = ?", $id);
 $db->query("DELETE FROM favorites WHERE audio_id = ?", $id);
 $db->query("DELETE FROM plays WHERE audio_id = ?", $id);
 $db->query("DELETE FROM audios WHERE reply_to = ?", $id);
-@unlink( PATH . INC . 'audios/' . $exists->audio);
+@unlink(
+	$_SERVER['DOCUMENT_ROOT'] .
+		'assets/audios/' . $exists->audio
+	);
 
 _result($id, true);

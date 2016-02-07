@@ -1,7 +1,20 @@
+<?php
+/**
+* The header template
+* Included in all files
+* @author Zerquix18
+* @copyright Copyright (c) 2015 Luis A. Martínez
+*
+**/
+?>
 <!DOCTYPE html>
 <html lang="<?php echo getlang() ?>">
 <head>
-	<title><?php if( isset($_BODY['title']) ) echo $_BODY['title'] . ' | ' ?>TwitAudio</title>
+	<title><?php
+		if( isset($_BODY['title']) )
+			echo $_BODY['title'] . ' | '
+	?>TwitAudio
+	</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="title" content="<?php echo $_BODY['meta']['title'] ?>">
@@ -76,6 +89,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			</a>
 		</li>
 	<?php else:
+	// get counts
 	$audios = $db->query(
 			'SELECT COUNT(*) AS size FROM audios
 			WHERE reply_to = \'0\' AND user = ?',

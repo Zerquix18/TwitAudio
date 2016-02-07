@@ -299,7 +299,16 @@ $(document).ready( function() {
 		if( initialized )
 			return null;
 		navigator.getMedia({audio:true}, function(stream) {
-			recorder = audioRecorder.fromSource( context.createMediaStreamSource(stream), {type: 'audio/mpeg', workerPath : workerpath, mp3LibPath : lamepath, recordAsMP3 : true });
+			recorder = audioRecorder.fromSource(
+				context.createMediaStreamSource(stream),
+				{
+					type: 'audio/mpeg',
+					workerPath : workerpath,
+					mp3LibPath : lamepath,
+					recordAsMP3 : true,
+					channels: 1
+				}
+			);
 			initialized = true;
 			if( cancel ) {
 				clearInterval(cancel);

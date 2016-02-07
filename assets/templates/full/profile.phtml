@@ -36,7 +36,7 @@ load_template('header');
 					$u->user
 				)
 				?>"
-				onerror="this.src='<?php echo url() . INC . IMG . 'unknown.png' ?>'; $(this).removeClass('materialboxed')"
+				onerror="this.src='<?php load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
 				>
 				<h5 id="name">
 					<?php

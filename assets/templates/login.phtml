@@ -1,9 +1,11 @@
 <?php
-// had to drink coffee to do this...
-// this file will be required in the footer
-// it gonna show the info after login or logout in any page
-// let's go
-# first, show the modal if it's the first time the user logs in
+/**
+* had to drink coffee to do this...
+* this file will be required in the footer
+* it gonna show the info after login or logout in any page
+* let's go
+**/
+#first, show the modal if it's the first time the user logs in
 if( ! is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
 	unset($_SESSION['first_time']) ?>
  <div id="welcome" class="modal bottom-sheet">

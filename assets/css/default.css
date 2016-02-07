@@ -1,3 +1,6 @@
+/*
+The CSS file
+*/
 html, body {
 	height: 100%;
 }
@@ -211,10 +214,12 @@ footer.notop .footer-copyright {
 	display: inline;
 	margin-left: 10px;
 }
+/* username */
 .uname {
 	font-size: 13px;
 	color: #CCC;
 }
+/* audio date*/
 .adate {
 	float:right;
 	font-size:15px;
@@ -233,6 +238,7 @@ footer.notop .footer-copyright {
 	color: #CBCBCB;
 	font-size: 18px;
 }
+/* linked reply */
 #linked {
 	font-weight: bold;
 	text-transform: uppercase;
@@ -453,15 +459,7 @@ div.jp-play-bar{
 .audio.big .audio_desc {
 	margin-left: 80px;
 }
-#load_more {
-	display: block;
-	margin: 15px auto;
-	max-width: 140px;
-	box-sizing: initial;
-}
-#load_more i {
-	vertical-align: top;
-}
+/* 404 page */
 #p404 {
 	background-color: #14455C;
 }
@@ -501,6 +499,7 @@ div.jp-play-bar{
 		font-size: 25px;
 	}
 }
+/** profile picture */
 #propic {
 	display: block;
 	margin: 10px auto;
@@ -554,6 +553,7 @@ div.jp-play-bar{
 	color: #616161;
 	font-family: Helvetica, 'Nelvetica Neue', 'Helvetica Neue LT', 'Roboto', Arial, Serif;
 }
+/** title in boxes */
 .title {
 	display: block;
 	width:100%;
@@ -665,6 +665,7 @@ a.signin {
 	margin: 0 auto;
 	display: block;
 }
+/** favorite button **/
 .laic {
 	cursor: pointer;
 }

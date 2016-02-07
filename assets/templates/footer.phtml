@@ -1,5 +1,17 @@
 <?php
+/**
+* The footer template
+* Included in all files
+* @author Zerquix18
+* @copyright Copyright (c) 2015 Luis A. Martínez
+*
+**/
+
+// get the info to show after login
 load_template('login');
+
+// show an ad block in the footer.
+// todo: stop selling user info
 if( ! is('index', 'txt', '404') ): ?>
 <div class="box ads_footer">
 	<p class="title"><?php _e('Advertising') ?></p>
@@ -15,15 +27,17 @@ if( ! is('index', 'txt', '404') ): ?>
 		(adsbygoogle = window.adsbygoogle || []).push({});
 	</script>
 </div>
-<?php endif ?>
+<?php endif
+/** the google analytics **/
+?>
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 ga('create', 'UA-69290712-1', 'auto');
 ga('send', 'pageview');
 workerpath 	= "<?php load_script('recorderWorker.js') ?>";
 lamepath 	= "<?php load_script('lame.all.js') ?>";
-ajaxurl 		= '<?php echo url() . INC . "ajax/" ?>';
-swfpath 	= '<?php echo url() . INC . "swf/" ?>';
+ajaxurl 		= '<?php echo url() . "assets/ajax/" ?>';
+swfpath 	= '<?php echo url() . "assets/swf/" ?>';
 </script>
 <?php if( is('index', 'txt') ): // index or any text page (terms,about,etc) ?>
 <footer class="page-footer grey darken-3">

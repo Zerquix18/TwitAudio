@@ -1,5 +1,18 @@
 <?php
+/**
+*
+* The home page
+* This routes everything and calls the templates
+* @author Zerquix18 <zerquix18@hotmail.com>
+* @copyright Copyright (c) 2015 Luis A. Martínez
+*
+**/
+/* requires everything */
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
+/*
+* ?p_ is routed by the .htaccess file
+* But it can be discovered, so don't trust it
+*/
 $p = isset($_GET['_p']) && is_string($_GET['_p']) ? $_GET['_p'] : '';
 switch($p):
 	case "audio":
@@ -12,7 +25,7 @@ switch($p):
 		);
 		if( $a->nums == 0 )
 			return load_full_template('404');
-		if( $a->reply_to != '0' )
+		if( $a->reply_to != '0' ) // if it's a reply
 			ta_redirect(
 				url() . $a->reply_to . '?reply_id=' . $a->id 
 			);
@@ -46,6 +59,8 @@ switch($p):
 		load_full_template('frame');
 		break;
 	case "profile":
+	// even if this is routed by the htaccess
+	// imma never trust it ↓
 		if( ! validate_args(@$_GET['u']) )
 			exit;
 		$u = $db->query(
@@ -58,6 +73,7 @@ switch($p):
 		load_full_template('profile');
 		break;
 	case "text":
+	// I can see goku making a kame ha below
 		if( ! isset($_GET['txt'])
 			|| ! in_array(
 				$_GET['txt'],

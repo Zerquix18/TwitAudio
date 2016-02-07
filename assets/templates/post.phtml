@@ -41,13 +41,13 @@
 		</div>
 	</div>
 	<form method="POST"
-	action="<?php echo url() . INC . 'ajax/upload.php' ?>"
+	action="<?php echo url() . 'assets/ajax/upload.php' ?>"
 	enctype="multipart/form-data"
 	style="display:none;" id="up_form">
 		<input type="file" id="up_file" name="up_file" style="visibility: 	hidden; display: none;" accept=".mp3,.aac,.m4a,.wav,.ogg">
 	</form>
 	<form method="POST"
-	action="<?php echo url() . INC . 'ajax/cut.php' ?>"
+	action="<?php echo url() . 'assets/ajax/cut.php' ?>"
 	id="cut_form" style="display:none">
 		<p class="center">
 			<?php _e('This audio is longer than 2 minutes. Please, cut it.') ?>
@@ -87,7 +87,7 @@
 		<hr>
 		<button type="submit" class="btn" id="cut_button"><i class="fa fa-scissors"></i>&nbsp;Cut</button><button type="button" id="cut_cancel" class="btn"><i class="fa fa-times-circle"></i>&nbsp;Cancel</button>
 	</form>
-	<form method="POST" action="<?php echo url() . INC . 'ajax/post.php' ?>" id="post_form" style="display:none">
+	<form method="POST" action="<?php echo url() . 'assets/ajax/post.php' ?>" id="post_form" style="display:none">
 		<p class="center">Your audio is ready!</p>
 		<div id="player_preview" class="jp-jplayer"></div>
 		<div id="preview_container" class="jp-audio sm audio_preview">

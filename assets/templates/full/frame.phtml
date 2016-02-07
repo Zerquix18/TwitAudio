@@ -20,7 +20,7 @@ $(document).ready( function() {
     $("#player_<?php echo $a->id ?>").jPlayer({
         ready: function(event) {
             $(this).jPlayer("setMedia", {
-				mp3: "<?php echo url() . INC . 'audios/' . $a->audio ?>",
+				mp3: "<?php echo url() . 'assets/audios/' . $a->audio ?>",
             });
         },
         cssSelectorAncestor : '#container_<?php echo $a->id ?>',
@@ -67,7 +67,7 @@ $(document).ready( function() {
         </div>
     </div>
     <script>
-    ajaxurl = '<?php echo url() . INC . "ajax/" ?>';
+    ajaxurl = '<?php echo url() . "assets/ajax/" ?>';
     </script>
    <script src="<?php load_script('jquery.jplayer.min.js') ?>"></script>
     <script src="<?php load_script('default.js') ?>"></script>
