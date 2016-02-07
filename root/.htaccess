@@ -1,0 +1,8 @@
+<Files "c.json">
+Order Allow,Deny
+Deny from all
+</Files>
+<Files "foo.sh">
+Order Allow,Deny
+Deny from all
+</Files>
