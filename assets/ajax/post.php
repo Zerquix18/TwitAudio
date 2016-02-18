@@ -18,59 +18,74 @@ if( ! is_logged() )
 * @var $_POST['description'] string (the description of the post)
 * @var $_POST['s_twitter'] string numeric ( send to tw - 1 or 0)
 **/
-if( ! validate_args( $_POST['id'], $_POST['description']) )
+if( ! validate_args(
+		$_POST['id'],
+		$_POST['description'],
+		$_POST['s_twitter'],
+		$_POST['effect']
+		)
+	)
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-// evaluated in this way because isset("0") returns false
-if( ! array_key_exists('s_twitter', $_POST) )
-	_result(
-		__('There was an error while processing your request.'),
-		false
-	);
-// check the id exists
+
 if( ! array_key_exists($_POST['id'], $_SESSION) )
+	_result(
+		__('There was an error while processing your request.'),
+		false
+	);
+if( 'original' !== $_POST['effect'] &&
+		! in_array(
+			$_POST['effect'],
+			get_available_effects()
+		)
+	) // go hack your mother !
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 
 $id = $_POST['id'];
-// todo: replace this duration and make it dynamic
-// with the premium version
-if( $_SESSION[$id]['duration'] > 120 )
+$description = trim($_POST['description']);
+$send_to_twitter = $_POST['s_twitter'];
+
+if( $_SESSION[$id]['duration'] > get_user_limit('audio_duration') )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-$_POST['description'] = trim($_POST['description']);
 // can't overpass limits
-if( mb_strlen($_POST['description'], 'utf-8') > 200 )
+if( mb_strlen($description, 'utf-8') > 200 )
 	_result( __("The description can't be longer than 200 characters"), false );
 
-#extract_hashtags( $_POST['description'] );
+if( ! in_array( $send_to_twitter, array('1', '0') ) )
+	$send_to_twitter = '1';
 
 // ok then
 
-while( file_exists( // never repeat a name!
+while( file_exists(
 	$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' .
-	$n = substr( md5( uniqid() . rand(1,100) ), 0, 26 ) . '.mp3'
+	$new_name = substr( md5( uniqid() . rand(1,100) ), 0, 26 ) . '.mp3'
 	)
 );
-// $n is now the new name
+
+if( 'original' !== $_POST['effect'] )
+	$tmp_url = $_SESSION[ $id ]['effects'][ $_POST['effect'] ]['filename'];
+else
+	$tmp_url = $_SESSION[ $id ]['tmp_url'];
 
 rename(
-	$_SESSION[$id]['tmp_url'],
-	$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' . $n
+	$tmp_url,
+	$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' . $new_name
 );
 // get in bitch
 $db->insert("audios", array(
-		$a_id = generate_id(), // the id
-		$_USER->id, // user id
-		$n, // nameofthefile.mp3
+		$audio_id = generate_id(),
+		$_USER->id,
+		$new_name, // nameofthefile.mp3
 		0, // reply_to 
-		$db->real_escape($_POST['description']),
+		$description,
 		0, // twitter id
 		time(),
 		0, // plays
@@ -79,24 +94,25 @@ $db->insert("audios", array(
 		(string) (int) $_SESSION[$id]['is_voice']
 	)
 );
+clean_tmp( $_SESSION[$id] );
+unset($_SESSION[$id]);
 
-unset($_SESSION[$id]); #no longer needed, just may cause problems
-
-if( $_POST['s_twitter'] === '1' ) {
-	// Good luck understanding this.
-	// Anyway I don't think this should be touched
-	$tweet = 'https://twitaudio.com/'. $a_id;
-	$len = strlen($tweet);
-	$desc = $_POST['description'];
-	if( strlen($desc) > (140-$len) )
-		$desc = substr($desc, 0, 140-$len-4 ) . '...';
-	$tweet = $desc . ' ' . $tweet;
-	$x = $twitter->tweet($tweet);
-	if( $x )
+if( '1' == $send_to_twitter ) {
+	// magic!
+	$tweet = 'https://twitaudio.com/'. $audio_id;
+	$tweet_length = strlen($tweet);
+	if( strlen($description) > (140-$tweet_length) )
+		$description = substr(
+				$description,
+				0,
+				140-$tweet_length-4
+			) . '...';
+	$tweet = $description . ' ' . $tweet;
+	if( $tweet_id = $twitter->tweet($tweet) )
 		$db->update("audios", array(
-				"tw_id" => $x
+				"tw_id" => $tweet_id
 			)
-		)->where("id", $a_id)->_();
+		)->where("id", $audio_id)->_();
 }
 
 _result( __("Audio successfully posted!"), true);

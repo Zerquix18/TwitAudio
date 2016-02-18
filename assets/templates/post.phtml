@@ -1,3 +1,6 @@
+<?php
+$minutes_limit = get_user_limit('audio_duration') / 60;
+?>
 <div class="box">
 	<div class="row" id="post">
 		<div class="col" id="record" title="<?php _e('Record audio with your microphone') ?>">
@@ -28,7 +31,7 @@
 		</div>
 	</div>
 	<div id="record_form" style="display:none">
-		<div>You can record up to 2 minutes.</div>
+		<div>You can record up to <?php echo $minutes_limit ?> minutes.</div>
 		<span id="cleft">Recording in <span id="cleftn">3</span>...</span>
 		<hr>
 		<div id="record_actions">
@@ -50,7 +53,7 @@
 	action="<?php echo url() . 'assets/ajax/cut.php' ?>"
 	id="cut_form" style="display:none">
 		<p class="center">
-			<?php _e('This audio is longer than 2 minutes. Please, cut it.') ?>
+			This audio lasts longer than your current limit's, please cut it.
 		</p>
 		<div id="player_cut" class="jp-jplayer"></div>
 		<div id="cut_container" class="jp-audio sm audio_preview">
@@ -82,7 +85,7 @@
 		</div>
 		<input type="hidden" name="id" id="audio_id">
 		<div id="cut_block">
-			Start: <input type="text" id="start" name="start" value="0:00"> | End: <input type="text" name="end" id="end" value="2:00">
+			Start: <input type="text" id="start" name="start" value="0:00"> | End: <input type="text" name="end" id="end" value="<?php echo $minutes_limit ?>:00">
 		</div>
 		<hr>
 		<button type="submit" class="btn" id="cut_button"><i class="fa fa-scissors"></i>&nbsp;Cut</button><button type="button" id="cut_cancel" class="btn"><i class="fa fa-times-circle"></i>&nbsp;Cancel</button>
@@ -118,20 +121,114 @@
 			</div>
 		</div>
 		<input type="hidden" name="id" id="a_id">
+		<input type="hidden" name="effect" id="audio_effect"
+		value="original">
 		<div class="input-field" id="desc_">
 			<textarea maxlength="200" id="desc" name="description" class="materialize-textarea"></textarea>
 			<label for="desc">
 				<i class="fa fa-pencil"></i>&nbsp;Type a description
 			</label>
 		</div>
-		<div id="send_to_twitter">
-			<input type="hidden" name="s_twitter" value="0">
-			<input type="checkbox" class="filled-in" id="s_twitter" checked="checked" name="s_twitter" value="1">
-			<label for="s_twitter">Send to Twitter</label>
+		<div id="post_footer">
+			<div id="send_to_twitter" class="left">
+				<input type="hidden" name="s_twitter" value="0">
+				<input type="checkbox" class="filled-in" id="s_twitter" checked="checked" name="s_twitter" value="1">
+				<label for="s_twitter">Send to Twitter</label>
+			</div>
+			<div id="effects_modal_button" class="right">
+				<a
+				class="waves-effect
+				waves-light btn modal-trigger"
+				href="#effects_modal"
+				>
+					<i class="fa fa-magic"></i>&nbsp;
+					Add Effects
+				</a>
+			</div>
 		</div>
 		<hr>
 		<div id="post_buttons">
 			<button class="btn" type="submit">Post&nbsp;<i class="fa fa-send"></i></button> | <button type="button" id="post_cancel" class="btn">Cancel&nbsp;<i class="fa fa-times-circle"></i></button>
 		</div>
 	</form>
+</div>
+<div id="effects_modal" class="modal modal-fixed-footer" style="max-width: 500px">
+	<div class="modal-content">
+		<h4>Add Effects</h4>
+		<div class="divider"></div>
+		<?php
+			$available_effects = get_available_effects();
+			/** keep the names ordered alphabetically */
+			$names = array(
+				'deep'		=> 'Deep',
+				'delay'		=> 'Delay',
+				'echo'		=> 'Echo',
+				'fade'		=> 'Fade',
+				'flanger'	=> 'Flanger',
+				'hilbert'		=> 'Hilbert',
+				'low'		=> 'Low',
+				'quick'		=> 'Quick',
+				'reverse'	=> 'Reversed',
+				'reverse_quick' => 'Reversed quick',
+				'slow'		=> 'Slow',
+				'tremolo'	=> 'Tremolo',
+			);
+			foreach( $available_effects as $effectname): ?>
+				<h5><?php
+					echo $names[ $effectname ]
+				?></h5>
+				<div id="effect_<?php echo $effectname ?>" class="effect_preview">
+					<div class="loading">
+						<i class="fa fa-spinner fa-spin"></i>&nbsp;
+						Loading effect...
+					</div>
+					<div class="preview" style="display:none;">
+<?php // todo: indent ?>
+<div id="effect_preview_<?php echo $effectname ?>" class="jp-jplayer"></div>
+    <div id="container_<?php echo $effectname ?>" class="jp-audio sm">
+        <div class="jp-type-single">
+            <div class="jp-gui jp-interface">
+                <ul class="jp-controls">
+                    <li><a href="javascript:;" class="jp-play" tabindex="1"><i class="fa fa-play control"></i></a></li>
+                    <li><a href="javascript:;" class="jp-pause" tabindex="1"><i class="fa fa-pause control"></i></a></li>
+                    <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+                    <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute"><i class="fa fa-volume-up vcontrol"></i></a></li>
+                    <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute"><i class="fa fa-volume-down vcontrol"></i></a></li>
+                    <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+                </ul>
+                <div class="jp-progress">
+                    <div class="jp-seek-bar">
+                        <div class="jp-play-bar"></div>
+                    </div>
+                </div>
+                <div class="jp-volume-bar">
+                    <div class="jp-volume-bar-value"></div>
+                </div>
+                <div class="jp-current-time"></div>
+                <div class="jp-duration"></div>
+            </div>
+            <div class="jp-no-solution">
+                <?php _e('<span>Update Required</span>
+                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>') ?>.
+            </div>
+        </div>
+    </div>
+    				<button
+    				type="button"
+    				class="btn choose choose_effect <?php
+    					echo $effectname
+    				?>"
+    				data-choose="<?php echo $effectname ?>"
+    				>
+    					<?php _e('Choose') ?>
+    				</button>
+					</div>
+				</div>
+			<?php
+			endforeach;
+		?>
+	</div>
+	<div class="modal-footer">
+	      <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat choose_effect original" data-choose="original">Use the original</a>
+	</div>
 </div>

@@ -14,18 +14,16 @@ header("Cache-Control: private, max-age=900");
 
 if( ! validate_args( $_GET['id'])  )
 	result_error( __('Missing fields.'), 4);
-$a = $db->query(
+$audio = $db->query(
 	"SELECT user,id FROM audios WHERE id = ?",
-	$db->real_escape( $_GET['id'])
+	$_GET['id']
 );
-if( ! $a->nums )
+if( 0 == $audio->nums )
 	result_error( __('Requested audio does not exist.') );
-if( ! can_listen($a->user) )
+if( ! can_listen($audio->user) )
 	result_error( __('No permissions.' ) );
-$id = $a->id;
-/** magic ALERT: read audios.php to understand this */
-$p = isset($_GET['p']) && is_numeric($_GET['p']) ? (int) $_GET['p'] : 1;
-$q = "SELECT * FROM audios
+$id = $audio->id;
+$query = "SELECT * FROM audios
 	WHERE reply_to = ?
 	ORDER BY `time` ASC";
 $count = $db->query(
@@ -34,25 +32,25 @@ $count = $db->query(
 		$id
 	);
 $count = (int) $count->size;
-if( ! $count )
+if( 0 == $count )
 	result_success( null, array(
 			'replies' 	=> array(),
 		)
 	);
 $total_audios = ceil( $count / 10 );
-$p = isset($_GET['p']) && is_numeric($_GET['p']) ? (int) $_GET['p'] : 1;
-if( $p > $total_audios )
+$page = validate_args($_GET['p']) ? sanitize_pageNumber( $_GET['p'] ) : 1;
+if( $page > $total_audios )
 	result_success( null, array(
 			'replies' 	=> array(),
 		)
 	);
-$q .= ' LIMIT '. ($p-1) * 10 . ',10';
-$audios = $db->query($q, $id);
+$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+$audios = $db->query($query, $id);
 $result = array();
 $result['count'] = $count;
 $result['replies'] = array();
 while( $a = $audios->r->fetch_array() )
 	$result['replies'][] = json_display_audio($a);
-$result['p'] = $p;
-$result['load_more'] = ($p < $total_audios);
+$result['p'] = $page;
+$result['load_more'] = ($page < $total_audios);
 result_success( null, $result );

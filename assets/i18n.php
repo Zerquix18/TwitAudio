@@ -4,12 +4,9 @@
 * Translations file
 *
 * @author Zerquix18
-* @package TrackYourPenguin
-* @since 0.1.1
 *
 **/
 
-//needed files
 require $_SERVER['DOCUMENT_ROOT'] . '/assets/i18n/gettext.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/assets/i18n/streams.php';
 
@@ -69,8 +66,6 @@ function getlang() {
 		return $_COOKIE['lang'];
 	return "en";
 }
-
-// requerimos al lenguaje, dando excepción de que no sea el default.
 
 if( getlang() !== "en"
 	&& file_exists(

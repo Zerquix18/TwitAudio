@@ -24,7 +24,7 @@ class Twitter {
 		);
 	}
 	public function getURL() {
-		if( $this->tw === null ) return;
+		if( null === $this->tw ) return;
 		$request_token = $this->tw->oauth(
 			'oauth/request_token',
 			array('oauth_callback' => $this->callback)

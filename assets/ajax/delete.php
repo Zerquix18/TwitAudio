@@ -23,25 +23,24 @@ if( ! validate_args( @$_POST['id'] ) )
 
 $id = $_POST['id'];
 
-if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
+if( ! is_audio_id_valid( $id ) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 
-// does audio exist ?
-
-$exists = $db->query(
-	"SELECT user,audio FROM audios WHERE id = ?",
-	$id // regex protected m8
+$audio = $db->query(
+	"SELECT user,audio FROM audios
+	WHERE id = ? AND status = '1'",
+	$id
 );
 
-if( $exists->nums === 0 )
+if( 0 == $audio->nums )
 	_result(
 		__("The audio you request was deleted or is no longer available."),
 		false
 	);
-if( $exists->user !== $_USER->id ) // its not the author
+if( $audio->user !== $_USER->id ) // its not the author
 	_result(
 		__('There was an error while processing your request.'),
 		false
@@ -53,7 +52,7 @@ $db->query("DELETE FROM plays WHERE audio_id = ?", $id);
 $db->query("DELETE FROM audios WHERE reply_to = ?", $id);
 @unlink(
 	$_SERVER['DOCUMENT_ROOT'] .
-		'assets/audios/' . $exists->audio
+		'assets/audios/' . $audio->audio
 	);
 
 _result($id, true);

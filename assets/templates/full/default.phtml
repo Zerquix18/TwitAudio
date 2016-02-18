@@ -34,19 +34,20 @@ load_template('header')
 					<?php _e('Your recent audios') ?>
 						</p>
 			<?php
-			$audios = $db->query(
+			$recent_audios = $db->query(
 					'SELECT * FROM audios
 					WHERE reply_to = \'0\'
+					AND status = \'1\'
 					AND user = ?
 					ORDER BY `time` DESC
 					LIMIT 3',
 					$_USER->id
 				);
-			if( $audios->nums == 0 ):
+			if( $recent_audios->nums == 0 ):
 				alert_info( __("Here we'll show you your most recent audios. Why not starting with an audio about you signing?") );
 			else:
-				while( $a = $audios->r->fetch_object() )
-					display_audio( $a );
+				while($audio = $recent_audios->r->fetch_object() )
+					display_audio( $audio );
 			endif;
 			?>
 					</div>
@@ -57,7 +58,7 @@ load_template('header')
 				<?php _e('Popular audios right now') ?>
 						</p>
 			<?php
-$recents = $db->query(
+$recents_popular = $db->query(
 			'SELECT * FROM audios
 			WHERE user NOT IN (
 					SELECT id
@@ -65,17 +66,18 @@ $recents = $db->query(
 					WHERE audios_public = \'0\'
 					)
 			AND reply_to = \'0\'
+			AND status = \'1\'
 			AND `time` BETWEEN ? AND ?
 			ORDER BY plays DESC
 			LIMIT 3',
 			time() - strtotime('-30 days'),
 			time()
 	);
-	if( $recents->nums === 0 ):
+	if( 0 == $recents_popular->nums ):
 		alert_info( __("We'll show you here the most recent popular audios when available!") );
 	else:
-		while( $r = $recents->r->fetch_object() )
-			display_audio($r);
+		while( $audio = $recents_popular->r->fetch_object() )
+			display_audio($audio);
 	endif;
 			?>
 					</div>

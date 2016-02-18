@@ -8,7 +8,6 @@
 *
 **/
 
-// we'll need this
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/assets/class.audio.php';
 
@@ -28,7 +27,7 @@ if( ! validate_args( $_POST['start'], $_POST['end'], $_POST['id'] ) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
-	); # Missing parameters
+	);
 
 if( ! array_key_exists($_POST['id'], $_SESSION) )
 	_result(
@@ -44,7 +43,7 @@ if( is_numeric($_POST['start']) ) {
 		_result(
 			__('There was an error while processing your request.'),
 			false
-		); # no valid format
+		);
 	$lel = explode(":", $start);
 	$start = ( (int) $lel[0] * 60 ) + (int) $lel[1]; // in seconds
 }
@@ -61,27 +60,38 @@ if( is_numeric($_POST['end']) ) {
 	$lel = explode(":", $end);
 	$end = ( (int) $lel[0] * 60 ) + (int) $lel[1]; // in seconds
 }
-$diff = $end-$start;
-/**
-* @todo improve the differences
-**/
-if( ($start >= $end) || $diff > 120 || $diff < 0 )
+$difference = $end-$start;
+
+if( ($start >= $end) ||
+	$difference > get_user_limit('audio_duration') ||
+	$difference < 1 )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 
 $id = $_POST['id'];
-$a = new Audio($_SESSION[$id]['tmp_url'], true);
-$n = $a->cut( $start, $end );
-if( ! $n )
-	_result( $a->error, false );
-$_SESSION[$id]['tmp_url'] = $n;
-$_SESSION[$id]['duration'] = floor($a->info['playtime_seconds']);
+$audio = new Audio($_SESSION[$id]['tmp_url'], array(
+		'validate'	=> 	false,
+		'decrease_bitrate' =>   false,
+		'max_duration'	 => 	get_user_limit('audio_duration'),
+	)
+);
+$new_audio = $audio->cut( $start, $end );
+
+if( ! $new_audio )
+	_result( $audio->error, false );
+
+$_SESSION[$id]['tmp_url'] = $new_audio;
+$_SESSION[$id]['duration'] = floor($audio->info['playtime_seconds']);
+$_SESSION[$id]['effects'] = apply_audio_effects(
+		$audio->audio,
+		get_available_effects()
+	);
 _result( true, true,
 	array(
 		'id' => $id,
 		'tmp_url' =>
-		url() . 'assets/tmp/' . last( explode('/', $a->audio) ) 
+		url() . 'assets/tmp/' . last( explode('/', $audio->audio) ) 
 		)
 	);

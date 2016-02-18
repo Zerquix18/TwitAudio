@@ -19,10 +19,10 @@ if( isset($_GET['back_to']) && is_string($_GET['back_to']) ):
 	// check it gets back to the site, no outside
 	if( preg_match(
 			'/^(' . $url . ')/',
-			$bt = urldecode($_GET['back_to'])
+			$back_to = urldecode($_GET['back_to'])
 			)
 		)
-		$_SESSION['back_to'] = $bt;
+		$_SESSION['back_to'] = $back_to;
 endif;
 
 ta_redirect( $twitter->getURL() );

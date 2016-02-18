@@ -18,47 +18,47 @@ if( ! validate_args(
 $access_token = $_POST['access_token'];
 $access_token_secret = $_POST['access_token_secret'];
 $twitter = new Twitter($access_token, $access_token_secret);
-$s = $twitter->tw->get('account/verify_credentials');
-if( ! is_object($s) || array_key_exists('errors', $s) )
+$details = $twitter->tw->get('account/verify_credentials');
+if( ! is_object($details) || array_key_exists('errors', $details) )
 	result_error( __("Access Tokens are wrong."), 5);
-$id = $s->id;
-$user = $s->screen_name;
-$name = $s->name;
-$bio = $s->description;
-$avatar = $s->profile_image_url_https;
-$verified = (int) $s->verified;
-$exists = $db->query(
+$id = $details->id;
+$user = $details->screen_name;
+$name = $details->name;
+$bio = $details->description;
+$avatar = $details->profile_image_url_https;
+$verified = (int) $details->verified;
+$user = $db->query(
 	"SELECT * FROM users WHERE id = ?",
 	$id
 );
-if( $exists->nums ) {
+if( 1 == $user->nums ) {
 	// user exists
 	$r = $db->update("users", array(
 			"user" => $user,
-			"name" => $db->real_escape($name),
+			"name" => $name,
 			"avatar" => $avatar,
-			"bio" => $db->real_escape($bio),
+			"bio" => $bio,
 			"verified" => $verified,
 			"access_token" => $access_token,
 			"access_token_secret" => $access_token_secret,
 		) )->where('id', $id)->_();
-	$time = $exists->time;
-	$favs_public = $exists->favs_public;
-	$audios_public = $exists->audios_public;
-	$lang = $exists->lang;
+	$time = $user->time;
+	$favs_public = $user->favs_public;
+	$audios_public = $user->audios_public;
+	$lang = $user->lang;
 	$first_time = false;
 }else{
 	$first_time = true;
 	$favs_public =
-	$audios_public = (int) ! $s->protected;
+	$audios_public = (int) ! $details->protected;
 	$time = time();
-	$lang = $s->lang;
+	$lang = $details->lang;
 	$db->insert("users", array(
 			$id,
 			$user,
-			$db->real_escape($name),
+			$name,
 			$avatar,
-			$db->real_escape($bio),
+			$bio,
 			$verified,
 			$access_token,
 			$access_token_secret,
@@ -78,7 +78,7 @@ $db->insert("sessions", array(
 	)
 );
 $result = array(
-		'id' 		=> (bool) $id,
+		'id' 		=> (int) $id,
 		'user' 		=> $user,
 		'name' 		=> $name,
 		'avatar' 	=> $avatar,

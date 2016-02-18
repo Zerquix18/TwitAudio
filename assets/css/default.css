@@ -19,9 +19,9 @@ body {
 	background: url('../img/homepage-bg.png');
 	background-attachment: fixed;
 	-webkit-background-size: 100% 100%;
-	-moz-background-size: 100% 100%;
-	-o-background-size: 100% 100%;
-	background-size: 100% 100%;
+	    -moz-background-size: 100% 100%;
+	         -o-background-size: 100% 100%;
+	             background-size: 100% 100%;
 	background-position: center center;
 	background-repeat: no-repeat;
 }
@@ -32,16 +32,16 @@ body {
 }
 #logo img {
 	display: block;
-	margin:0 auto;
+	margin: 0 auto;
 }
 #logo img.logo-full {
-	width: 323px;
+	width:  323px;
 	height: 244px;
 }
 @media (max-width: 415px) {
 	#logo img.logo-full {
-		width: 275px;
-		height:200px;
+		width:  275px;
+		height: 200px;
 	}
 }
 @media (max-width: 360px) {
@@ -724,4 +724,11 @@ a.nodeco:active {
 	color: inherit !important;
 	font-size: inherit !important;
 	font-weight: inherit !important;
+}
+.choose {
+	margin: 25px auto;
+	display: block;
+}
+#post_footer {
+	min-height: 40px;
 }

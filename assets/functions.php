@@ -6,10 +6,7 @@
 * @author Zerquix18
 * @copyright Copyright (c) 2015 - Luis A. Martínez
 **/
-/**
-* Returns the URL
-* @return string
-**/
+
 function url() {
 	if('localhost' == $_SERVER['HTTP_HOST'])
 		return 'http://localhost/TwitAudio/'; //:)
@@ -19,11 +16,12 @@ function url() {
 * All the arguments passed by this function
 * MUST be existing variables and must be strings
 * This is to avoid the typical lol[]='xd' in get/post methods
+* And to check if there is any missing parameter
 **/
 function validate_args() {
 	$args = func_get_args();
 	foreach($args as $a)
-		if( ! isset($a) || !is_string($a) )
+		if( ! isset($a) || ! is_string($a) )
 			return false;
 	return true;
 }
@@ -38,18 +36,18 @@ function generate_id($session=false) {
 	$chars = 
 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890';
 	$table = $session ? 'sessions' : 'audios';
-	$wh = $session ? 'sess_id' : 'id';
+	$column = $session ? 'sess_id' : 'id';
 	while( // check if exists
-		($x = (
+		($check = (
 			$db->query(
 				"SELECT COUNT(*) AS size FROM $table
-				 WHERE $wh = ?", 
+				 WHERE $column = ?", 
 				$id = $session ?
 				'ta-' . substr( str_shuffle($chars), 0, 29)
 				:
 				substr( str_shuffle($chars), 0, 6)
 			)
-		) )&& $x->size > 0
+		) ) && $check->size > 0
 	);
 	return $id;
 }
@@ -71,9 +69,9 @@ function getip() {
 * @return string
 **/
 function d_diff( $time ) {
-	$n = new Datetime('@'.$time);
-	$f = new DateTime();
-	$diff = $f->diff($n);
+	$old_date = new Datetime('@'.$time);
+	$current_date = new DateTime();
+	$diff = $current_date->diff($old_date);
 	$diff->w = floor( $diff->days / 7 );
 	if( $diff->w > 4 )
 		return date('d/m/Y', $time);
@@ -114,7 +112,6 @@ function d_diff( $time ) {
 * @param mixed $response
 * @param bool success
 * @param array $extra
-* @return void
 **/
 function _result( $response, $success, $extra = null ) {
 	$arr = array(
@@ -184,30 +181,30 @@ function is() {
 **/
 function can_listen( $id2 ) {
 	global $db, $twitter, $_USER;
-	$l = $_USER !== NULL; // check if logged in
-	if( $l && $_USER->id == $id2 ) // same user
+	$is_logged = $_USER !== NULL;
+	if( $is_logged && $_USER->id == $id2 ) // same user
 		return true;
 	// check if audios of $id2 are private.
-	$c = $db->query(
+	$check = $db->query(
 		"SELECT audios_public FROM users WHERE id = ?",
 		$id2
 	);
-	if( $c->nums > 0 && $c->audios_public == '1' )
-		return true; // they're public.
-	if( ! $l )
+	if( $check->nums > 0 && $check->audios_public == '1' )
+		return true;
+	if( ! $is_logged )
 		return false; // not logged and audios aren't public.
 	// not public. check if cached ...
 	$db->query( // cleans
 		"DELETE FROM following_cache WHERE time < " .
 		time() - 1800 // (60*30) half hour
 	);
-	$x = $db->query("SELECT result FROM following_cache
+	$is_following = $db->query("SELECT result FROM following_cache
 		WHERE user_id = ? AND following = ?",
 		$_USER->id,
 		$id2
 	);
-	if( $x->nums > 0 )
-		return (bool) $x->result;
+	if( 0 != $is_following->result )
+		return (bool) $is_following->result;
 	// not cached, make twitter requests
 	$g = $twitter->tw->get(
 		'friendships/lookup',
@@ -262,7 +259,6 @@ function sanitize( $str ) {
 	return $str;
 }
 /**
-* The name says it all
 * @param int $count
 * @return string
 **/
@@ -284,4 +280,151 @@ function format_number( $count ) {
 function ta_redirect( $url, $status = 302 ) {
 	header('Location: ' . $url, true, $status);
 	exit;
+}
+
+function is_audio_id_valid( $id ) {
+	return preg_match("/^[A-Za-z0-9]{6}$/", $id );
+}
+
+function sanitize_pageNumber( $pageNumber ) {
+	if( ! is_numeric($pageNumber) )
+		return 1;
+	if( (int) $pageNumber < 1 )
+		return 1;
+	return (int) $pageNumber;
+}
+
+function is_paid_user() {
+	global $_USER;
+	$duration = (int) $_USER->upload_seconds_limit;
+	return $duration > 120;
+}
+
+function get_user_limit( $which ) {
+	global $_USER;
+	$duration = (int) $_USER->upload_seconds_limit;
+	switch( $which ) {
+		case 'file_upload':
+			$duration = (string) ( $duration / 60 );
+			return (int) $duration . '0';
+			/**
+			* example: duration = 120 then
+			* 120/60 = 2
+			* return 20(mb)
+			* 50 for 5 minutes, 100 for 10 minutes
+			* una hermosa simetría <3
+			**/
+			break;
+		case "audio_duration":
+			return $duration;
+			break;
+	}
+}
+/**
+* Get the list of available effects
+* for the logged user
+**/
+function get_available_effects() {
+	$all_effects = array(
+			/** effects for all the users **/
+			'echo',
+			'quick',
+			/** effects for paid users ($5) */
+			'reverse',
+			'slow',
+			'reverse_quick',
+			'hilbert',
+			'flanger',
+			/** effects for paid users ($10) **/
+			'delay',
+			'deep',
+			'low',
+			'fade',
+			'tremolo'
+		);
+	$max_duration = get_user_limit('audio_duration');
+	$max_duration = $max_duration / 60;
+
+	if( 2 == $max_duration ) // normal user
+		return array_splice($all_effects, 0, 2);
+
+	elseif( 5 == $max_duration ) // $5
+		return array_splice($all_effects, 0, 7);
+
+	return $all_effects; // $10
+}
+/**
+* Will apply $effects to $filename
+* Making each process in a system process
+* Which may not last more than 6 seconds
+* No matter how many effects will be applied
+**/
+function apply_audio_effects( $filename, array $effects ) {
+	if( ! file_exists($filename) )
+		return array();
+	$commands = array(
+		/* effect => its command */
+		'echo'	  => 'sox %s %s echo 0.8 0.88 6 0.4',
+		'quick'   => 'sox %s %s speed 1.5',
+		'reverse' => 'sox %s %s reverse',
+		'slow'      => 'sox %s %s speed 0.9',
+		'reverse_quick' => 'sox %s %s reverse speed 1.5',
+		'hilbert'   => 'sox %s %s hilbert -n 11',
+		'flanger'  => 'sox %s %s flanger',
+		'delay'     => 'sox %s %s delay 2',
+		'deep'	   => 'sox %s %s deemph',
+		'low'        => 'sox %s %s upsample 150',
+		'fade'      => 'sox %s %s fade l 3',
+		'tremolo' => 'sox %s %s tremolo 1'
+	);
+	$result = array();
+	//             ↓ don't delete that comma
+	while( list(,$effect) = each($effects) ) {
+		$new_name = Audio::get_name( $filename ) .
+						'-' . $effect . '.mp3';
+		$execute = sprintf(
+				$commands[ $effect ],
+				$filename,
+				$new_name
+			);
+		exec( 'nohup ' . $execute . " > /dev/null 2> /dev/null & echo $!", $output);
+		$PID = end($output);
+		$result[$effect] = array(
+				'pid'		=>	$PID,
+				'filename'	=>	$new_name
+			);
+	}
+	return $result;
+}
+/**
+* Gets the list of finished effects
+* checking if the PIDS still exist
+* The param $info must be
+* the $_SESSION[ {id} ]['effects'] array
+**/
+function get_finished_effects( array $info ) {
+	$result = array();
+	foreach( $info as $effectname => $effectinfo ) {
+		// check if process alive
+		exec('ps -p ' . $effectinfo['pid'], $output);
+		$output = implode("\n", $output);
+		if( 0 == strpos( $output, 'sox' ) )
+			$result[] = array(
+					'name' => $effectname,
+					'file'     => $effectinfo['filename']
+				);
+	}
+	return $result;
+}
+/**
+* cleans the tmp/ dir
+* the param $session_id
+* must be the $_SESSION[ {id} ] array
+* before destroying it
+**/
+function clean_tmp( array $session_id ) {
+	@unlink( $session_id['tmp_url'] );
+	foreach($session_id['effects'] as $effect => $effectinfo) {
+		@unlink( $effectinfo['filename'] );
+	}
 }

@@ -15,8 +15,7 @@ if( 'POST' === getenv('REQUEST_METHOD') ) {
 		$id = validate_args( $_POST['id'] ) ? trim($_POST['id']) : '';
 		if( empty($id) )
 			throw new Exception('ID cannot be empty');
-		// i don't even trust myself
-		$id = $db->real_escape($id);
+
 		$reason = validate_args( $_POST['reason'] ) ?
 			trim( $_POST['reason'] )
 		:
@@ -24,7 +23,7 @@ if( 'POST' === getenv('REQUEST_METHOD') ) {
 		if( empty( $reason ) ){
 			// I am sorry babe
 			$exists = $db->query('SELECT audio FROM audios WHERE id = ?',
-				$db->real_escape($id)
+				$id
 			);
 			$db->query("DELETE FROM audios WHERE id = ?", $id);
 			$db->query("DELETE FROM favorites WHERE audio_id = ?", $id);
@@ -40,7 +39,7 @@ if( 'POST' === getenv('REQUEST_METHOD') ) {
 			$db->update('audios', array(
 					'status' => '0',
 					'delete_reason' =>
-					$db->real_escape($reason)
+					$reason
 				)
 			)->where('id', $id)->_();
 		}
@@ -77,7 +76,9 @@ if( 'POST' === getenv('REQUEST_METHOD') ) {
 		WHERE reply_to = \'0\'
 		ORDER BY `time` DESC'
 	);
-	$page = isset($_GET['p']) && is_numeric($_GET['p']) ? $_GET['p'] : 1;
+	$page = validate_args($_GET['p']) ?
+		sanitize_pageNumber( $_GET['p'] ) : 1;
+		
 	$limit = ' LIMIT '. ($page-1) * 10 . ',' . 10;
 	$q = $db->query( $qe . ' ' . $limit );
 	$pages = ceil( $count->size / 10 );

@@ -9,11 +9,10 @@
 *
 **/
 
-# get my backback
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 
 if( 'POST' !== getenv('REQUEST_METHOD') )
-	exit; # why would u need to use get
+	exit;
 /**
 * @var $_POST['q'] is the username
 * @var $_POST['p'] is the page to load.
@@ -23,29 +22,29 @@ if( ! validate_args( @$_POST['q'], @$_POST['p'] ) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
-	); # missing parameters or they're wrong
+	);
 
-$q = trim($_POST['q']);
-$p = (int) $_POST['p'];
-if( ! is_numeric($_POST['p']) || $p <= 1 || empty($q) )
+$query = trim($_POST['q']);
+$page = sanitize_pageNumber( $_POST['p'] );
+if( $page <= 1 || empty($query) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
-	); # p is not a number or is less than 1 or $q is empty
-$exists = $db->query(
+	);
+$audio = $db->query(
 	"SELECT id FROM users WHERE user = ?",
-	$db->real_escape( $_POST['q'] )
+	$query
 );
-if( ! $exists->nums )
+if( 0 == $audio->nums )
 	_result(
 		__('There was an error while processing your request.'),
 		false
-	); # no users were found
-if( ! can_listen($exists->id) )
+	);
+if( ! can_listen($audio->id) )
 	_result(
 		__('This user\'s audios are private.'),
 		false
-	); # no authorization to listen to those audios
+	);
 
-load_audios($exists->id, $p);
+load_audios($audio->id, $page);
 		# user id, page

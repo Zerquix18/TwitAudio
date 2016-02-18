@@ -14,16 +14,16 @@ require $_SERVER['DOCUMENT_ROOT'] . '/mob/load.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/mob/functions.php';
 checkAuthorization();
 header("Cache-Control: private, max-age=900");
-$x = isset( $_GET['user'] ) && is_string($_GET['user']) // ← validation
-	&& strcasecmp($_GET['user'], $_USER->user) !== 0;
-if( $x ): // if 'user' is passed and its not the logged one
-	$u = $db->query(
+$is_the_logged_user = validate_args( $_GET['user'] )
+	&& strcasecmp($_GET['user'], $_USER->user) == 0;
+if( ! $is_the_logged_user ):
+	$user = $db->query(
 		'SELECT id FROM users WHERE user = ?',
-		$db->real_escape($_GET['user'])
+		$_GET['user']
 	);
-	if( $u->nums == 0 )
+	if( $user->nums == 0 )
 		result_error( __('The user does not exist.'), 7);
-	$id = $u->id;
+	$id = $user->id;
 	if( ! can_listen($id) ):
 		result_error(
 				__('No permissions'),
@@ -33,7 +33,7 @@ if( $x ): // if 'user' is passed and its not the logged one
 else:
 	$id = $_USER->id;
 endif;
-$q = 'SELECT * FROM audios
+$query = 'SELECT * FROM audios
 	WHERE id IN (
 			SELECT audio_id FROM favorites
 			WHERE user_id = ?
@@ -48,25 +48,25 @@ $count = $db->query(
 	$id
 );
 $count = (int) $count->size;
-if( ! $count )
+if(  0 == $count )
 	result_success( null, array(
 			'audios' 	=> array(),
 		)
 	);
-$total_audios = ceil( $count / 10 );
-$p = isset($_GET['p']) && is_numeric($_GET['p']) ? (int) $_GET['p'] : 1;
-if( $p > $total_audios )
+$total_page = ceil( $count / 10 );
+$page =validate_args($_GET['p']) ? sanitize_pageNumber( $_GET['p'] ) : 1;
+if( $page > $total_audios )
 	result_success( null, array(
 			'audios' 	=> array(),
 		)
 	);
 //
-$q .= ' LIMIT '. ($p-1) * 10 . ',10';
-$audios = $db->query($q, $id);
+$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+$audios = $db->query($query, $id);
 $result = array();
 $result['audios'] = array();
-while( $a = $audios->r->fetch_array() )
-	$result['audios'][] = json_display_audio($a);
-$result['p'] = $p;
-$result['load_more'] = ($p < $total_audios);
+while( $audio = $audios->r->fetch_array() )
+	$result['audios'][] = json_display_audio($audio);
+$result['p'] = $page;
+$result['load_more'] = ($page < $total_audios);
 result_success( null, $result );

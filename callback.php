@@ -9,16 +9,15 @@
 * @copyright Copyright (c) 2015 Luis A. Martínez
 *
 **/
-// get the loader with all the functions and classes
+
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
-// if the request was denied
+
 if( isset($_GET['denied']) ) {
-	// if it's legit...
 	if( $_GET['denied'] === $_SESSION['oauth_token'] ) {
 		unset($_SESSION);
 		session_destroy();
 		ta_redirect('process.php?denied=1');
-	}else // no legit
+	}else // no legit, fak ya
 		ta_redirect('process.php?err=1');
 }
 if( ! validate_args(

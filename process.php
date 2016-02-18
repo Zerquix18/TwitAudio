@@ -9,10 +9,10 @@
 require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
 // Where will we redirect after login ?
 if( isset($_SESSION['back_to']) ) {
-	$redirect = $_SESSION['back_to'];
+	$redirect_to = $_SESSION['back_to'];
 	unset($_SESSION['back_to']);
 }else
-	$redirect = url();
+	$redirect_to = url();
 // if something failed
 if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 	|| ! validate_args(
@@ -21,24 +21,27 @@ if( ($err = isset($_GET['err']) ) || ( $den = isset($_GET['denied']) )
 		)
 	) {
 	$_SESSION[ $den ? 'login_denied' : 'login_error' ] = true;
-	ta_redirect( $redirect );
+	ta_redirect( $redirect_to );
 }
-$twitter = new Twitter($_SESSION['access_token'], $_SESSION['access_token_secret']);
+$twitter = new Twitter(
+		$_SESSION['access_token'],
+		$_SESSION['access_token_secret']
+	);
 /**
 *
 * Get the data from Twitter
 * @link https://dev.twitter.com/rest/reference/get/account/verify_credentials
 **/
-$s = $twitter->tw->get('account/verify_credentials');
-if( ! is_object($s) || array_key_exists('error', $s) ) {
+$details = $twitter->tw->get('account/verify_credentials');
+if( ! is_object($details) || array_key_exists('error', $details) ) {
 	$_SESSION['login_error'] = true;
-	ta_redirect( $redirect );
+	ta_redirect( $redirect_to );
 }
-$user = $s->screen_name;
-$name = $s->name;
-$bio = $s->description;
-$avatar = $s->profile_image_url_https;
-$verified = (int) $s->verified;
+$user = $details->screen_name;
+$name = $details->name;
+$bio = $details->description;
+$avatar = $details->profile_image_url_https;
+$verified = (int) $details->verified;
 $access_token = $_SESSION['access_token'];
 $access_token_secret = $_SESSION['access_token_secret'];
 // does the user exist?
@@ -47,9 +50,9 @@ if( (int) $exists->size > 0 ) { // it already exists
 	// re-update everythin'
 	$r = $db->update("users", array(
 			"user" => $user,
-			"name" => $db->real_escape($name),
+			"name" => $name,
 			"avatar" => $avatar,
-			"bio" => $db->real_escape($bio),
+			"bio" => $bio,
 			"verified" => $verified,
 			"access_token" => $access_token,
 			"access_token_secret" => $access_token_secret,
@@ -58,15 +61,15 @@ if( (int) $exists->size > 0 ) { // it already exists
 	// it does not exist
 	$_SESSION['first_time'] = true;
 	$favs_public =
-	$audios_public = (int) ! $s->protected;
+	$audios_public = (int) ! $details->protected;
 	$time = time();
-	$lang = $s->lang;
+	$lang = $details->lang;
 	$db->insert("users", array(
 			$_SESSION['id'],
 			$user,
-			$db->real_escape($name),
+			$name,
 			$avatar,
-			$db->real_escape($bio),
+			$bio,
 			$verified,
 			$access_token,
 			$access_token_secret,
@@ -89,4 +92,4 @@ $db->insert("sessions", array(
 		'0'
 	)
 );
-ta_redirect( $redirect );
+ta_redirect( $redirect_to );

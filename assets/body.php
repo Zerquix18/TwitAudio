@@ -7,7 +7,7 @@
 /**
 * Stores all the info about the logged user
 *
-* @var array
+* @var object
 *
 **/
 $_USER = ( $id = is_logged() ) ?
@@ -102,41 +102,41 @@ function verified( $numb ) {
 		return;
 	echo '<i class="fa fa-check verified" title="'. __('Verified account') .'"></i>';
 }
-function display_audio( $a, $big = false ) {
+function display_audio( $audio, $big = false ) {
 	global $db, $_USER;
-	$u = ( is_logged() && $a->user == $_USER->id) ?
+	$user = ( is_logged() && $audio->user == $_USER->id) ?
 		$_USER // if its the same user, dont do an extra query
 	:
 		$db->query(
 			'SELECT * FROM users WHERE id = ?',
-			$a->user
+			$audio->user
 		);
 	if( is_logged() ):
 		$is_faved = $db->query(
 			"SELECT COUNT(*) AS size FROM favorites
 			WHERE audio_id = ? AND user_id = ?",
-			$a->id,
+			$audio->id,
 			$_USER->id
 		);
 		$is_faved = (int) $is_faved->size;
 	endif;
 	$replies_count = $db->query(
 			'SELECT COUNT(*) AS size FROM audios
-			WHERE reply_to = ?',
-			$a->id
+			WHERE reply_to = ? AND status = \'1\'',
+			$audio->id
 		);
 	$replies_count = (int) $replies_count->size;
-	$size = $big ? 'bigger' : 'normal';
-	$profile_url = url() . 'audios/' . $u->user
+	$image_size = $big ? 'bigger' : 'normal';
+	$profile_url = url() . 'audios/' . $user->user
 ?>
 <div class="audio <?php
 	if($big) echo 'big';
-	echo ' audio_' . $a->id;
-	?>" id="<?php echo $a->id ?>">
+	echo ' audio_' . $audio->id;
+	?>" id="<?php echo $audio->id ?>">
 	<div class="audio_header">
-		<a href="<?php echo url() . 'audios/'. $u->user ?>">
+		<a href="<?php echo url() . 'audios/'. $user->user ?>">
 			<img class="circle"
-			src="<?php echo get_image($u->avatar, $size) ?>"
+			src="<?php echo get_image($user->avatar, $size) ?>"
 			onerror="this.src='<?php echo url() . 'assets/img/unknown.png' ?>'"
 		<?php if($big): ?>
 			height="73"
@@ -153,7 +153,7 @@ function display_audio( $a, $big = false ) {
 			href="<?php echo $profile_url ?>"
 			>
 				<?php echo htmlspecialchars(
-					$u->name,
+					$user->name,
 					ENT_QUOTES,
 					'utf-8'
 				)
@@ -165,24 +165,25 @@ function display_audio( $a, $big = false ) {
 			class="nodeco"
 			href="<?php echo $profile_url ?>"
 			>
-				@<?php echo $u->user ?>
+				@<?php echo $user->user ?>
 			</a>
 		</span>
 		<span class="adate">
 			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
 			<a href="<?php
 			echo url();
-			if( $a->reply_to != '0' )
-				echo $a->reply_to . '?reply_id=' . $a->id;
+			if( $audio->reply_to != '0' )
+				echo $audio->reply_to .
+				'?reply_id=' . $audio->id;
 			else
-				echo $a->id
+				echo $audio->id
 			?>">
-				<?php echo d_diff( $a->time ) ?>
+				<?php echo d_diff( $audio->time ) ?>
 			</a>
 		</span>
 		<?php
 		if( defined('LINKED')
-			&& $a->id === constant('LINKED') 
+			&& $audio->id === constant('LINKED') 
 			):
 		?>
 		<div class="chip" id="linked">
@@ -191,23 +192,26 @@ function display_audio( $a, $big = false ) {
 		</div>
 		<?php endif ?>
 	</div>
-	<?php if( ! empty($a->description) ): ?>
+	<?php if( ! empty($audio->description) ): ?>
 		<div class="audio_desc">
-			<?php echo sanitize( $a->description ) ?>
+			<?php echo sanitize( $audio->description ) ?>
 		</div>
-	<?php endif; if( ! empty( $a->audio ) ):  // if its not a reply?>
+	<?php endif; if( ! empty( $audio->audio ) ):  // if its not a reply?>
 	<div class="audio_play">
 	<script>
 $(document).ready( function() {
-		$("#player_<?php echo $a->id ?>").jPlayer({
+		$("#player_<?php echo $audio->id ?>").jPlayer({
 		ready: function(event) {
 		$(this).jPlayer("setMedia", {
 			mp3: "<?php
-			echo url() . 'assets/audios/' . $a->audio
+			echo url() . 'assets/audios/' . $audio->audio
 			?>",
 		});
-	},
-		cssSelectorAncestor : '#container_<?php echo $a->id ?>',
+		},
+		play: function() {
+			$(".jp-jplayer").not(this).jPlayer("pause");
+		},
+		cssSelectorAncestor : '#container_<?php echo $audio->id ?>',
 		swfPath: swfpath,
 		supplied: "mp3",
 		wmode: "window",
@@ -220,12 +224,12 @@ $(document).ready( function() {
 	});
 });
 </script>
-<div id="player_<?php echo $a->id ?>" class="jp-jplayer"></div>
-    <div id="container_<?php echo $a->id ?>" class="jp-audio sm">
+<div id="player_<?php echo $audio->id ?>" class="jp-jplayer"></div>
+    <div id="container_<?php echo $audio->id ?>" class="jp-audio sm">
         <div class="jp-type-single">
             <div class="jp-gui jp-interface">
                 <ul class="jp-controls">
-                    <li><a href="javascript:;" class="jp-play plei" data-id="<?php echo $a->id ?>" tabindex="1"><i class="fa fa-play control"></i></a></li>
+                    <li><a href="javascript:;" class="jp-play plei" data-id="<?php echo $audio->id ?>" tabindex="1"><i class="fa fa-play control"></i></a></li>
                     <li><a href="javascript:;" class="jp-pause" tabindex="1"><i class="fa fa-pause control"></i></a></li>
                     <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
                     <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute"><i class="fa fa-volume-up vcontrol"></i></a></li>
@@ -252,21 +256,21 @@ $(document).ready( function() {
 	</div>
 	<?php endif # / if its not a reply ?>
 	<div class="audio_footer">
-	<?php if( ! empty($a->audio) ): # if not a reply ?>
+	<?php if( ! empty($audio->audio) ): # if not a reply ?>
 		<a
 		class="audiobtn"
-		id="plays_<?php echo $a->id ?>"
+		id="plays_<?php echo $audio->id ?>"
 		title="<?php
 		echo _n(
 				__('%d person played this'),
 				__('%d people have played this'),
-				$a->plays
+				$audio->plays
 			);
 		?>"
 		>
 			<i class="fa fa-headphones"></i>&nbsp;
 			<span>
-				<?php echo format_number($a->plays) ?>
+				<?php echo format_number($audio->plays) ?>
 			</span>
 		</a>
 	<?php endif ?>
@@ -276,16 +280,16 @@ $(document).ready( function() {
 			if($is_faved)
 				echo ' favorited';
 			endif ?>"
-		data-id="<?php echo $a->id ?>"
+		data-id="<?php echo $audio->id ?>"
 		title="<?php _e('Mark as favorite') ?>">
 			<i class="fa fa-star"></i>&nbsp;
 			<span>
-				<?php echo format_number($a->favorites) ?>
+				<?php echo format_number($audio->favorites) ?>
 			</span>
 		</a>
-	<?php if( ! empty($a->audio) ): # if not a reply ?>
+	<?php if( ! empty($audio->audio) ): # if not a reply ?>
 		<a class="audiobtn"
-		      href="<?php echo url() . $a->id ?>#replies"
+		      href="<?php echo url() . $audio->id ?>#replies"
 		      title="<?php _e('Leave a reply') ?>"
 		      >
 			<i class="fa fa-reply"></i>&nbsp;
@@ -294,11 +298,11 @@ $(document).ready( function() {
 			</span>
 		</a>
 	<?php endif;
-		if( is_logged() && $a->user == $_USER->id ): ?>
+		if( is_logged() && $audio->user == $_USER->id ): ?>
 		<a
 		href="javascript:void(0);"
 		class="audiobtn delit"
-		data-id="<?php echo $a->id ?>"
+		data-id="<?php echo $audio->id ?>"
 		title="<?php _e('Delete this audio') ?>"
 		>
 			<i class="fa fa-times"></i> <?php _e('Delete') ?>
@@ -309,12 +313,12 @@ $(document).ready( function() {
 </div>
 <?php
 }
-function display_user( $u ) { ?>
+function display_user( $user ) { ?>
 <ul class="user">
 	<li>
-		<a href="<?php echo url() . 'audios/' . $u->user ?>">
+		<a href="<?php echo url() . 'audios/' . $user->user ?>">
 			<img class="circle"
-			src="<?php echo $u->avatar ?>"
+			src="<?php echo $user->avatar ?>"
 			onerror="this.src='<?php load_img('unknowin.png') ?>'"
 			height="48"
 			width="48"
@@ -322,43 +326,45 @@ function display_user( $u ) { ?>
 		</a>
 	</li>
 	<li class="name">
-		<a href="<?php echo url() . 'audios/' . $u->user ?>">
+		<a href="<?php echo url() . 'audios/' . $user->user ?>">
 			<?php
 			echo htmlspecialchars(
-				$u->name,
+				$user->name,
 				ENT_QUOTES,
 				'utf-8'
 			);
-			verified($u->verified);
+			verified($user->verified);
 			?>
 		</a>
 	</li>
 	<li class="uname">
-		<a href="<?php echo url() . 'audios/' . $u->user ?>">
-			@<?php echo $u->user ?>
+		<a href="<?php echo url() . 'audios/' . $user->user ?>">
+			@<?php echo $user->user ?>
 		</a>
 	</li>
 </ul>
 <?php
 }
-function load_more( $what, $p, $extra = '' ) {
+function load_more( $toLoad, $page, $extra = '' ) {
 	$extra = !empty($extra) ? 'data-extra="'. $extra . '"' : '';
 	echo '<div id="load_more"
-	data-load="'.$what.'"
-	data-page="'.$p.'" '. $extra .'></div>';
+	data-load="'.$toLoad.'"
+	data-page="'.$page.'" '. $extra .'></div>';
 }
-function search($search, $s, $t, $p = 1) {
+function search($search, $sort, $type, $page = 1) {
 	global $db;
 	$search = trim($search, "\x20*\t\n\r\0\x0B");
-	$escaped = '*' . $db->real_escape($search) . '*';
-	if( 'a' == $t ): // if the type is audios
+	$escaped = '*' . $search . '*';
+	if( 'a' == $type ):
 		$query = 'SELECT * FROM audios
 			WHERE reply_to = \'0\'
+			AND status = \'1\'
 			AND MATCH(`description`)
 			AGAINST (? IN BOOLEAN MODE)';
 		$count = $db->query(
 			'SELECT COUNT(*) AS size FROM audios
 			WHERE reply_to = \'0\'
+			AND status =  \'1\'
 			AND MATCH(`description`)
 			AGAINST (? IN BOOLEAN MODE)',
 			$escaped
@@ -376,133 +382,133 @@ function search($search, $s, $t, $p = 1) {
 	endif;
 	$count = (int) $count->size;
 	# min 3
-	if( mb_strlen( $search, 'utf-8') < 3 || ! $count )
+	if( mb_strlen( $search, 'utf-8') < 3 ||  0 == $count )
 		return alert_error( __("No results were found... Maybe if my mom comes she may find something.") );
 	$total_pages = ceil( $count / 10 );
-	if( $p > $total_pages )
+	if( $page > $total_pages )
 		return;
 	#--
-	if( 'a' == $t ): // append if the type is audios
-		if( 'd' == $s )
+	if( 'a' == $type ):
+		if( 'd' == $sort )
 			$query .= ' ORDER BY time DESC';
 		else
 			$query .= ' ORDER BY plays DESC';
 	endif;
 	#--
-	$query .= ' LIMIT '. ($p-1) * 10 . ',10';
+	$query .= ' LIMIT '. ($page-1) * 10 . ',10';
 	$result = $db->query($query, $escaped );
-	while($r = $result->r->fetch_object() ) {
-		if( 'a' === $t ): // if looking for audios
-			if( can_listen($r->user) ):
-				display_audio($r);
+	while($result = $result->r->fetch_object() ) {
+		if( 'a' === $type ): // if looking for audios
+			if( can_listen($result->user) ):
+				display_audio($result);
 			endif;
 		else: // if looking for users
-			display_user($r);
+			display_user($result);
 		endif;
 	}
-	if( $p < $total_pages )
-		load_more('search', $p+1, $s);
+	if( $page < $total_pages )
+		load_more('search', $page+1, $sort);
 }
-function load_audios( $id, $p = 1 ) {
+function load_audios( $id, $page = 1 ) {
 	global $db;
-	$q = "SELECT * FROM audios
+	$query = "SELECT * FROM audios
 	WHERE user = ?
 	AND reply_to = '0'
+	AND status = '1'
 	ORDER BY time DESC";
 	$count = $db->query(
 		"SELECT COUNT(*) AS size FROM audios
 	WHERE user = ? AND reply_to = '0'", $id);
 	$count = (int) $count->size;
-	if( 0 === $count )
+	if( 0 == $count )
 		return alert_error( __("This user has not uploaded audios... yet."), true);
 	$total_pages = ceil( $count / 10 );
-	if( $p > $total_pages )
+	if( $page > $total_pages )
 		return;
-	$q .= ' LIMIT '. ($p-1) * 10 . ',10';
-	$audios = $db->query($q, $id);
-	while( $a = $audios->r->fetch_object() )
-		display_audio($a);
-	if( $p < $total_pages )
-		load_more('audios', $p+1);
+	$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+	$audios = $db->query($query, $id);
+	while( $audio = $audios->r->fetch_object() )
+		display_audio($audio);
+	if( $page < $total_pages )
+		load_more('audios', $page+1);
 }
-function load_favs( $id, $p = 1 ) {
+function load_favs( $id, $page = 1 ) {
 	global $db;
-	$q = "SELECT * FROM audios
-	WHERE id IN (
-		SELECT audio_id FROM favorites
-		WHERE user_id = ?
-		ORDER BY time DESC
-		)";
+	$query = "SELECT DISTINCT A.* FROM audios
+		AS A INNER JOIN favorites AS F ON A.id = F.audio_id
+		AND F.user_id = ? AND A.status = '1'
+		ORDER BY F.time DESC";
 	$count = $db->query(
 		"SELECT COUNT(*) AS size FROM audios
 		WHERE id IN (
 			SELECT audio_id FROM favorites
 			WHERE user_id = ?
-			)",
-		$id);
+			)
+		AND status = '1'",
+		$id
+	);
 	$count = (int) $count->size;
-	if( 0 === $count )
+	if( 0 == $count )
 		return alert_error(
 			__("This user has not favorited audios/replies... yet."),
 			true
 		);
 	$total_pages = ceil( $count / 10 );
-	if( $p > $total_pages )
+	if( $page > $total_pages )
 		return;
-	$q .= ' LIMIT '. ($p-1) * 10 . ',10';
-	$audios = $db->query($q, $id);
-	while( $a = $audios->r->fetch_object() )
-		display_audio($a);
-	if( $p < $total_pages )
-		load_more('favorites', $p+1);
+	$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+	$audios = $db->query($query, $id);
+	while( $audio = $audios->r->fetch_object() )
+		display_audio($audio);
+	if( $page < $total_pages )
+		load_more('favorites', $page+1);
 }
-function load_replies( $id, $p = 1 ) {
+function load_replies( $id, $page = 1 ) {
 	global $db;
-	$q = "SELECT * FROM audios
+	$query = "SELECT * FROM audios
 		WHERE reply_to = ?
-		ORDER BY `time` ASC";
+		ORDER BY `time` DESC";
 	$count = $db->query(
 		"SELECT COUNT(*) AS size FROM audios
-		WHERE reply_to = ?",
+		WHERE reply_to = ? AND status = '1'",
 		$id
 	);
 	$count = (int) $count->size;
-	if( 0 === $count ){
+	if( 0 == $count ){
 		echo '<div class="alert info" id="noreplies">' .
 			__("There are not replies yet. Be the first!") .
 		'</div>';
 		return;
 	}
 	$total_pages = ceil( $count / 10 );
-	if( $p > $total_pages )
+	if( $page > $total_pages )
 		return;
-	$q .= ' LIMIT '. ($p-1) * 10 . ',10';
-	$audios = $db->query($q, $id);
+	$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+	$audios = $db->query($query, $id);
 	# linked replies:
 	$is_reply = isset($_REQUEST['reply_id']) &&
-	preg_match(
-		'/^[A-Za-z0-9]{6}$/',
-		$_REQUEST['reply_id']
-	);
+	is_audio_id_valid($_REQUEST['reply_id']);
 	if( is('audio') && $is_reply ) {
-		$r = $db->query(
+		$result = $db->query(
 			'SELECT * FROM audios
-			WHERE id = ? AND reply_to = ?',
+			WHERE id = ?
+			AND reply_to = ?
+			AND status = \'1\'',
 			$_REQUEST['reply_id'],
 			$id
 		);
-		if( $r->nums > 0 ) {
+		if( $result->nums > 0 ) {
 			define('LINKED', $_REQUEST['reply_id']);
-			display_audio($r);
+			display_audio($result);
 		}
 	}
-	while( $a = $audios->r->fetch_object() ):
-		if( $is_reply && $_REQUEST['reply_id'] == $a->id )
+	while( $audio = $audios->r->fetch_object() ):
+		if( $is_reply && $_REQUEST['reply_id'] == $audio->id )
 			continue;
-		display_audio($a);
+		display_audio($audio);
 	endwhile;
-	if( $p < $total_pages )
-		load_more('replies', $p+1);
+	if( $page < $total_pages )
+		load_more('replies', $page+1);
 }
 /**
 * @deprecated until the future ... :o

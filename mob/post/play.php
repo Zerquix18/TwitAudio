@@ -15,22 +15,19 @@ if( ! validate_args( @$_POST['id'] ) )
 
 $id = $_POST['id'];
 
-// does audio exist ?
-
-$exists_audio = $db->query(
+$audio = $db->query(
 	"SELECT plays,reply_to FROM audios WHERE id = ?",
-	$db->real_escape($id)
+	$id
 );
 
-if( ! (int) $exists_audio->nums )
+if( 0 == $audio->nums )
 	result_error( __("The audio you tried to play doesn't exist.") );
 
-if( $exists_audio->reply_to != '0' )
+if( $audio->reply_to != '0' )
 	result_error( __("A reply is not playable") );
 
 $ip = getip();
 
-// was played ?
 $was_played = $db->query(
 	"SELECT COUNT(*) AS size FROM plays
 	WHERE user_ip = ?
@@ -50,6 +47,6 @@ $db->insert("plays", array(
 );
 
 result_success(true, array(
-		'count' => (int) $exists_audio->plays + 1
+		'count' => (int) $audio->plays + 1
 	)
 );

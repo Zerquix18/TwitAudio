@@ -20,18 +20,15 @@ checkAuthorization();
 */
 // if $_GET['user'] is send it will use it
 // else it will use the logged one
-$_GET['user'] = validate_args($_GET['user']) ?
-	trim($_GET['user'])
-:
-	$_USER->user;
-if( strcasecmp($_GET['user'], $_USER->user) == 0 )
-	$u = $db->query(
+if( validate_args( $_GET['user'] ) &&
+	strcasecmp($_GET['user'], $_USER->user) !== 0 )
+	$user = $db->query(
 		'SELECT * FROM users WHERE user = ?',
-		$db->real_escape($_GET['user'])
+		trim($_GET['user'])
 	);
 else
-	$u = $_USER; // no extra queries
-if( $u->nums === 0 )
+	$user = $_USER; // no extra queries
+if( 0 == $user->nums )
 	result_error( __('The user doesn\' exist.'), 7);
 // loads public info
 $result = array(

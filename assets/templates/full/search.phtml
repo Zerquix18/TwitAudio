@@ -1,15 +1,25 @@
 <?php
 $_BODY['page'] = 'search';
 $_BODY['q'] =
-$q = validate_args(@$_GET['q']) ? htmlentities(trim($_GET['q'])) : '';
-$_BODY['title'] = $q . ' ' . __('Search');
+$query = validate_args(@$_GET['q']) ? trim($_GET['q']) : '';
+$_BODY['title'] =
+	htmlspecialchars($query, ENT_QUOTES, 'utf-8') . ' ' . __('Search');
+
 load_template('header');
-$s = validate_args( @$_GET['s'] )
+/**
+* d = date
+* p = page
+**/
+$sort = validate_args( @$_GET['s'] )
 	&& in_array($_GET['s'], array("d", "p") ) ?
 		$_GET['s']
 	:
 		'd';
-$t = validate_args( @$_GET['t'] )
+/**
+* u = users
+* a = audios
+**/
+$type = validate_args( @$_GET['t'] )
 	&& in_array($_GET['t'], array('u', 'a') ) ?
 		$_GET['t']
 	:
@@ -31,11 +41,11 @@ $t = validate_args( @$_GET['t'] )
 				<div class="input-field col s3 left">
 				<select id="search_type" name="t">
 					<option value="a"
-					<?php if( 'a' == $t )
+					<?php if( 'a' == $type )
 					echo 'selected="selected"'
 					?>><?php _e('Audios') ?></option>
 					<option value="u"
-					<?php if( 'u' == $t )
+					<?php if( 'u' == $type )
 					echo 'selected="selected"'
 					?>><?php _e('Users') ?></option>
 				</select>
@@ -44,15 +54,15 @@ $t = validate_args( @$_GET['t'] )
 				<div class="input-field col s3 right">
 				<select id="search_sort" name="s"
 				<?php
-				if( 'u' == $t )
+				if( 'u' == $type )
 					echo 'disabled="disabled"';
 				?>>
 					<option value="d"
-					<?php if( 'd' == $s )
+					<?php if( 'd' == $sort )
 					echo 'selected="selected"'
 					?>><?php _e('Date') ?></option>
 					<option value="p"
-					<?php if( 'p' == $s )
+					<?php if( 'p' == $sort )
 					echo 'selected="selected"'
 					?>><?php _e('Plays') ?></option>
 				</select>
@@ -67,9 +77,13 @@ $t = validate_args( @$_GET['t'] )
   				<p class="title"><?php _e('Results') ?></p>
   				<div id="search">
   				<?php
-  				if( ! empty($q) )
-  					search( $q, $s, $t, 1)
-  						//query,sort,type,page
+  				if( ! empty($query) )
+  					search(
+  						$query,
+  						$sort,
+  						$type,
+  						$page = 1
+  					)
   				?>
   				</div>
   			</div>
@@ -87,8 +101,8 @@ window.onload = function() {
 	$("label[for='s'], label[for='q']").addClass('active');
 };
 var search = "<?php echo urlencode($_GET['q']) ?>";
-var type = "<?php echo $t ?>";
-var sort = "<?php echo $s ?>";
+var type = "<?php echo $type ?>";
+var sort = "<?php echo $sort ?>";
 </script>
 <?php
 endif; load_template('footer');

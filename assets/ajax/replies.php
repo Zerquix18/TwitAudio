@@ -22,27 +22,27 @@ if( ! validate_args( @$_POST['q'], @$_POST['p'] ) )
 		false
 	);
 
-$q = trim($_POST['q']);
-$p = (int) $_POST['p'];
-if( ! is_numeric($_POST['p']) || $p <= 1 || empty($q) )
+$query = trim($_POST['q']);
+$page = sanitize_pageNumber( $_POST['p'] );
+if( $page <= 1 || empty($query) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-// does it exist?
-$a = $db->query(
-	"SELECT user,id FROM audios WHERE id = ?",
-	$db->real_escape( $_POST['q'])
+$audio = $db->query(
+	"SELECT user,id FROM audios
+	WHERE id = ? AND status = '1'",
+	$query
 );
-if( ! $a->nums )
+if( 0 == $audio->nums )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-if( ! can_listen($a->user) ) // Well try! :D
+if( ! can_listen($audio->user) ) // Good intent! :D
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 
-load_replies($a->id, $p);
+load_replies($audio->id, $page);

@@ -22,14 +22,12 @@ if( ! is_logged() )
 **/
 if( ! validate_args(
 	@$_POST['reply'],
-	@$_POST['s_twitter'],
 	@$_POST['id'])
 	)
-	_result( __("Request malformed."), false );
-
-// is the audio id valid?
-if( ! preg_match("/^[A-Za-z0-9]{6}$/", $_POST['id']) )
-	_result( __("Request malformed."), false);
+	_result(
+		__("There was an error while processing your request."),
+		false
+	);
 // // evaluated in this way because isset("0") returns false
 if( ! array_key_exists('s_twitter', $_POST) )
 	_result(
@@ -37,34 +35,47 @@ if( ! array_key_exists('s_twitter', $_POST) )
 		false
 	);
 
-$_POST['reply'] = trim($_POST['reply']);
-if( empty($_POST['reply']) )
+$id = $_POST['id'];
+$send_to_twitter = $_POST['s_twitter'];
+$reply = trim($_POST['reply']);
+
+if( ! is_audio_id_valid( $id ) )
+	_result(
+		__("There was an error while processing your request."),
+		false
+	);
+
+if( in_array($send_to_twitter, array("1", "0") ) )
+	$send_to_twitter = '1';
+
+if( empty($reply) )
 	_result( __("The reply cannot be empty."), false);
 
-if( mb_strlen($_POST['reply'], 'utf-8') > 200 )
-	_result( __("The reply cannot have more than 200 characters") );
-// does the audio exist?
-$exists = $db->query(
-	"SELECT reply_to,tw_id,user FROM audios WHERE id = ?",
-	$_POST['id'] // 'id' is protected by regex
+if( mb_strlen($reply, 'utf-8') > 200 )
+	_result( __("The reply cannot be longer than 200 characters") );
+
+$audio = $db->query(
+	"SELECT reply_to,tw_id,user FROM audios
+	WHERE id = ? AND status = '1'",
+	$id
 );
-if( $exists->nums === 0 )
+if( 0 == $audio->nums )
 	_result(
 		__("The audio you're trying to reply was deleted or is no longer available"),
 		false
 	);
 // if reply_to !== 0 is because it is a reply
 // can you reply a reply? not yet
-if( $exists->reply_to != '0' )
+if( $audio->reply_to != '0' )
 	_result( __("You cannot reply a reply."), false);
 
 // everything ok
 $db->insert("audios", array(
-		$a_id = generate_id(), // audio id
-		$_USER->id, // user id
+		$audio_id = generate_id(),
+		$_USER->id,
 		'', // audio.mp3 (not used here)
-		$_POST['id'], // reply_to
-		$db->real_escape( $_POST['reply'] ),
+		$id, // reply_to
+		$reply,
 		0,
 		time(),
 		0,
@@ -73,30 +84,27 @@ $db->insert("audios", array(
 		'0' // is_voice (the answer is no)
 	)
 );
-if( $_POST['s_twitter'] === '1' ) {
-	// MUST know chinese to understand this
-	$tweet = ' - https://twitaudio.com/'. $a_id;
-	$len = strlen($tweet);
+if( '1' == $send_to_twitter ) {
+	$tweet = ' - https://twitaudio.com/'. $audio_id;
+	$tweet_length = strlen($tweet);
 	$at = $db->query(
 		"SELECT user FROM users WHERE id = ?",
-		$exists->user
+		$audio->user
 	);
 	$at = $at->user;
-	$len2 = strlen($at);
-	$desc = "@$at ";
-	$desc .= $_POST['reply'];
-	if( strlen($desc) > (140-$len) )
-		$desc = substr($desc, 0, 140-$len-3) . '...';
-	$tweet = $desc . $tweet;
-	$reply_to = $exists->tw_id !== '' ? $exists->tw_id : '';
-	$x = $twitter->tweet($tweet, $reply_to);
-	if( $x )
+	$reply = "@$at " . $reply;
+	if( strlen($reply) > (140-$tweet_length) )
+		$desc = substr($desc, 0, 140-$tweet_length-3) . '...';
+	$tweet = $reply . $tweet;
+	$in_reply_to = $audio->tw_id !== '' ? $audio->tw_id : '';
+	if( $tweet_id = $twitter->tweet($tweet, $in_reply_to) )
 		$db->update("audios", array(
-				"tw_id" => $x
+				"tw_id" => $tweet_id
 			)
-		)->where("id", $a_id)->_();
+		)->where("id", $audio_id)->_();
 }
 
+
 display_audio(
-	$db->query("SELECT * FROM audios WHERE id = ?", $a_id)
+	$db->query("SELECT * FROM audios WHERE id = ?", $audio_id)
 );

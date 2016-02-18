@@ -16,8 +16,6 @@ if( 'POST' === getenv('REQUEST_METHOD') ) {
 		$id = validate_args( $_POST['id'] ) ? trim($_POST['id']) : '';
 		if( empty($id) )
 			throw new Exception('ID cannot be empty');
-		// i don't even trust myself
-		$id = $db->real_escape($id);
 		$db->query("DELETE FROM audios WHERE id = ?", $id);
 		if( $db->mysqli->affected_rows == 0 )
 			throw new Exception('No audios were deleted the audio does not exist');
@@ -53,7 +51,8 @@ if( 'POST' === getenv('REQUEST_METHOD') ) {
 		WHERE reply_to != \'0\'
 		ORDER BY `time` DESC'
 	);
-	$page = isset($_GET['p']) && is_numeric($_GET['p']) ? $_GET['p'] : 1;
+	$page = validate_args($_GET['p']) ?
+		sanitize_pageNumber( $_GET['p'] ) : 1;
 	$limit = ' LIMIT '. ($page-1) * 10 . ',' . 10;
 	$q = $db->query( $qe . ' ' . $limit );
 	$pages = ceil( $count->size / 10 );

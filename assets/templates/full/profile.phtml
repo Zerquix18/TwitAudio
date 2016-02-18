@@ -1,23 +1,25 @@
 <?php
 $_BODY['page'] = 'profile';
-$u = $_BODY['user'];
-$is_fav = isset($_GET['l']);
+$user = $_BODY['user'];
+$is_fav_page = isset($_GET['l']);
 $are_favs_visible = 
-(int) $u->favs_public || ( is_logged() && $u->id == $_USER->id );
-$are_audios_visible = can_listen($u->id);
-$_BODY['title'] = $is_fav ?
-	sprintf( __("%s favorites"), $u->user )
+(int) $user->favs_public || ( is_logged() && $user->id == $_USER->id );
+$are_audios_visible = can_listen($user->id);
+$_BODY['title'] = $is_fav_page ?
+	sprintf( __("%s favorites"), $user->user )
 :
-	$u->user;
+	$user->user;
 $audios_count = $db->query(
 		'SELECT COUNT(*) AS size FROM audios
-		WHERE reply_to = \'0\' AND user = ?',
-		$u->id
+		WHERE reply_to = \'0\'
+		AND status = \'1\'
+		AND user = ?',
+		$user->id
 	);
 $audios_count = (int) $audios_count->size;
 $favs_count = $db->query(
 		'SELECT COUNT(*) AS size FROM favorites WHERE user_id = ?',
-		$u->id
+		$user->id
 	);
 $favs_count = (int) $favs_count->size;
 load_template('header');
@@ -27,35 +29,35 @@ load_template('header');
 		<div class="col l9 m12 s12">
 			<div class="box">
 				<img
-				src="<?php echo get_image($u->avatar) ?>"
+				src="<?php echo get_image($user->avatar) ?>"
 				class="circle z-depth-3 materialboxed"
 				id="propic"
 				data-caption="<?php
 				echo sprintf(
 					__("%s's profile picture"),
-					$u->user
+					$user->user
 				)
 				?>"
 				onerror="this.src='<?php load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
 				>
 				<h5 id="name">
 					<?php
-					echo htmlspecialchars($u->name);
-					verified($u->verified)
+					echo htmlspecialchars($user->name);
+					verified($user->verified)
 					?>
 				</h5>
 				<p id="user" class="grey-text lighten-2-text">
-					@<?php echo $u->user ?>
+					@<?php echo $user->user ?>
 				</p>
 				<div id="bio">
-			<?php echo htmlspecialchars($u->bio) ?>
+			<?php echo htmlspecialchars($user->bio) ?>
 				</div>
 				<ul class="tabs" id="pnavigation">
 					<li class="tab">
 						<a class="blue-text <?php
-					if( ! $is_fav ) echo 'active' ?>"
+					if( ! $is_fav_page ) echo 'active' ?>"
 						href="<?php
-			echo url() . 'audios/' . $u->user
+			echo url() . 'audios/' . $user->user
 						?>">
 						<?php _e('Audios') ?>&nbsp;
 		<?php if( $audios_count && $are_audios_visible  ): ?>
@@ -67,9 +69,9 @@ load_template('header');
 					</li>
 					<li class="tab">
 						<a class="blue-text <?php
-					if( $is_fav ) echo 'active' ?>"
+					if( $is_fav_page ) echo 'active' ?>"
 						href="<?php
-			echo url() . 'favorites/' . $u->user
+			echo url() . 'favorites/' . $user->user
 						?>">
 						<?php _e('Favorites') ?>&nbsp;
 			<?php if( $favs_count && $are_favs_visible ): ?>
@@ -81,17 +83,17 @@ load_template('header');
 					</li>
 				</ul>
 				<div id="<?php
-				if( $is_fav )
+				if( $is_fav_page )
 					echo 'favorites';
 				else
 					echo 'audios'
 				?>">
 		<?php
-		$call = $is_fav ? 'load_favs' : 'load_audios';
-		if( $is_fav ? $are_favs_visible : $are_audios_visible ):
-			$call($u->id);
+		$function_to_call = $is_fav_page ? 'load_favs' : 'load_audios';
+		if( $is_fav_page ? $are_favs_visible : $are_audios_visible ):
+			$function_to_call($user->id);
 		else: // no much talking, you just cannot see em'!
-			if( $is_fav )
+			if( $is_fav_page )
 				alert_error(
 					__("This user's favorites are private.")
 				);
@@ -110,6 +112,6 @@ load_template('header');
 	</div>
 </div>
 <script type="text/javascript">
-var profile = '<?php echo $u->user ?>';
+var profile = '<?php echo $user->user ?>';
 </script>
 <?php load_template('footer');

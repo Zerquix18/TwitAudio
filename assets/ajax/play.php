@@ -21,27 +21,26 @@ if( ! validate_args( @$_POST['id'] ) )
 	);
 
 $id = $_POST['id'];
-// is a valid audio id?
-if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
+
+if( ! is_audio_id_valid($id ) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 
-// does audio exist ?
-
-$exists_audio = $db->query(
-	"SELECT plays,reply_to FROM audios WHERE id = ?",
-	$id // regex protected
+$audio = $db->query(
+	"SELECT plays,reply_to FROM audios
+	WHERE id = ? AND status = '1'",
+	$id
 );
-if( ! (int) $exists_audio->nums )
+if( 0 == $audio->nums )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 // if reply_to !== 0 is because it is a reply
 // can you play a reply?
-if( $exists_audio->reply_to != '0' )
+if( $audio->reply_to != '0' )
 	_result(
 		__('There was an error while processing your request.'),
 		false
@@ -49,7 +48,6 @@ if( $exists_audio->reply_to != '0' )
 
 $ip = getip();
 
-// already played ?
 $was_played = $db->query(
 	"SELECT COUNT(*) AS size FROM plays
 	WHERE user_ip = ?
@@ -70,6 +68,6 @@ $db->insert("plays", array(
 );
 
 _result (null, true, array(
-		'count' => (int) $exists_audio->plays + 1
+		'count' => (int) $audio->plays + 1
 	)
 );

@@ -24,23 +24,23 @@ if( ! validate_args( @$_POST['q'], @$_POST['p'] ) )
 		false
 	);
 
-$q = trim($_POST['q']);
-$p = (int) $_POST['p']; // can't be the 1 or less
-if( ! is_numeric($_POST['p']) || $p <= 1 || empty($q) )
+$query = trim($_POST['q']);
+$page = sanitize_pageNumber( $_POST['p'] );
+if( $page <= 1 || empty($query) )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-$exists = $db->query(
+$user = $db->query(
 		"SELECT id, favs_public FROM users WHERE user = ?",
-		$db->real_escape( $_POST['q'])
+		$query
 	);
-if( ! $exists->nums )
+if( 0 == $user->nums )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-if( ! (int) $exists->favs_public )
+if( 0 == $user->favs_public )
 	_result( __("This user's favorites are private."), false );
 
-load_favs($exists->id, $p);
+load_favs($user->id, $page);

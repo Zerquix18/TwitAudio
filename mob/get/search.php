@@ -15,14 +15,18 @@ header('Cache-Control: public, max-age=900');
 if( ! validate_args( $_GET['q']) )
 	result_error( __('Missing fields.'), 4);
 $search = trim($_GET['q'], "\x20*\t\n\r\0\x0B");
-if( '' === $search )
+if( '' == $search )
 	result_error( __("Some required fields are empty"), 6);
-$escaped = '*' . $db->real_escape($search) . '*';
-$t = isset($_GET['t']) && in_array($_GET['t'], array('a', 'u') ) ?
+$search = '*' . $search . '*'; // "*" = wildcard
+/**
+* a = audios
+* u = users
+**/
+$type = isset($_GET['t']) && in_array($_GET['t'], array('a', 'u') ) ?
 		$_GET['t']
 	:
 		'a';
-if( 'a' == $t ): // if the type is audios
+if( 'a' == $type ):
 	$query = 'SELECT * FROM audios
 		WHERE reply_to = \'0\'
 		AND MATCH(`description`)
@@ -32,7 +36,7 @@ if( 'a' == $t ): // if the type is audios
 		WHERE reply_to = \'0\'
 		AND MATCH(`description`)
 		AGAINST (? IN BOOLEAN MODE)',
-		$escaped
+		$search
 	);
 else: // if the type is user
 	$query = 'SELECT * FROM users
@@ -42,60 +46,61 @@ else: // if the type is user
 		'SELECT COUNT(*) AS size FROM users
 		WHERE MATCH(`user`, `name`, `bio`)
 		AGAINST (? IN BOOLEAN MODE)',
-		$escaped
+		$search
 	);
 endif;
 $count = (int) $count->size;
-if( ! $count )
+if( 0 == $count )
 	result_success( null, array(
 			'count' 		=> 0,
 			'audios' 	=> [],
 			'load_more' 	=> false,
 		)
 	);
-$p = isset($_GET['p']) && is_numeric($_GET['p']) ?
-		abs( (int) $_GET['p'])
-	:
-		1;
-$s = isset($_GET['s']) && in_array($_GET['s'], array('p', 'd', 'l') ) ?
+$page = validate_args($_GET['p']) ? sanitize_pageNumber( $_GET['p'] ) : 1;
+/**
+* p = plays
+* d = date
+**/
+$sort  = isset($_GET['s']) && in_array($_GET['s'], array('p', 'd') ) ?
 		$_GET['s']
 	:
 		'd';
 
 $total_pages = ceil( $count / 10 );
 
-if( $p > $total_pages )
+if( $page > $total_pages )
 	result_success( null, array(
 			'count' 		=> $count,
 			'audios' 	=> array(),
-			'p' 		=> $p,
+			'p' 		=> $page,
 			'load_more' 	=> false,
 		)
 	);
 
-if( 'a' == $t ): // append if the type is audios
-	if( 'd' == $s )
+if( 'a' == $type ):
+	if( 'd' == $sort )
 		$query .= ' ORDER BY time DESC';
 	else
 		$query .= ' ORDER BY plays DESC';
 endif;
 
 $audios = array();
-$query .= ' LIMIT '. ($p-1) * 10 . ',10';
-$auds = $db->query($query, $escaped);
-while( $r = $auds->r->fetch_object() ) {
-	if( 'a' === $t ): // if looking for audios
-		if( can_listen($r->user) ):
-			$audios[] = json_display_audio($r, true);
+$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+$auds = $db->query($query, $search);
+while( $result = $auds->r->fetch_object() ) {
+	if( 'a' === $type ):
+		if( can_listen($result->user) ):
+			$audios[] = json_display_audio($result, true);
 		endif;
 	else: // if looking for users
-		$audios[] = json_display_user_sm($r, true);
+		$audios[] = json_display_user_sm($result, true);
 	endif;
 }
 result_success(null, array(
 		'count' 		=> $count,
 		'audios' 	=> $audios,
-		'p' 		=> $p,
-		'load_more' 	=> ($p < $total_pages),
+		'p' 		=> $page,
+		'load_more' 	=> ($page < $total_pages),
 	)
 );

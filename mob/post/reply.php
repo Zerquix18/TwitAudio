@@ -16,32 +16,34 @@ if( ! validate_args(
 	@$_POST['id'])
 	)
 	result_error( __('Missing fields.'), 4);
-// send to twitter
-$s_twitter = in_array($_POST['s_twitter'], array("1", "0") ) ?
+
+$send_to_twitter = in_array($_POST['s_twitter'], array("1", "0") ) ?
 		$_POST['s_twitter']
 	:
-		'0';
+		'1';
+
 $reply = trim($_POST['reply']);
+
 if( empty($reply) )
 	result_error( __("The reply cannot be empty.") );
 if( mb_strlen($reply, 'utf-8') > 200 )
 	result_error( __("The reply cannot have more than 200 characters") );
-$exists = $db->query(
+$audio = $db->query(
 	"SELECT id,reply_to,tw_id,user FROM audios WHERE id = ?",
-	$db->real_escape($_POST['id'])
+	$_POST['id']
 );
-if( $exists->nums === 0 )
+if( $audio->nums === 0 )
 	result_error( __("The audio you're trying to reply does not exist.") );
-if( $exists->reply_to != '0' )
+if( $audio->reply_to != '0' )
 	result_error( __("You cannot reply a reply.") );
 
 // everything ok
 $db->insert("audios", array(
-		$a_id = generate_id(),
+		$audio_id = generate_id(),
 		$_USER->id,
 		'',
-		$exists->id,
-		$db->real_escape( $reply ),
+		$audio->id,
+		$reply,
 		0,
 		time(),
 		0,
@@ -50,30 +52,26 @@ $db->insert("audios", array(
 		'0'
 	)
 );
-if( $_POST['s_twitter'] === '1' ) {
-	//hello...it'sme
-	$tweet = ' - https://twitaudio.com/'. $a_id;
-	$len = strlen($tweet);
+if( '1' == $send_to_twitter ) {
+	$tweet = ' - https://twitaudio.com/'. $audio_id;
+	$tweet_length = strlen($tweet);
 	$at = $db->query(
 		"SELECT user FROM users WHERE id = ?",
-		$exists->user
+		$audio->user
 	);
 	$at = $at->user;
-	$len2 = strlen($at);
-	$desc = "@$at ";
-	$desc .= $_POST['reply'];
-	if( strlen($desc) > (140-$len) )
-		$desc = substr($desc, 0, 140-$len-3) . '...';
-	$tweet = $desc . $tweet;
-	$reply_to = $exists->tw_id !== '' ? $exists->tw_id : '';
-	$x = $twitter->tweet($tweet, $reply_to);
-	if( $x )
+	$reply = "@$at " . $reply;
+	if( strlen($reply) > (140-$tweet_length) )
+		$desc = substr($desc, 0, 140-$tweet_length-3) . '...';
+	$tweet = $reply . $tweet;
+	$in_reply_to = $audio->tw_id !== '' ? $audio->tw_id : '';
+	if( $tweet_id = $twitter->tweet($tweet, $in_reply_to) )
 		$db->update("audios", array(
-				"tw_id" => $x
+				"tw_id" => $tweet_id
 			)
-		)->where("id", $a_id)->_();
+		)->where("id", $audio_id)->_();
 }
 result_success( array(
-		'id' => $a_id
+		'id' => $audio_id
 	)
 );

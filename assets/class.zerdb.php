@@ -6,8 +6,12 @@
 * @author Zerquix18
 * @version 2.0
 * @link http://github.com/zerquix18/zerdb
-* @copyright Copyright (c) 2014-2015, Zerquix18
+* @copyright Copyright (c) 2014-2016, Zerquix18
 *
+* I ask for forgiveness to ayone reading this code
+* I made it when I was 14-15 years old
+* And it's the greatest and usefull bullshit
+* that I've done.
 **/
 
 if( ! class_exists('mysqli') )
@@ -17,7 +21,7 @@ class zerdb {
 
 /**
 *
-* Database tables, just for codes with prefix (soon)
+* Database tables, for insert queries
 *
 * @since 1.0
 * @access public
@@ -50,57 +54,15 @@ class zerdb {
 					'user', 'trend', 'time'
 				),
 		);
-/**
-*
-* Database username
-*
-* @since 1.0
-* @access private
-* @var string
-*
-**/
 	private $dbhost;
-/**
-*
-* Database user
-*
-* @since 1.0
-* @access private
-* @var string
-*
-**/
+
 	private $dbuser;
 
-/**
-*
-* Database password
-*
-* @since 1.0
-* @access private
-* @var string
-*
-**/
 	private $dbpass;
-/**
-*
-* Database name
-*
-* @since 1.0
-* @access private
-* @var string
-*
-**/
+
 	private $dbname;
-/**
-*
-* Database port
-*
-* @since 1.0
-* @access private
-* @var string
-*
-**/
-	private $port;
+
+	private $dbport;
 /**
 *
 * Affected rows of the last query OR the nums of rows selected in the last query.
@@ -162,16 +124,8 @@ class zerdb {
 *
 **/
 	public $errno;
-/**
-*
-* Database charset
-*
-* @since 1.0
-* @access public
-* @var string
-*
-**/
-	public $charset;
+
+	public $dbcharset;
 /**
 *
 * Last ID inserted (if there's one).
@@ -190,17 +144,19 @@ class zerdb {
 * @param string $dbuser
 * @param string $dbpass
 * @param string $dbname
-* @param string $charset
-* @param integer $port
+* @param string $dbcharset
+* @param integer $dbport
 *
 **/
-	public function __construct( $dbhost, $dbuser, $dbpass, $dbname, $charset = null, $port = null ) {
+	public function __construct(
+			$dbhost, $dbuser, $dbpass,
+			$dbname, $dbcharset = null, $dbport = null ) {
 		$this->dbhost = $dbhost;
 		$this->dbuser = $dbuser;
 		$this->dbpass = $dbpass;
 		$this->dbname = $dbname;
-		$this->charset = ! is_null($charset) ? $charset : 'utf8';
-		$this->port = is_null($port) ? ini_get('mysqli.default_port') : (int) $port;
+		$this->dbcharset = ! is_null($dbcharset) ? $dbcharset : 'utf8';
+		$this->dbport = is_null($dbport) ? ini_get('mysqli.default_port') : (int) $dbport;
 		return $this->connect();
 	}
 
@@ -213,15 +169,13 @@ class zerdb {
 *
 **/
 	private function connect() {
-		$this->mysqli = @new mysqli( $this->dbhost, $this->dbuser, $this->dbpass, $this->dbname, $this->port);
+		$this->mysqli = @new mysqli( $this->dbhost, $this->dbuser, $this->dbpass, $this->dbname, $this->dbport);
     		if( $this->mysqli->connect_error ) {
 			$this->error = $this->mysqli->connect_error;
 			$this->errno = $this->mysqli->connect_errno;
 			return false;
 		}
-		foreach($this->tablas as $a => $b)
-			$this->$a = $a;
-		$this->mysqli->set_charset( $this->charset );
+		$this->mysqli->set_charset( $this->dbcharset );
 		$this->ready = true;
 		return true;
   	}
@@ -247,7 +201,7 @@ class zerdb {
 **/
 	public function flush() {
 		$this->query =
-		$this->error =
+		$this->error  =
 		$this->errno =
 		$this->nums = null;
 	}
@@ -285,7 +239,10 @@ class zerdb {
 			array_shift($args);
 			if( is_array($args[0]) )
 				$args = $args[0];
-			array_walk($args, array($this, "real_escape") ); // protection mate
+			$args = array_map(
+					array($this, 'real_escape'),
+					$args
+				);
 			$rplc = array("%s", "%d", "%f", "'?'", "'%s'", "'%d'", "'%f'"); // deletes mistakes
 			$query = str_replace($rplc, "?", $query); // replace all that by: ? :)
 			if( preg_match_all("!\?!", $query) !== count($args) )
@@ -308,8 +265,8 @@ class zerdb {
 	public function execute() {
 		if( empty($this->query ) )
 			return false;
-		$q = $this->mysqli->query( $this->query );
-		if( !$q ) {
+		$query = $this->mysqli->query( $this->query );
+		if( !$query ) {
 			$this->error = $this->mysqli->error;
 			$this->errno = $this->mysqli->errno;
 			return false;
@@ -318,16 +275,16 @@ class zerdb {
 		$this->nums = (int) $this->mysqli->affected_rows;
 		if( preg_match('/^(select)/i', $this->query) ) {
 			$lol = new stdClass();
-			$this->nums = $lol->nums = $q->num_rows;
-			$lol->r = $q;
+			$this->nums = $lol->nums = $query->num_rows;
+			$lol->r = $query;
 			if( $this->nums == 1):
-				foreach($q->fetch_array() as $a => $b)
+				foreach($query->fetch_array() as $a => $b)
 					$lol->$a = stripslashes($b);
-				$q->data_seek(0);
+				$query->data_seek(0);
 			endif;
 			return $lol;
 		}
-		return $q;
+		return $query;
 	}
 /**
 *
@@ -352,7 +309,7 @@ class zerdb {
 			return false;
 		$this->flush();
 		$this->query = "SELECT $data FROM $table";
-		if( ! is_null($where) )
+		if( null != $where )
 			$this->where( $where );
 		return $this;
 	}
@@ -375,10 +332,16 @@ class zerdb {
 		$this->query = "UPDATE {$table}";
 		$set = array();
 		if( empty($arg2) )
-			foreach($arg1 as $a => $b)
+			foreach($arg1 as $a => $b) {
+				if( is_string($b) )
+					$b = $this->real_escape($b);
 				$set[] = "{$a} = '{$b}'";
-		else
+			}
+		else {
+			if( is_string($arg2) )
+				$arg2 = $this->real_escape($arg2);
 			$set = array("{$arg1} = '{$arg2}'");
+		}
 		$this->query .= " SET " . implode(', ', $set);
 		return $this;
 	}
@@ -391,13 +354,13 @@ class zerdb {
 * @return object
 *
 **/
-	public function delete( $table, $arg2 = null) {
+	public function delete( $table, $where = null) {
 		if( ! $this->ready )
 			return false;
 		$this->flush();
 		$this->query = "DELETE FROM {$table}";
-		if( is_array($arg2) )
-			$this->where( $arg2 );
+		if( is_array($where) )
+			$this->where( $where );
 		return $this;
 	}
 
@@ -444,40 +407,10 @@ class zerdb {
 		$this->query = "{$action} INTO {$table} (`" . implode('`,`', $t_data) . "`) VALUES ";
 		$v = array();
 		foreach($data as $a){
+			$a = array_map( array($this, 'real_escape'), $a);
 			$v[] = "('" . implode("','", $a ) . "')";
 		}
 		$this->query .= implode(', ', $v);
-		return $this->execute();
-	}
-/**
-*
-* It alters some table in the database
-*
-* @param string $table
-* @param string $action
-* @param null|string|array $values
-* @return bool|object
-*
-**/
-	public function alter( $table, $action, $values = null) {
-		$this->flush();
-		$action = strtoupper($action);
-		if( ! in_array($action, array('ADD', 'DROP', 'MODIFY') ) )
-			return false;
-		$action = ($check = in_array($action, array("DROP", "MODIFY") ) ) ? $action . " COLUMN" : $action;
-		$this->query = "ALTER TABLE {$table} {$action} ";
-		if("ADD" == $action || "MODIFY COLUMN" == $action)  {
-			if( ! is_array($values) )
-				return false;
-			foreach($values as $a => $b) {
-				$this->query .= "`{$a}` {$b}";
-				break; // just one...
-			}
-		}elseif( "DROP COLUMN" == $action ) {
-			if( ! is_string($values) )
-				return false;
-			$this->query .= $values;
-		}
 		return $this->execute();
 	}
 /**
@@ -490,23 +423,27 @@ class zerdb {
 * @return bool|object
 *
 **/
-	public function where( $arg1, $arg2 = '', $and = "AND") {
+	public function where( $column, $value = '', $operator = "AND") {
 		$args = func_get_args();
-		if( ! is_array($arg1) && empty($arg2) )
+		if( ! is_array($column) && empty($value) )
 			return false;
 		$ops = array(">", "<", "!=", "=");
-		if( in_array($arg2, $ops) )
-			$op = $arg2;
+		if( in_array($value, $ops) )
+			$op = $value;
 		else
 			$op = "=";
-		if( is_array($arg1) ) {
+		if( is_array($column) ) {
 			$wh = array();
-			foreach($arg1 as $a => $b){
-				$b = is_int($b) ? "{$b}" : "'{$b}'";
-				$wh[] = "{$a} {$op} {$b}";
+			foreach($column as $col => $val){
+				if( is_string($val ) )
+					$val = $this->real_escape($val);
+				$val = !is_string($b) ? "{$val}" : "'{$val}'";
+				$wh[] = "{$col} {$op} {$val}";
 			}
 			$this->query .= " WHERE " . implode(" {$and} ", $wh);
 		}else{
+			if( is_string($args[1]) )
+				$args[1] = $this->real_escape($args[1]);
 			$this->query .= " WHERE {$args[0]} {$op} '{$args[1]}'";
 		}
 		return $this;

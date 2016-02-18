@@ -15,19 +15,22 @@ checkAuthorization();
 // allow cache
 header('Cache-Control: public, max-age=900');
 
-$x = isset( $_GET['user'] ) && is_string($_GET['user']) // ← validation
-	&& strcasecmp($_GET['user'], $_USER->user) !== 0;
-if( $x ): // if 'user' is passed and its not the logged one
-	$u = $db->query(
+$is_the_logged_user = validate_args( $_GET['user'] )
+	&& strcasecmp($_GET['user'], $_USER->user) == 0;
+if( ! $is_the_logged_user ):
+	$user = $db->query(
 		'SELECT id FROM users WHERE user = ?',
-		$db->real_escape($_GET['user'])
+		$_GET['user']
 	);
-	if( $u->nums == 0 )
-		result_error( __('The user does not exist.'), 7);
-	$id = $u->id;
+	if( 0 == $user->nums )
+		result_error(
+			__('The user does not exist.'),
+			7
+		);
+	$id = $user->id;
 	if( ! can_listen($id) ):
 		result_error(
-				__('No permissions'),
+				__('The audios of this user are private'),
 				8
 			);
 	endif;
@@ -35,7 +38,7 @@ else:
 	$id = $_USER->id;
 endif;
 /** everything below this line is magic */
-$q = 'SELECT * FROM audios
+$query = 'SELECT * FROM audios
 	WHERE user = ?
 	AND reply_to = \'0\'
 	ORDER BY time DESC';
@@ -45,26 +48,26 @@ $count = $db->query(
 	$id
 );
 $count = (int) $count->size;
-if( ! $count ) // no audios no result
+if( 0 == $count ) // no audios no result
 	result_success( null, array(
 			'audios' 	=> array(),
 		)
 	);
-$total_audios = ceil( $count / 10 );
-// p means page
-$p = isset($_GET['p']) && is_numeric($_GET['p']) ? (int) $_GET['p'] : 1;
-if( $p > $total_audios ) // no more pages
+$total_pages = ceil( $count / 10 );
+
+$page = validate_args($_GET['p']) ? sanitize_pageNumber( $_GET['p'] ) : 1;
+if( $page > $total_pages ) // no more pages
 	result_success( null, array(
 			'audios' 	=> array(),
 		)
 	);
 //
-$q .= ' LIMIT '. ($p-1) * 10 . ',10'; // pagination
-$audios = $db->query($q, $id);
+$query .= ' LIMIT '. ($page-1) * 10 . ',10'; // pagination
+$audios = $db->query($query, $id);
 $result = array();
 $result['audios'] = array();
-while( $a = $audios->r->fetch_array() )
-	$result['audios'][] = json_display_audio($a);
-$result['p'] = $p;
-$result['load_more'] = ($p < $total_audios);
+while( $audio = $audios->r->fetch_array() )
+	$result['audios'][] = json_display_audio($audio);
+$result['p'] = $page;
+$result['load_more'] = ($page < $total_pages);
 result_success( null, $result );

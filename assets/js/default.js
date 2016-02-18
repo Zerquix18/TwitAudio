@@ -1,24 +1,38 @@
-// Hi, I'm called Javascript.
-var	recorder, // recorder object
+/**
+* Javascript code for TwitAudio
+* Author: Zerquix18 <zerquix18@hotmail.com>
+* Copyright (c) 2016 - Luis A. Martínez
+**/
+
+var	recorderJS,
 	context, //AudioContext object
-	init, // the function to put the microphone to record
+	initMicrophone,
 	/** intervals **/
-	cleft_i,
-	r_i,
+	counterLeft = 3, // before recording, seconds left to start
+	counterLeft_interval,
+	recordingSeconds = null,
+	recordingSeconds_interval,
+	// 
 	tmp_preview_url,
 	tmp_post_preview,
 	load_more,
 	initialized = null, // if everything with the mic was ok
-	cancel = false, // did the user canceled the recording?
-	cleft = 3, // counter to star recording
-	r_count = null,
+	cancel = false,
+	recordingSeconds = null,
 	is_recording = false, // it says it all
 	playeds = [], // played audios in page
 	first_second = false,
 	unloaded = false,
 	progressives = [],
-	can_scroll = true;
-
+	can_scroll = true,
+	all_effects_loaded = true,
+	load_effects_interval = null,
+	added_files = [],
+	added_effects = [],
+	save_my_life = -1;
+	//^I gotta explain myself.. idk,
+	// I finished 2 hours of bugs
+	// with that variable
 /**
 * Checks if needle is in haystack
 * in_array('lol', ['asd', 'lol']) = true
@@ -45,11 +59,13 @@ function display_info( info, dissapear ) {
 }
 // returns (bool)
 function can_record() {
-	navigator.getMedia = ( navigator.getUserMedia ||
-                       navigator.webkitGetUserMedia ||
-                       navigator.mozGetUserMedia ||
-                       navigator.msGetUserMedia );
-	if( ! (navigator.getMedia) ) // none of them worked
+	navigator.getMedia = (
+			navigator.getUserMedia ||
+			navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia ||
+			navigator.msGetUserMedia
+		);
+	if( ! navigator.getMedia ) // none of them worked
 		return false;
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	context = new AudioContext();
@@ -58,55 +74,56 @@ function can_record() {
 	return true;
 }
 function startRecording() {
-	if( cleft >= 3 )
-		cleft_i = setInterval(startRecording, 1000);
-	if( cleft > 0 ) {
-		cleft -= 1;
-		$(cleftn).html( String(cleft) );
+	if( counterLeft >= 3 )
+		counterLeft_interval = setInterval(startRecording, 1000);
+	if( counterLeft > 0 ) {
+		counterLeft -= 1;
+		$(cleftn).html( String(counterLeft) );
 		return;
 	}
-	if( cleft === 0 ) {
-		clearInterval(cleft_i);
-		cleft_i = null;
-		cleft = 4;
+	if( 0 === counterLeft ) {
+		clearInterval(counterLeft_interval);
+		counterLeft_interval = null;
+		counterLeft = 4;
 		$("#cleft").hide();
-		recorder.record();
+		recorderJS.record(); // here it starts recording
 		is_recording = true;
 		recording();
 	}
 }
 function recording() {
-	if( null === r_count ) {
-		r_i = setInterval(recording, 1000);
+	if( null === recordingSeconds ) {
+		recordingSeconds_interval = setInterval(recording, 1000);
 		first_second = true;
-		r_count = 0;
+		recordingSeconds = 0;
 	}
 	if( first_second ) {
 		first_second = false;
-		return;
+		return;  // don't start counting till 1 second
 	}
-	if( r_count < 120 ) {
-		r_count += 1;
-		var result, first, second;
-		if( r_count < 60 ){
-			first = 0;
-			second = String(r_count);
+	if( recordingSeconds < max_duration ) {
+		recordingSeconds += 1;
+		var result, firstNumber, secondNumber;
+		if( recordingSeconds < 60 ){
+			firstNumber = 0;
+			secondNumber = String(recordingSeconds);
 		}else{
-			first = Math.floor(r_count / 60 );
-			second = String(r_count - (first*60) );
+			firstNumber = Math.floor(recordingSeconds / 60 );
+			secondNumber = // ↓
+			String( recordingSeconds - (firstNumber*60) );
 		}
-		if( second.length === 1 )
-			second = "0" + second;
-		result = String( first ) + ':' + second;
+		if( secondNumber.length === 1 )
+			secondNumber = "0" + secondNumber;
+		result = String( firstNumber ) + ':' + secondNumber;
 		$("#count").html(result);
 		return;
 	}
-	if( r_count === 120 ) {
+	if( max_duration === recordingSeconds ) {
 		Materialize.toast('Time is up!', 5000, 'rounded');
 		$("#stop").trigger('click');
 	}
 }
-function up_form( voice ) {
+function up_form( is_voice ) {
 	$("#record_form").hide();
 	$("#post").hide();
 	show_progressive('#whatsloading', [
@@ -117,9 +134,9 @@ function up_form( voice ) {
 			'This is a really long audio...',
 			"I'll have to use a lift to upload this",
 			'Uploading...'
-		], 5);
+		], 5); // 5 seconds of separation
 	$("#loading").show();
-	voice = voice || false;
+	is_voice = is_voice || false;
 	var ajaxform = {
 		beforeSend : function() {
 			$("#player_cut").jPlayer("destroy");
@@ -174,24 +191,26 @@ function up_form( voice ) {
 				return;
 			}
 			unfinishedaudio('start');
+			load_effects( result.extra.id );
 			load_post_form(result.extra.id, result.extra.tmp_url);
+			$(".original").data('url', result.extra.tmp_url);
 		}
 	};
-	if( voice && recorder ) {
-		recorder.exportMP3( function(blob) {
+	if( is_voice && recorderJS ) {
+		recorderJS.exportMP3( function(blob) {
 			var reader = new FileReader();
 			reader.onload = function(event) {
-				var fd = {};
-				fd.is_voice = 'true';
-				fd.bin =  event.target.result;
-				ajaxform.data = fd;
+				var fileReader = {};
+				fileReader.is_voice = '1';
+				fileReader.bin =  event.target.result;
+				ajaxform.data = fileReader;
 				$("#up_form").ajaxSubmit(ajaxform);
 			};
 			reader.readAsDataURL(blob);
 		});
 		return;
 	}
-	ajaxform.data = {is_voice : 'false'};
+	ajaxform.data = {is_voice : '0'};
 	$("#up_form").ajaxSubmit(ajaxform);
 }
 function load_post_form( id, tmp_url ) {
@@ -268,12 +287,17 @@ function show_progressive( selector, texts, time ) {
 	if( typeof texts !== 'object' )
 		return;
 	time = time || 5;
-	var taim;
+	var milliSeconds;
 	for( var i = 0; i < texts.length; i++ ) {
-		taim = time * (i * 1000);
-		var id = window.setTimeout( function( selector, text) {
-			$(selector).text(text);
-		}, taim, selector, texts[i] );
+		milliSeconds = time * (i * 1000);
+		var id = window.setTimeout(
+			function( selector, text) {
+				$(selector).text(text);
+			},
+			milliSeconds,
+			selector,
+			texts[i]
+		);
 		progressives.push(id);
 	}
 }
@@ -281,6 +305,81 @@ function stop_progressive() {
 	for( var i = 0; i < progressives.length; i++)
 		window.clearTimeout( progressives[i] );
 }
+function load_effects( audio_id ) {
+	if( ! all_effects_loaded )
+		return;
+	if( null === load_effects_interval ) {
+		load_effects_interval = setInterval(
+				load_effects,
+				5000,
+				audio_id
+			);
+		return; // wait the 5 seconds...
+	}
+	// proceed
+	var params = {
+		'id': audio_id
+	};
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: ajaxurl + 'checkeffects.php',
+		data: params,
+		success: function( result ) {
+			result = JSON.parse(result);
+			if( ! result.success ) {
+				clearInterval( load_effects_interval );
+				return display_error( result.response );
+			}
+			/* fun starts here */
+			/** load all the audios with effects **/
+			var loaded_effects = result.extra.loaded_effects;
+			for( var i = 0; i < loaded_effects.length; i++) {
+				// 2 keys: file for the path,
+				// and name for the effect name
+				var name = loaded_effects[i].name;
+				if( in_array(name, added_effects) )
+					continue;
+				else
+					added_effects.push(name);
+				added_files.push( loaded_effects[i].file );
+				$("." + name).data('url', loaded_effects[i].file);
+				$("#effect_preview_" + name).jPlayer({
+					ready: function(event) {
+						save_my_life++;
+						// ^ now when this motherfucking function
+						// executes, it gets the right URL ↓
+						$(this).jPlayer("setMedia", {
+							mp3: added_files[save_my_life],
+						});
+					},
+					play: function() {
+						$(".jp-jplayer").not(this).jPlayer("pause");
+					},
+					cssSelectorAncestor : '#container_' + name,
+					swfPath: "http://jplayer.org/latest/dist/jplayer",
+					supplied: "mp3",
+					wmode: "window",
+					useStateClassSkin: true,
+					autoBlur: false,
+					smoothPlayBar: true,
+					keyEnabled: true,
+					remainingDuration: true,
+					toggleDuration: true
+    				});
+				// now, after it's loaded, show it.
+				$("#effect_" + name + " > .loading").hide();
+				$("#effect_" + name + " > .preview").show();
+			}
+			if( result.extra.are_all_loaded ) {
+				clearInterval(load_effects_interval);
+				all_effects_loaded = true;
+				added_effects = [];
+			}
+		}
+	});
+}
+/** event listeners **/
 $(document).ready( function() {
 	$('.collapsible').collapsible();
 	$('.button-collapse').sideNav({ menuWidth: 240, edge: 'left', closeOnClick: false });
@@ -291,43 +390,50 @@ $(document).ready( function() {
 		in_duration: 300,
 		out_duration: 200,
 	});
+
 	if( ! can_record() )
 		norecordsupport();
-	init = function() {
+
+	initMicrophone = function() {
 		if( ! can_record() )
 			return false;
 		if( initialized )
 			return null;
-		navigator.getMedia({audio:true}, function(stream) {
-			recorder = audioRecorder.fromSource(
-				context.createMediaStreamSource(stream),
+		navigator.getMedia(
 				{
-					type: 'audio/mpeg',
-					workerPath : workerpath,
-					mp3LibPath : lamepath,
-					recordAsMP3 : true,
-					channels: 1
-				}
-			);
-			initialized = true;
-			if( cancel ) {
-				clearInterval(cancel);
-				cancel = false;
-			}
-			$("div#waiting").hide();
-			$("div#record").trigger('click');
-		}, function(e) {
-			initialized = false;
-			$("div#waiting").hide();
-			$("div#post").show();
-			display_error('Microphone access is not allowed or was blocked.');
-		});
-	};
+					audio: true
+				},
+				function(stream) {
+					recorderJS =
+						audioRecorder.fromSource(
+							context.createMediaStreamSource(stream),
+							{
+								type: 'audio/mpeg',
+								workerPath : workerpath,
+								mp3LibPath : lamepath,
+								recordAsMP3 : true,
+								channels: 1
+							}
+						);
+					initialized = true;
+					if( cancel ) {
+						clearInterval(cancel);
+						cancel = false;
+					}
+					$("div#waiting").hide();
+					$("div#record").trigger('click');
+				}, function(e) {
+					initialized = false;
+					$("div#waiting").hide();
+					$("div#post").show();
+					display_error('Microphone access is not allowed or was blocked.');
+				});
+			};
 	$("div#record").on('click', function() {
 		if( ! initialized ) {
 			$("div#post").hide();
 			$("div#waiting").show();
-			init();
+			initMicrophone();
 			cancel = window.setTimeout( function() {
 				$("div#waiting").hide();
 				$("div#post").show();
@@ -344,27 +450,29 @@ $(document).ready( function() {
 		if( ! is_recording )
 			return false;
 		is_recording = false;
-		recorder.stop();
-		if( cleft_i )
+		recorderJS.stop();
+		if( counterLeft_interval )
 			clearInterval(cleft_i);
-		if( r_i )
-			clearInterval(r_i);
-		r_i = cleft_i = null;
-		cleft = 3;
-		r_count = null;
+		if( recordingSeconds_interval )
+			clearInterval(recordingSeconds_interval);
+		counterLeft_interval =
+		recordingSeconds_interval = null;
+		counterLeft = 3;
+		recordingSeconds = null;
 		up_form(true);
-		recorder.clear();
+		recorderJS.clear();
 		$("#count").html("0:00");
 	});
 	$("#cancel").on('click', function() {
-		recorder.clear();
-		if( r_i )
-			clearInterval(r_i);
-		if( cleft_i )
-			clearInterval(cleft_i);
-		r_i = cleft_i = null;
-		cleft = 3;
-		r_count = null;
+		recorderJS.clear();
+		if( recordingSeconds_interval )
+			clearInterval(recordingSeconds_interval);
+		if( counterLeft_interval )
+			clearInterval(counterLeft_interval);
+		counterLeft_interval =
+		recordingSeconds_interval = null;
+		counterLeft = 3;
+		recordingSeconds = null;
 		$("#cleftn").html("3");
 		$("#count").html("0:00");
 		$("#record_form").hide();
@@ -377,10 +485,15 @@ $(document).ready( function() {
 	});
 	$("#up_file").on('change', function() {
 		var format = $(this).val().split('.');
+		var file_size = this.files[0].size/1024/1024;
 		format = format[ format.length -1 ];
 		format = format.toLowerCase();
 		if( ! in_array(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) )
 			return display_error('Format not allowed');
+		if( file_size > upload_file_limit )
+			return display_error(
+				'The file size is greater than your current ' +
+				'limit \'s, ' + upload_file_limit + ' mb');
 		up_form();
 	});
 });
@@ -401,7 +514,7 @@ $("#end, #start").on('keyup', function() {
 		end = ( parseInt(lel[0]) * 60 ) + parseInt(lel[1]);
 	}
 	var diff = end-start;
-	if( (start >= end) || diff > 120 || diff < 0 )
+	if( (start >= end) || diff > max_duration || diff < 1 )
 		return btn.attr('disabled', 'disabled');
 	return btn.removeAttr('disabled');
 });
@@ -453,7 +566,10 @@ $("#cut_form").ajaxForm({
 			$("#cut_form").show();
 			return;
 		}
+		$("#cut_form").trigger('reset');
+		load_effects( result.extra.id );
 		load_post_form( result.extra.id, result.extra.tmp_url);
+		$(".original").data('url', result.extra.tmp_url);
 	}
 });
 $("#post_form").ajaxForm({
@@ -469,6 +585,7 @@ $("#post_form").ajaxForm({
 		if( ! result.success )
 			return display_error( result.response );
 		$("#desc").val("");
+		$("#audio_effect").val('original');
 		$("#loading, #post_form").hide();
 		$("#post").show();
 		unfinishedaudio('stop');
@@ -669,7 +786,7 @@ $("#form_reply").ajaxForm({
 		$("#label_reply").removeClass('active');
 		$("#noreplies").remove();
 		if( null === document.getElementById("load_more") )
-			$("#replies").append(result);
+			$("#replies").prepend(result);
 		else
 			$("#load_more").before(result);
 	}
@@ -681,7 +798,7 @@ $("#replies_box").on('keyup keydown', function(e) {
 	else
 		$("#c_submit").attr('disabled', 'disabled');
 });
-$( "#search_type").on( 'change', function() {
+$("#search_type").on( 'change', function() {
 	if( $(this).val() == 'a' ) {
 		$("#search_sort").removeAttr('disabled');
 		$('#search_sort').material_select();
@@ -689,4 +806,19 @@ $( "#search_type").on( 'change', function() {
 		$('#search_sort').material_select('destroy');
 		$("#search_sort").attr('disabled', 'disabled');
 	}
+});
+$(".choose_effect").on('click', function(e) {
+	e.preventDefault();
+	if( undefined === $(this).data('url') )
+		return false; // no urls loaded
+	$.jPlayer.pause();
+	$("#player_preview").jPlayer('setMedia', {
+		'mp3' : $(this).data('url')
+	});
+	$("#effects_modal").closeModal();
+	$("#audio_effect").val( $(this).data('choose') );
+	if( 'original' == $(this).data('choose') )
+		display_info('OK. Got it.');
+	else
+		display_info('Effect added!');
 });

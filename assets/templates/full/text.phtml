@@ -1,6 +1,6 @@
 <?php
 $_BODY['page'] = 'txt';
-$rplc = array(
+$replace = array(
 		'about' 		=> __('About'),
 		'tos' 		=> __('Terms of Service'),
 		'privacy' 	=> __('Privacy Policy'),
@@ -8,8 +8,8 @@ $rplc = array(
 		'contact' 	=>__('Contact')
 	);
 $_BODY['title'] = str_replace(
-		array_keys($rplc),
-		array_values($rplc),
+		array_keys($replace),
+		array_values($replace),
 		$_GET['txt']
 	);
 load_template('header')

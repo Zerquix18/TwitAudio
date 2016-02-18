@@ -17,20 +17,19 @@ if('POST' !== getenv('REQUEST_METHOD') )
 if( !is_logged() )
 	_result( __("Authentication required."), false);
 /**
-* @var $_POST['is_voice'] string 'true' or 'false'
+* @var $_POST['is_voice'] string '1' or '0'
 **/
-if( ! array_key_exists('is_voice', $_POST)
-	|| ! is_string($_POST['is_voice'])
-	|| ! in_array($_POST['is_voice'], array('true', 'false'), true )
+if( ! validate_args( $_POST['is_voice'] )
+	|| ! in_array($_POST['is_voice'], array('1', '0') )
 	)
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
 
-$is_voice = 'true' === $_POST['is_voice'];
+$is_voice = (bool) $_POST['is_voice'];
 
-if( $is_voice ): // validation if it's voice
+if( $is_voice ):
 	$_POST['bin'] = substr(
 			$_POST['bin'],
 			strpos($_POST['bin'], ",") + 1
@@ -39,20 +38,23 @@ if( $is_voice ): // validation if it's voice
 	if( !( $bin = base64_decode($_POST['bin'], true ) )
 		|| base64_encode($bin) !== $_POST['bin'] )
 		_result(__('There was an error while processing the file...'), false );
-	// save the result in a file
+
 	file_put_contents(
 		$file = $_SERVER['DOCUMENT_ROOT'] .
 			'/assets/tmp/' . uniqid() . '.mp3',
 		$bin
 	);
-else: // validation for a normal file, which is not voice
+else:
 	if( empty($_FILES['up_file'])
 		|| is_array($_FILES['up_file']['name'] )
 		|| ( isset($_FILES['up_file']["error"] ) &&
 			$_FILES['up_file']["error"] != 0
 			)
 		)
-		_result( __('There was an error while processing the file...'), false );
+		_result(
+			__('There was an error while processing the file...'),
+			false
+		);
 	$format = last( explode('.', $_FILES['up_file']['name']) );
 	// $format is just for a quick validation
 	// the real way to find the format
@@ -61,12 +63,12 @@ else: // validation for a normal file, which is not voice
 		strtolower($format),
 		array("mp3", "m4a", "aac", "ogg", "wav")
 		) )
-		_result( __("The format of the uploaded audio is not allowed"), false );
-	// file in megabytes
-	//todo: restrict this for the premium version
-	$fs = ( ( $_FILES['up_file']['size'] / 1024) / 1024);
-	if( $fs <= 0 || $fs > 50 )
-		 _result( __("The file size is invalid. The maximum size is 50mb"), false );
+		_result(__("The format of the uploaded audio is not allowed"), false );
+
+	$file_size = ( ( $_FILES['up_file']['size'] / 1024) / 1024);
+	$file_limit = get_user_limit('file_upload');
+	if( $file_size > $file_limit )
+		 _result( __("The file size is greater than your current limit's, $file_limit mb"), false );
 	move_uploaded_file(
 		$_FILES['up_file']['tmp_name'],
 		$file = $_SERVER['DOCUMENT_ROOT'] .
@@ -74,35 +76,45 @@ else: // validation for a normal file, which is not voice
 	) or _result( __("There was an error while processing the file..."), false);
 endif;
 // now $file needs to be validated
-$a = new Audio($file);
-// 3 is the error when the file exceeds the 2m limit
-if( $a->error && $a->error_code != 3 )
-	_result($a->error, false);
+$audio = new Audio( $file, array(
+		'validate'	=>	true,
+		'max_duration'  =>	get_user_limit('audio_duration'),
+		'is_voice'	=>	$is_voice,
+		'decrease_bitrate' =>   ! is_paid_user(),
+	)
+);
+// 3 is the error when the file exceeds the user limit
+if( $audio->error && $audio->error_code != 3 )
+	_result($audio->error, false);
 
 $id = uniqid();
 
 // saves some info
 $_SESSION[$id] = array(
-		'tmp_url' => $a->audio,
+		'tmp_url' => $audio->audio,
 		'is_voice' => $is_voice,
-		'duration' => floor( $a->info['playtime_seconds'])
+		'duration' => floor( $audio->info['playtime_seconds'])
 	);
 // if needs to cut
-if( $a->error && $a->error_code == 3 )
+if( $audio->error && $audio->error_code == 3 )
 	_result(
-		$a->error,
+		$audio->error,
 		false,
 		array( // tmp_url for preview
 			'tmp_url' => url() . 'assets/tmp/'.
-				last( explode('/', $a->audio) ),
+				last( explode('/', $audio->audio) ),
 			'id' => $id
 			)
 		);
-// if not, then return success and the audio to preview
+// if not, then apply effects
+$_SESSION[$id]['effects'] = apply_audio_effects(
+		$audio->audio,
+		get_available_effects()
+	);
 _result( true, true,
 	array(
 		'tmp_url' => url() . 'assets/tmp/' .
-			last( explode('/', $a->audio) ),
+			last( explode('/', $audio->audio) ),
 		'id' => $id
 		)
 	);

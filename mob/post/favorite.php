@@ -6,31 +6,35 @@
 **/
 require $_SERVER['DOCUMENT_ROOT'] . '/mob/load.php';
 checkAuthorization();
+
 if( 'POST' !== getenv('REQUEST_METHOD') )
 	exit;
+
 if( ! validate_args( @$_POST['id'] ) )
 	result_error( __('Missing fields.'), 4);
+
 $id = $_POST['id'];
-$a = $db->query(
+
+$audio = $db->query(
 		'SELECT id,favorites FROM audios WHERE id = ?',
-		$db->real_escape($_POST['id'])
+		$_POST['id']
 	);
-if( $a->nums === 0 )
+if( $audio->nums === 0 )
 	result_error(
 			__("The audio you tried to favorite does not exist."),
 			9
 		);
-// exists.
-$id = $a->id;
-//was faved?
-$favorited = $db->query(
+
+$id = $audio->id;
+
+$is_favorited = $db->query(
 	"SELECT COUNT(*) AS size FROM favorites
 	WHERE audio_id = ?
 	AND user_id = ?",
 	$id,
 	$_USER->id
 );
-$favorited = (int) $favorited->size;
+$is_favorited = (int) $favorited->size;
 
 $action = isset($_POST['action']) && in_array($_POST['action'],
 	array(
@@ -41,7 +45,7 @@ if( ! $action )
 		null
 	);
 
-if( $favorited && 'unfav' == $action ) {
+if( $is_favorited && 'unfav' == $action ) {
 	$db->query(
 		"UPDATE audios SET favorites = favorites-1 WHERE id = ?",
 		$id
@@ -51,7 +55,7 @@ if( $favorited && 'unfav' == $action ) {
 		$id,
 		$_USER->id
 	);
-}elseif( ! $favorited && 'fav' == $action ) {
+}elseif( ! $is_favorited && 'fav' == $action ) {
 	$db->query(
 		"UPDATE audios SET favorites = favorites+1 WHERE id = ?",
 		$id
@@ -64,14 +68,14 @@ if( $favorited && 'unfav' == $action ) {
 	);
 }else // no way 
 	result_success( array(
-		'count' => $exists_audio->favorites
+		'count' => $audio->favorites
 		)
 	);
 
 result_success( null, array(
-		'count'	=> $favorited ?
-			(int) $exists_audio->favorites - 1
+		'count'	=> $is_favorited ?
+			(int) $audio->favorites - 1
 		:
-			(int) $exists_audio->favorites + 1
+			(int) $audio->favorites + 1
 	)
 );
