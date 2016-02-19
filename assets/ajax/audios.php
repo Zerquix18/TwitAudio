@@ -31,20 +31,20 @@ if( $page <= 1 || empty($query) )
 		__('There was an error while processing your request.'),
 		false
 	);
-$audio = $db->query(
+$user = $db->query(
 	"SELECT id FROM users WHERE user = ?",
 	$query
 );
-if( 0 == $audio->nums )
+if( 0 == $user->nums )
 	_result(
 		__('There was an error while processing your request.'),
 		false
 	);
-if( ! can_listen($audio->id) )
+if( ! can_listen($user->id) )
 	_result(
 		__('This user\'s audios are private.'),
 		false
 	);
 
-load_audios($audio->id, $page);
+load_audios($user->id, $page);
 		# user id, page

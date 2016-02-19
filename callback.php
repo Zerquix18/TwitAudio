@@ -29,7 +29,10 @@ if( ! validate_args(
 	|| $_SESSION['oauth_token'] !== $_GET['oauth_token']
 	)
 	ta_redirect('process.php?err=1');
-$twitter = new Twitter($_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
+$twitter = new Twitter(
+		$_SESSION['oauth_token'],
+		$_SESSION['oauth_token_secret']
+	);
 unset($_SESSION['oauth_token']);
 unset($_SESSION['oauth_token_secret']);
 $access_token = $twitter->callback($_GET['oauth_verifier']);

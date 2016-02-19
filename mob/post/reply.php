@@ -6,14 +6,15 @@
 * @copyright Copyright 2015 - Luis A. Martínez
 *
 **/
-require $_SERVER['DOCUMENT_ROOT'] . '/mob/load.php';
+require getenv('DOCUMENT_ROOT') . '/mob/load.php';
 checkAuthorization();
 if( 'POST' !== getenv('REQUEST_METHOD') )
 	exit;
 if( ! validate_args(
-	@$_POST['reply'],
-	@$_POST['s_twitter'],
-	@$_POST['id'])
+		@$_POST['reply'],
+		@$_POST['s_twitter'],
+		@$_POST['id']
+		)
 	)
 	result_error( __('Missing fields.'), 4);
 

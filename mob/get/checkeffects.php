@@ -6,24 +6,15 @@
 * @author Zerquix18 <zerquix18>
 * @copyright Copyright (c) 2016 - Luis A. Martínez
 **/
-require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/mob/load.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/assets/class.audio.php';
+checkAuthorization();
+header('Cache-Control: public, max-age=900');
 
-if( 'POST' !== getenv('REQUEST_METHOD') )
-	exit;
-
-if( ! is_logged() )
-	_result( __("Authentication required."), false);
-
-if( ! validate_args( $_POST['id']) )
-	_result(
-		__('There was an error while processing your request.'),
-		false
-	);
+if( ! validate_args( $_GET['id'])  )
+	result_error( __('Missing fields.'), 4);
 if( ! isset($_SESSION[ $_POST['id'] ] ) )
-	_result(
-		__('There was an error while processing your request.'),
-		false
-	);
+	result_error( __('ID does not exist.'), false);
 
 $loaded_effects = get_finished_effects(
 		$_SESSION[ $_POST['id'] ]['effects']
@@ -31,8 +22,7 @@ $loaded_effects = get_finished_effects(
 
 $loaded_effects_count = count($loaded_effects);
 
-$are_all_loaded =
-count( get_available_effects() ) === $loaded_effects_count;
+$are_all_loaded = count( get_available_effects() ) === $loaded_effects_count;
 
 for($i = 0; $i < $loaded_effects_count; $i++) {
 	/* replaces the 'file' key. Instead of a full path for backend
@@ -49,4 +39,5 @@ $return = array(
 		'loaded_effects'	=>	$loaded_effects,
 		'are_all_loaded'	=>	$are_all_loaded
 	);
-_result( null, true, $return );
+
+result_success(null, $return);

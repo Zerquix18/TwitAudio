@@ -39,74 +39,29 @@ move_uploaded_file(
 		__('There was an error while processing audio')
 	);
 // $file is a temporary file... just to validate 
-$audio = new Audio( $file );
+$audio = new Audio( $file, array(
+		'validate'	=>	true,
+		'max_duration'  =>	get_user_limit('audio_duration'),
+		'is_voice'	=>	$is_voice,
+		'decrease_bitrate' =>   ! is_paid_user(),
+	)
+);
 if( $audio->error )
 	result_error( $audio->error, $audio->error_code );
 // ------------- audio processed ---------
-$description = validate_args( $_POST['description'] ) ?
-	trim( $_POST['description'] )
-:
-	false;
-$s_twitter = validate_args( $_POST['s_twitter'])
-	&& in_array( $_POST['s_twitter'], array('1', '0') ) ?
-		$_POST['s_twitter']
-	:
-		false;
-if( ! ($description && $s_twitter) )
-	result_error(
-			__("There was an error")
-		);
-if( mb_strlen($description, 'utf-8') > 200 )
-	result_error(
-			__("The description can't be longer than 200 characters")
-		);
-while( file_exists(
-	$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' .
-	$new_name = substr( md5( uniqid() . rand(1,100) ), 0, 26 ) . '.mp3'
-	)
-);
-// $n is now the new name
-// look at this trick
-rename( $file, $new_name ); //magic!
+$id = uniqid();
 
-$db->insert("audios", array(
-		$audio_id = generate_id(), // the id
-		$_USER->id, // user id
-		$new_name, // nameofthefile.mp3
-		0, // reply_to 
-		$description,
-		0, // twitter id
-		time(),
-		0, // plays
-		0, // favorites
-		floor( $a->info['playtime_seconds'] ),
-		$is_voice
-	)
-);
-
-if( '1' == $send_to_twitter ) {
-	// magic!
-	$tweet = 'https://twitaudio.com/'. $audio_id;
-	$tweet_length = strlen($tweet);
-	if( strlen($description) > (140-$tweet_length) )
-		$description = substr(
-				$description,
-				0,
-				140-$tweet_length-4
-			) . '...';
-	$tweet = $description . ' ' . $tweet;
-	if( $tweet_id = $twitter->tweet($tweet) )
-		$db->update("audios", array(
-				"tw_id" => $tweet_id
-			)
-		)->where("id", $audio_id)->_();
-}
-
-result_success( true, json_display_audio(
-		$db->query(
-				'SELECT * FROM audios
-				WHERE id = ?',
-				$audio_id
-			)
+$_SESSION[$id] = array(
+		'tmp_url'  => $audio->audio,
+		'is_voice' => $is_voice,
+		'duration' => floor( $audio->info['playtime_seconds'])
+	);
+$_SESSION[$id]['effects'] = apply_audio_effects(
+		$audio->audio,
+		get_available_effects()
+	);
+result_success( null, array(
+		'id'		=>	$id,
+		'tmp_url'	=>	$audio->audio
 	)
 );

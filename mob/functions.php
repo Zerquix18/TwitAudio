@@ -65,7 +65,7 @@ function json_display_audio( $audio, $profile_extra = false ) {
 			'plays' 		=> (int) $audio['plays'],
 			'favorites' 	=> (int) $audio['favorites'],
 			'duration' 	=> (int) $audio['duration'],
-			'favorited' 	=> $is_favorited
+			'favorited' 	=> $is_favorited,
 			'replies_count' => $replies_count,
 		);
 }

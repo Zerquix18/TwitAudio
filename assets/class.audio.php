@@ -41,8 +41,8 @@ class Audio {
 	}
 	private function load_options( array $options ) {
 		$default_options = array(
-				'validate'		=> true,
-				'is_voice'		=> false,
+				'validate'			=> true,
+				'is_voice'			=> false,
 				'decrease_bitrate' 	=> false,
 				'max_duration'		=> '120',
 			);

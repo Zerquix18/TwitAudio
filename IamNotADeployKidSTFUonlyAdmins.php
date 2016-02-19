@@ -1,4 +1,6 @@
 <?php
+ignore_user_abort(true);
+set_time_limit(0);
 // devuelve todo al estado del último commit local, sin borrar archivos nuevos.
 shell_exec('git reset --hard HEAD');
 // actualiza nuevamente todo, sin borrar archivos nuevos.
