@@ -54,6 +54,7 @@ class LoginController {
 	private function callback() {
 		if( isset($_SESSION['back_to']) ) { 
 			$back_to = $_SESSION['back_to'];
+			unset($_SESSION['back_to']);
 		} else {
 			$back_to = url();
 		}

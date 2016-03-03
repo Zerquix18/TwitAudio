@@ -260,7 +260,7 @@ class User extends \application\ModelBase {
 				$sess_id,
 				$sess_time = time(),
 				\get_ip(),
-				'1'
+				'mobile' == $via ? '1' : '0'
 			)
 		);
 
