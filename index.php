@@ -71,7 +71,7 @@ spl_autoload_register( function ( $name ) use ($_CONFIG) {
 use \application\AltoRouter;
 
 $router = new AltoRouter();
-$router->setBasePath( str_replace( '/var/www', '', getcwd() ) );
+$router->setBasePath( $_CONFIG['base_path'] );
 $router->addMatchTypes( array(
 		'valid_username' 	=> '([\w]{2,15})',
 		'valid_audio_id'	=> '([A-Za-z0-9]{6})',
