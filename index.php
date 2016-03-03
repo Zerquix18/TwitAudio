@@ -1,104 +1,148 @@
 <?php
 /**
+* Home File
+* This file loads and routes everythin'!
 *
-* The home page
-* This routes everything and calls the templates
-* @author Zerquix18 <zerquix18@hotmail.com>
-* @copyright Copyright (c) 2015 Luis A. Martínez
+* @author Zerquix18
+* @copyright Copyright (c) 2016 - Luis A. Martínez
 *
 **/
-/* requires everything */
-require $_SERVER['DOCUMENT_ROOT'] . '/load.php';
-/*
-* ?p_ is routed by the .htaccess file
-* But it can be discovered, so don't trust it
-*/
-$page = isset($_GET['_p']) && is_string($_GET['_p']) ? $_GET['_p'] : '';
-switch($page):
-	case "audio":
-		if( ! is_audio_id_valid( $_GET['id'] ) )
-			return load_full_template('404');
-		$audio = $db->query(
-			"SELECT * FROM audios
-			WHERE id = ? AND status = '1'",
-			$_GET['id']
+
+/** configuration **/
+$_CONFIG = parse_ini_file('config.ini');
+$_SERVER['DOCUMENT_ROOT'] = $_CONFIG['document_root'];
+
+if( '1' == $_CONFIG['display_errors'] )
+	error_reporting(E_ALL);
+else
+	error_reporting(0);
+
+if( '1' == $_CONFIG['minify_html'] )
+	ob_start( function($output) {
+		return preg_replace(
+			['/\>[^\S ]+/s','/[^\S ]+\</s','/(\s)+/s'],
+			['>','<','\\1'],
+			$output
 		);
-		if( 0 == $audio->nums )
-			return load_full_template('404');
-		if( '0' != $audio->reply_to ) // if it's a reply
-			ta_redirect(
-				url() . $audio->reply_to .
-				'?reply_id=' . $audio->id
-			);
-		$user = $db->query(
-			'SELECT * FROM users WHERE id = ?',
-			$audio->user
-		);
-		$_BODY['audio'] = $audio;
-		$_BODY['user'] = $user;
-		load_full_template('audio');
-		break;
-	case "search":
-		load_full_template('search');
-		break;
-	case "frame":
-		if( ! validate_args( $_GET['id'] ) )
-			return load_full_template('404');
-		if( ! is_audio_id_valid( $_GET['id'] ) )
-			return load_full_template('404');
-		$audio = $db->query(
-			"SELECT * FROM audios
-			WHERE id = ? AND status = '1'",
-			$_GET['id']
-		);
-		if( 0 == $audio->nums )
-			return load_full_template('404');
-		$user = $db->query(
-			"SELECT audios_public FROM users
-			WHERE id = ?",
-			$audio->user
-		);
-		if( '0' == $user->audios_public )
-			return load_full_template('404');
-		$_BODY['audio'] = $audio;
-		load_full_template('frame');
-		break;
-	case "profile":
-	// even if this is routed by the htaccess
-	// imma never trust it ↓
-		if( ! validate_args(@$_GET['u']) )
-			return load_full_template('404');
-		$user = $db->query(
-			'SELECT * FROM users WHERE user = ?',
-			$_GET['u']
-		);
-		if( $user->nums === 0 )
-			return load_full_template('404');
-		$_BODY['user'] = $user;
-		load_full_template('profile');
-		break;
-	case "text":
-	// I can see goku making a kame ha below
-		if( ! isset($_GET['txt'])
-			|| ! in_array(
-				$_GET['txt'],
-				array(
-					'about',
-					'privacy',
-					'tos',
-					'faq',
-					)
-				)
+	});
+else
+	ob_start();
+
+/** database connection **/
+require $_SERVER['DOCUMENT_ROOT'] . '/application/class.zerdb.php';
+try {
+	$db = new zerdb(
+		$_CONFIG['host'],
+		$_CONFIG['user'],
+		$_CONFIG['password'],
+		$_CONFIG['database']
+	);
+	if( ! $db->ready )
+		throw new \Exception( $db->error );
+
+} catch( \Exception $e ) {
+	if( $_CONFIG['display_errors'] )
+		echo $e->getMessage();
+	else
+		exit( file_get_contents('assets/templates/error-500.html') );
+}
+
+require $_SERVER['DOCUMENT_ROOT'] . '/application/functions.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/application/i18n.php';
+
+$_USER = ( $id = is_logged() ) ?
+		$db->query(
+				'SELECT * FROM users WHERE id = ?',
+				$id
 			)
-			return load_full_template('404');
-		load_full_template('text');
-		break;
-	default: # its hard to read but funny :v
-		is_logged() ?
-			isset($_GET['logout']) ?
-				load_full_template('index')
-			:
-				load_full_template('default')
-		:
-			load_full_template('index');
-endswitch;
+	:
+		NULL;
+
+spl_autoload_register( function ( $name ) use ($_CONFIG) {
+	$file = str_replace('\\', '/', $name);
+	$file = $_SERVER['DOCUMENT_ROOT'] . '/' . $file . '.php';
+	if( file_exists( $file ) )
+		require $file;
+});
+
+/** Now JUST DO IT! **/
+
+use \application\AltoRouter;
+
+$router = new AltoRouter();
+$router->setBasePath( str_replace( '/var/www', '', getcwd() ) );
+$router->addMatchTypes( array(
+		'valid_username' 	=> '([\w]{2,15})',
+		'valid_audio_id'	=> '([A-Za-z0-9]{6})',
+	)
+);
+
+/** Map common pages **/
+
+$router->map('GET', '/[signin|callback:login]', function( $login ) {
+	return new \controllers\LoginController( $login );
+});
+
+$router->map('GET|POST|DELETE|PUT', '/', function() {
+	return new \controllers\FrontController();
+});
+
+$router->map(
+		'GET', '/[about|terms|privacy|faq:page]', function( $page ) {
+			return new \controllers\TextPagesController( $page );
+		}
+	);
+
+$router->map(
+		'GET',
+		'/[audios|favorites:profile_page]/[valid_username:user]',
+		function( $profile_page, $user ) {
+			return new \controllers\ProfileController(
+						$profile_page,
+						$user
+					);
+		}
+	);
+
+$router->map('GET', '/search', function() {
+	return new \controllers\SearchController();
+});
+
+/**
+*    ^ That guy must be above 
+*because if it's not the guy below will catch it
+**/
+
+$router->map('GET', '/[valid_audio_id:audio_id]', function( $audio_id) {
+	return new \controllers\AudioController( $audio_id );
+});
+
+$router->map('GET', '/frame/[valid_audio_id:audio_id]', function( $id ) {
+	return new \controllers\FrameController( $id );
+});
+
+/** Route AJAX & Mobile requests **/
+$router->map(
+		'GET|POST',
+		'/[ajax|mob:via]/[get|post:method]/[a:action]',
+		function( $via, $method, $action ) {
+			return new \controllers\MobileAJAXController(
+					$via, $method, $action
+				);
+		}
+	);
+
+$router->map('GET', '/re-update-943', function() {
+	exec('./re-update.sh', $output);
+	echo implode("\n", $output);
+});
+
+/** end routes, match em'! **/
+
+$match = $router->match();
+
+if( $match && is_callable( $match['target'] ) )
+	call_user_func_array( $match['target'], $match['params'] );
+else
+	\application\Views::load_full_template('404');

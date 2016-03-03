@@ -1,0 +1,179 @@
+<?php
+/**
+* The header template
+* Included in all files
+* @author Zerquix18
+* @copyright Copyright (c) 2015 Luis A. Martínez
+*
+**/
+use \application\Views;
+use \application\HTTP;
+
+if( ! isset($template['robots']) )
+	$template['robots'] = true;
+?>
+<!DOCTYPE html>
+<html lang="<?php echo getlang() ?>">
+<head>
+	<title><?php
+		if( isset($template['title']) )
+			echo $template['title'] . ' | '
+	?>TwitAudio
+	</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="title" content="<?php echo $title ?>">
+	<meta name="template['robots']"
+	content="<?php
+	echo $template['robots'] ? 'index,follow' : 'noindex,nofollow'
+	?>">
+	<link rel="stylesheet" href="<?php Views::load_style('materialize.css') ?>">
+	<link rel="stylesheet" href="<?php Views::load_style('default.css') ?>">
+	<link rel="stylesheet" href="<?php Views::load_style('font-awesome.css') ?>">
+	<link rel="apple-touch-icon" href="<?php Views::load_img('apple-icon.png') ?>">
+	<link rel="icon" href="<?php Views::load_img('favicon.ico') ?>">
+	<?php if( ! Views::is('index') ): ?>
+	<script src="<?php Views::load_script('jquery-1.11.3.min.js') ?>"></script>
+	<?php endif;
+	if( Views::is('audio') && $template['robots']): ?>
+	<meta name="twitter:player" content="<?php echo 'https://twitaudio.com/frame/' . $audio->id ?>">
+	<meta name="twitter:player:height" content="47">
+	<meta name="twitter:player:width" content="435">
+	<meta name="twitter:card" content="player">
+	<meta name="twitter:site" content="@twit_audio">
+	<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $audio->user->user) ?>">
+	<meta name="twitter:image" content="https://twitaudio.com/assets/img/image.jpg">
+	<meta name="twitter:url" content="https://twitaudio.com/<?php echo $audio->id ?>">
+	<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
+	<?php elseif( ! Views::is('404') ): ?>
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@twit_audio" />
+	<meta name="twitter:title" content="TwitAudio" />
+	<meta name="twitter:description" content="Share voice notes and audio files with Twitter" />
+	<meta name="twitter:image" content="<?php Views::load_img('logo-md.png') ?>" />
+	<?php endif ?>
+	<meta property="og:title" content="TwitAudio">
+	<meta property="og:image" content="<?php Views::load_img('logo-md.png') ?>">
+</head>
+<body <?php
+if( Views::is('txt') ) echo 'id="txt"';
+if( Views::is('404') ) echo 'id="p404"';
+if( Views::is('index') ) echo 'class="white"';
+?>>
+<?php
+$show_sidebar = ! Views::is('404', 'txt');
+if( ! Views::is('index') ): // do I show navbar? if it not home page
+if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
+?>
+<div id="slide-out" class="side-nav fixed  grey darken-3">
+	<form method="GET" action="<?php echo url() . 'search' ?>">
+		<div class="input-field">
+			<input
+				type="text"
+				class="validate"
+				id="q"
+				name="q"
+				title="<?php
+				_e('Type something to search')
+				?>"
+				>
+			<label for="q">
+				<i class="fa fa-search"></i>
+				&nbsp;Search...
+			</label>
+		</div>
+	</form>
+	<ul id="userthings">
+		<li>
+			<a
+			title="<?php _e('Go to the home page') ?>"
+			href="<?php echo url() ?>">
+				<i class="fa fa-home"></i>
+				<?php _e('Home') ?>
+			</a>
+		</li>
+	<?php if( ! is_logged() ): ?>
+		<li>
+			<a href="<?php
+			echo url('signin?back_to=') .
+			urlencode( url( substr($_SERVER['REQUEST_URI'], 1) ) )
+			?>">
+				<i class="fa fa-twitter"></i>
+				<?php _e('Sign in with Twitter') ?>
+			</a>
+		</li>
+	<?php else:
+	// get counts
+	$user = new \models\User();
+	$audios = $user->get_audios_count();
+	$favorites = $user->get_favorites_count();
+	?>
+		<li>
+			<a
+			title="<?php _e('Go to your profile') ?>"
+			href="<?php echo url('audios/' . $user->user->user ) ?>">
+				<img
+				id="pp" class="circle" width="25" height="25"
+				src="<?php echo $user->user->avatar ?>"
+				onerror="this.src='<?php Views::load_img('unknown.png') ?>'" >
+				&nbsp;
+				<?php echo HTTP::XSSprotect( $user->user->name ) ?>
+			</a>
+		</li>
+		<li>
+			<a
+			title="<?php _e('See your audios') ?>"
+			href="<?php echo url('audios/' . $user->user->user) ?>">
+				<i class="fa fa-headphones"></i>
+				Audios
+				<?php if( $audios ): ?>
+				<span class="right bdge blue lighten-2">
+				<?php echo format_number($audios) ?>
+				</span>
+				<?php endif ?>
+			</a>
+		</li>
+		<li>
+			<a
+			title="<?php _e('See your favorites') ?>"
+			href="<?php
+				echo url('favorites/' . $user->user->user)
+			?>">
+				<i class="fa fa-star"></i>
+				<?php _e('Favorites') ?>
+				<?php if( $favorites ): ?>
+				<span class="right bdge yellow darken-2">
+				<?php echo format_number($favorites) ?>
+				</span>
+				<?php endif ?>
+			</a>
+		</li>
+		<li>
+			<a href="#settings" class="modal-trigger waves-effect waves-light">
+				<i class="fa fa-cog"></i>
+				<?php _e('Settings') ?>
+			</a>
+		</li>
+		<li>
+			<a href="<?php echo url('?logout=1') ?>">
+				<i class="fa fa-sign-out"></i>
+				<?php _e('Log out') ?>
+			</a>
+		</li>
+		<?php endif ?>
+	</ul>
+</div>
+<?php
+endif;
+?>
+<div class="navbar-fixed">
+	<nav class="blue lighten-2 <?php if($show_sidebar) echo 'content' ?>">
+	<?php if( $show_sidebar ): ?>
+		<a href="javascript:void(0);" data-activates="slide-out" class="button-collapse" id="open_sidebar"><i class="mdi-navigation-menu"></i></a>
+	<?php endif ?>
+		<div class="nav-wrapper">
+			<a href="<?php echo url() ?>" class="brand-logo center logo">TwitAudio</a>
+		</div>
+	</nav>
+</div>
+<?php endif ?>

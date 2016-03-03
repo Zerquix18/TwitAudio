@@ -1,0 +1,35 @@
+<?php
+/**
+*
+* Template file for text pages
+*
+* @author Zerquix18 
+**/
+
+use \application\Views;
+
+Views::set_page('txt');
+
+$replace = array(
+		'about' 	=> __('About'),
+		'tos' 		=> __('Terms of Service'),
+		'privacy' 	=> __('Privacy Policy'),
+		'faq' 		=> 'FAQ',
+		'contact' 	=> __('Contact')
+	);
+Views::load_template('header', array(
+		'title' 	=> str_replace(
+							array_keys($replace),
+							array_values($replace),
+							$template['page']
+						)
+	)
+)
+?>
+<div class="container">
+	<div id="alltxt">
+		<?php echo $template['text'] ?>
+	</div>
+</div>
+<?php Views::load_template('footer');
+/* COUNTDOWN TO THE SCIENTIST! */

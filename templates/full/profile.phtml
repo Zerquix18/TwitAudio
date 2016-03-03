@@ -1,0 +1,112 @@
+<?php
+
+use \application\Views;
+use \application\HTTP;
+
+Views::set_page('profile');
+$user 	 = $template['user'];
+$page 	 = $template['page'];
+$errors  = $template['errors'];
+$content = $template['content'];
+$total_audios	 = $template['total_audios'];
+$total_favorites = $template['total_favorites'];
+
+if( 'favorites' == $page )
+	$title = sprintf( __('%s favorites'), $user->user );
+else
+	$title = sprintf( __('%s audios'), $user->user);
+Views::load_template('header', array(
+		'title'	=> $title
+	)
+);
+?>
+<div class="content" id="main">
+	<div class="row">
+		<div class="col l9 m12 s12">
+			<div class="box">
+				<img
+				src="<?php echo \get_avatar($user->avatar) ?>"
+				class="circle z-depth-3 materialboxed"
+				id="propic"
+				data-caption="<?php
+				echo sprintf(
+					__("%s's profile picture"),
+					$user->user
+				)
+				?>"
+				onerror="this.src='<?php Views::load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
+				>
+				<h5 id="name">
+					<?php
+					echo HTTP::XSSprotect($user->name);
+					Views::show_verified_badge($user->verified)
+					?>
+				</h5>
+				<p id="user" class="grey-text lighten-2-text">
+					@<?php echo $user->user ?>
+				</p>
+				<div id="bio">
+			<?php echo HTTP::XSSprotect($user->bio) ?>
+				</div>
+				<ul class="tabs" id="pnavigation">
+					<li class="tab">
+						<a class="blue-text <?php
+					if( 'audios' == $page ) echo 'active' ?>"
+						href="<?php
+			echo url() . 'audios/' . $user->user
+						?>">
+						<?php _e('Audios') ?>&nbsp;
+		<?php if( false !== $content && $total_audios > 0 ): ?>
+							<span class="bdge blue lighten-2">
+				<?php echo format_number($total_audios) ?>
+							</span>
+		<?php endif ?>
+						</a>
+					</li>
+					<li class="tab">
+						<a class="blue-text <?php
+					if( 'favorites' == $page ) echo 'active' ?>"
+						href="<?php
+			echo url() . 'favorites/' . $user->user
+						?>">
+						<?php _e('Favorites') ?>&nbsp;
+			<?php if( false !== $content && $total_favorites > 0 ): ?>
+							<span class="bdge yellow darken-2">
+				<?php echo format_number($total_favorites) ?>
+							</span>
+			<?php endif ?>
+						</a>
+					</li>
+				</ul>
+				<div id="<?php
+				if( 'favorites' == $page )
+					echo 'favorites';
+				else
+					echo 'audios'
+				?>">
+		<?php
+			if( false == $content ) {
+				alert_error($errors['forbidden']);
+			}elseif( 0 == count( $content['audios']) ) {
+				alert_error($errors['empty']);
+			}else{
+
+				while( list(,$audio) = each($content['audios']) )
+					Views::display_audio( $audio );
+				if( $content['load_more'] )
+					Views::load_more( $page, 2);
+
+			}
+		?>
+				</div>
+			</div>
+		</div>
+		<div class="col l3 m12 s12">
+			<?php Views::load_template('sidebar') ?>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+var profile = '<?php echo $user->user ?>';
+</script>
+<?php Views::load_template('footer');

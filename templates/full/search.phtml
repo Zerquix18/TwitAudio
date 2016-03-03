@@ -1,0 +1,103 @@
+<?php
+use \application\Views, \application\HTTP;
+
+Views::set_page('search');
+
+$query = $template['query'];
+$type  = $template['type'];
+$sort  = $template['order'];
+$content = $template['content'];
+
+$title =  HTTP::XSSProtect( $query ) . ' ' . __('Search');
+
+Views::load_template('header', array(
+		'title'	=> $title
+	)
+);
+
+?>
+<div class="content" id="main">
+	<div class="row">
+		<div class="col l9 m12 s12">
+			<div class="box">
+				<form method="GET" action="<?php echo url() . 'search' ?>">
+				<div class="input-field">
+					<input type="text" class="validate" name="q" id="s">
+					<label for="s">
+						<i class="fa fa-search"></i>
+						&nbsp;<?php _e('Search...') ?>
+					</label>
+				</div>
+				<div id="search_options">
+				<div class="input-field col s3 left">
+				<select id="search_type" name="t">
+					<option value="a"
+					<?php if( 'a' == $type )
+					echo 'selected="selected"'
+					?>><?php _e('Audios') ?></option>
+					<option value="u"
+					<?php if( 'u' == $type )
+					echo 'selected="selected"'
+					?>><?php _e('Users') ?></option>
+				</select>
+				<label><?php _e('Type') ?></label>
+				</div>
+				<div class="input-field col s3 right">
+				<select id="search_sort" name="s"
+				<?php
+				if( 'u' == $type )
+					echo 'disabled="disabled"';
+				?>>
+					<option value="d"
+					<?php if( 'd' == $sort )
+					echo 'selected="selected"'
+					?>><?php _e('Date') ?></option>
+					<option value="p"
+					<?php if( 'p' == $sort )
+					echo 'selected="selected"'
+					?>><?php _e('Plays') ?></option>
+				</select>
+				<label><?php _e('Sort') ?></label>
+				</div>
+  				</div>
+  				<button id="search_button" type="submit" class="waves-effect waves-light btn blue lighten-1">
+  					<?php _e('Search') ?>
+  				</button>
+  				</form>
+  				<div class="divider search"></div>
+  				<p class="title"><?php _e('Results') ?></p>
+  				<div id="search">
+  				<?php
+  				if( ! empty($query) ) {
+  					$function_to_call =
+  						$type == 'a' ? 'display_audio' : 'display_user';
+  					while( list(,$audio) = each($content['audios']) )
+  						Views::$function_to_call( $audio );
+
+  					if( $content['load_more'] )
+  						Views::load_more('search', 2);
+  				} else
+  					''; // add a pretty message
+  				?>
+  				</div>
+  			</div>
+		</div>
+		<div class="col l3 m12 s12">
+			<?php Views::load_template('sidebar') ?>
+		</div>
+	</div>
+</div>
+<?php if( ! empty($query) ): ?>
+<script type="text/javascript">
+window.onload = function() {
+	$("#q, #s").val( decodeURIComponent("<?php echo urlencode($query) ?>") );
+	$("#q, #s").addClass('valid');
+	$("label[for='s'], label[for='q']").addClass('active');
+};
+var
+search = "<?php echo urlencode($query) ?>",
+type = "<?php echo $type ?>",
+sort = "<?php echo $sort ?>";
+</script>
+<?php
+endif; Views::load_template('footer');

@@ -1,0 +1,79 @@
+<?php
+/**
+* had to drink coffee to do this...
+* this file will be required in the footer
+* it gonna show the info after login or logout in any page
+* let's go
+**/
+use \application\Views;
+
+#first, show the modal if it's the first time the user logs in
+
+if( ! Views::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
+	unset($_SESSION['first_time']) ?>
+ <div id="welcome" class="modal bottom-sheet">
+	<div class="modal-content">
+		<h4>
+			<?php _e('Welcome') ?>
+		</h4>
+		<p>
+			<?php _e('Welcome to TwitAudio! We are very happy that you are here.') ?>
+		</p>
+		<p>
+<?php
+	$status = (int) $_USER->audios_public ? __('public') : __('private');
+	echo sprintf(
+		__('Your audios were set as %1$s because your tweets are also %1$s. You can change this on your <a href="#settings" class="modal-trigger">Settings</a>.'), $status
+		);
+?>
+		</p>
+		<p>
+<?php
+	echo sprintf(
+			__('By using TwitAudio, you agree with our <a href="%s">terms and conditions</a>.'),
+			url() . 'terms'
+		);
+?>
+		</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+	</div>
+</div>
+<script>
+window.onload = function() {
+	$("#welcome").openModal();
+};
+</script>
+<?php endif; // endif first time
+
+# so finally, show the messages of error
+$logout_request = Views::is('index')
+					&& is_logged()
+					&& \application\HTTP::get('logout');
+					
+$login_error = isset($_SESSION['login_error']);
+if( ! Views::is('404', 'txt') && ( $logout_request || $login_error) ):
+	if( $logout_request):
+		session_logout(); // defined in application/session.php
+	?>
+		<script>window.onload = function() {
+			display_info("<?php _e('You are now logged out.') ?>", 10000);
+		};</script>
+<?php elseif( $login_error ): // if not logout ?>
+		<script>window.onload = function() {
+			display_error("<?php echo $_SESSION['login_error'] ?>", 10000);
+		};</script>
+<?php
+		unset($_SESSION['login_error']);
+endif;
+if( Views::is('index') ):
+#in index these scripts never load. in this case they must
+?>
+<script src="<?php Views::load_script('jquery-1.11.3.min.js') ?>"></script>
+<script src="<?php Views::load_script('materialize.js') ?>"></script>
+<script src="<?php Views::load_script('default.js') ?>"></script>
+<?php
+endif; // end if is index
+
+endif; // endif something was requested

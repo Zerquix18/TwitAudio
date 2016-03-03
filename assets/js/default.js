@@ -158,7 +158,7 @@ function up_form( is_voice ) {
 			$("#up_progress").width("100%");
 			var result = JSON.parse(xhr.responseText);
 			if( false === result.success ) {
-				if( typeof result.extra == 'undefined' ) {
+				if( typeof result.tmp_url == 'undefined' ) {
 					$("#loading").hide();
 					$("#up_progress").width(0);
 					$("#post").show();
@@ -166,7 +166,7 @@ function up_form( is_voice ) {
 					return;
 				}
 				unfinishedaudio('start');
-				tmp_preview_url = result.extra.tmp_url;
+				tmp_preview_url = result.tmp_url;
 				$("#player_cut").jPlayer({
 					ready: function(event) {
 						$(this).jPlayer("setMedia", {
@@ -187,13 +187,13 @@ function up_form( is_voice ) {
 				$("#loading").hide();
 				$("#up_progress").width(0);
 				$("#cut_form").show();
-				$("#audio_id").val( result.extra.id );
+				$("#audio_id").val( result.id );
 				return;
 			}
 			unfinishedaudio('start');
-			load_effects( result.extra.id );
-			load_post_form(result.extra.id, result.extra.tmp_url);
-			$(".original").data('url', result.extra.tmp_url);
+			load_effects( result.id );
+			load_post_form(result.id, result.tmp_url);
+			$(".original").data('url', result.tmp_url);
 		}
 	};
 	if( is_voice && recorderJS ) {
@@ -333,7 +333,7 @@ function load_effects( audio_id ) {
 			}
 			/* fun starts here */
 			/** load all the audios with effects **/
-			var loaded_effects = result.extra.loaded_effects;
+			var loaded_effects = result.loaded_effects;
 			for( var i = 0; i < loaded_effects.length; i++) {
 				// 2 keys: file for the path,
 				// and name for the effect name
@@ -371,7 +371,7 @@ function load_effects( audio_id ) {
 				$("#effect_" + name + " > .loading").hide();
 				$("#effect_" + name + " > .preview").show();
 			}
-			if( result.extra.are_all_loaded ) {
+			if( result.are_all_loaded ) {
 				clearInterval(load_effects_interval);
 				all_effects_loaded = true;
 				added_effects = [];
@@ -567,9 +567,9 @@ $("#cut_form").ajaxForm({
 			return;
 		}
 		$("#cut_form").trigger('reset');
-		load_effects( result.extra.id );
-		load_post_form( result.extra.id, result.extra.tmp_url);
-		$(".original").data('url', result.extra.tmp_url);
+		load_effects( result.id );
+		load_post_form( result.id, result.tmp_url);
+		$(".original").data('url', result.tmp_url);
 	}
 });
 $("#post_form").ajaxForm({
@@ -645,7 +645,7 @@ $(document).on('click', '.laic', function(e) {
 				}
 				return display_error(result.response);
 			}
-			last_laic_id.find('span').html(result.extra.count);
+			last_laic_id.find('span').html(result.count);
 		}
 	});
 });
@@ -664,7 +664,7 @@ $(document).on('click', '.plei', function(e) {
 			if( ! result.success )
 				return;
 			$( '#plays_' + playeds[ playeds.length - 1 ] )
-				.find('span').html( result.extra.count );
+				.find('span').html( result.count );
 		}
 	});
 });
