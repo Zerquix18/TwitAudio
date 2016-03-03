@@ -1,0 +1,10 @@
+ErrorDocument 404 /index.php
+
+RewriteEngine On
+
+#dont map these files
+RewriteCond %{REQUEST_URI} !(\.css|\.js|\.png|\.jpg|\.gif|\.mp3|\.ogg|\.eot|\.svg|\.ttf|\.woff|\.woff2|\.otf|\.ico|\.swf)$ [NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
