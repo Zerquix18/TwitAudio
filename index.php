@@ -89,7 +89,7 @@ $router->map('GET|POST|DELETE|PUT', '/', function() {
 });
 
 $router->map(
-		'GET', '/[about|terms|privacy|faq:page]', function( $page ) {
+		'GET', '/[about|terms|privacy|faq|licensing:page]', function( $page ) {
 			return new \controllers\TextPagesController( $page );
 		}
 	);

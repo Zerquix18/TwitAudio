@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS payments (
 	`time` int(32) NOT NULL,
 	`ip` varchar(32) NOT NULL
 );
-CREATE TABLE IF NOT EXISTS paypal_paymets (
+CREATE TABLE IF NOT EXISTS paypal_payments (
 	`payment_id` int(6) NOT NULL,
 	`paypal_payment_id` varchar(40) NOT NULL,
 	`paypal_token` varchar(20) NOT NULL,

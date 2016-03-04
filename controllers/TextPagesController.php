@@ -22,11 +22,14 @@ class TextPagesController {
 		$file = $_SERVER['DOCUMENT_ROOT'] .
 			'/application/html/' .$page . '.html';
 			
-		if( ! file_exists($file ) || ! is_readable($file) )
+		if( ! file_exists( $file ) || ! is_readable($file) )
 			Views::exit_404();
 
+		$text = file_get_contents( $file );
+		$text = nl2br( $text );
+
 		$template = array(
-				'text'		=>		file_get_contents( $file ),
+				'text'		=>		$text,
 				'page'		=> 		$page
 			);
 

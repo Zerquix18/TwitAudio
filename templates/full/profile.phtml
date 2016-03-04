@@ -27,7 +27,7 @@ Views::load_template('header', array(
 				<img
 				src="<?php echo \get_avatar($user->avatar) ?>"
 				class="circle z-depth-3 materialboxed"
-				id="propic"
+				id="profile_picture"
 				data-caption="<?php
 				echo sprintf(
 					__("%s's profile picture"),
@@ -48,7 +48,7 @@ Views::load_template('header', array(
 				<div id="bio">
 			<?php echo HTTP::XSSprotect($user->bio) ?>
 				</div>
-				<ul class="tabs" id="pnavigation">
+				<ul class="tabs" id="profile_navigation">
 					<li class="tab">
 						<a class="blue-text <?php
 					if( 'audios' == $page ) echo 'active' ?>"
@@ -57,7 +57,7 @@ Views::load_template('header', array(
 						?>">
 						<?php _e('Audios') ?>&nbsp;
 		<?php if( false !== $content && $total_audios > 0 ): ?>
-							<span class="bdge blue lighten-2">
+							<span class="_badge blue lighten-2">
 				<?php echo format_number($total_audios) ?>
 							</span>
 		<?php endif ?>
@@ -71,7 +71,7 @@ Views::load_template('header', array(
 						?>">
 						<?php _e('Favorites') ?>&nbsp;
 			<?php if( false !== $content && $total_favorites > 0 ): ?>
-							<span class="bdge yellow darken-2">
+							<span class="_badge yellow darken-2">
 				<?php echo format_number($total_favorites) ?>
 							</span>
 			<?php endif ?>

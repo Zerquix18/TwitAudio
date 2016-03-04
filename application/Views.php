@@ -114,7 +114,7 @@ class Views {
 		<?php endif ?>
 			>
 		</a>
-		<span class="name">
+		<span class="audio_user_name">
 			<a
 			class="nodeco"
 			href="<?php echo $profile_url ?>"
@@ -122,7 +122,7 @@ class Views {
 				<?php echo HTTP::XSSprotect( $user->name ) ?>
 			</a>
 		</span>
-		<span class="uname">
+		<span class="audio_user_user">
 			<a
 			class="nodeco"
 			href="<?php echo $profile_url ?>"
@@ -130,7 +130,7 @@ class Views {
 				@<?php echo $user->user ?>
 			</a>
 		</span>
-		<span class="adate">
+		<span class="audio_date">
 			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
 			<a href="<?php
 			echo \url();
@@ -216,7 +216,7 @@ class Views {
 	<div class="audio_footer">
 	<?php if( ! empty($audio->audio) ): # if not a reply ?>
 		<a
-		class="audiobtn"
+		class="audio_btn"
 		id="plays_<?php echo $audio->id ?>"
 		title="<?php
 		echo _n(
@@ -232,7 +232,7 @@ class Views {
 			</span>
 		</a>
 	<?php endif ?>
-		<a class="audiobtn
+		<a class="audio_btn
 		<?php if( is_logged() ):
 			echo 'laic';
 			if($audio->favorited)
@@ -246,7 +246,7 @@ class Views {
 			</span>
 		</a>
 	<?php if( ! empty($audio->audio) ): # if not a reply ?>
-		<a class="audiobtn"
+		<a class="audio_btn"
 		      href="<?php echo url() . $audio->id ?>#replies"
 		      title="<?php _e('Leave a reply') ?>"
 		      >
@@ -259,7 +259,7 @@ class Views {
 		if( is_logged() && $audio->user == $GLOBALS['_USER']->id ): ?>
 		<a
 		href="javascript:void(0);"
-		class="audiobtn delit"
+		class="audio_btn delit"
 		data-id="<?php echo $audio->id ?>"
 		title="<?php _e('Delete this audio') ?>"
 		>
@@ -279,14 +279,14 @@ class Views {
 					<img class="circle"
 						 src="<?php echo $user->avatar ?>"
 						 onerror="this.src='<?php
-						 Views::load_img('unknowin.png')
+						 Views::load_img('unknown.png')
 						 ?>'"
 						 height="48"
 						 width="48"
 					>
 				</a>
 			</li>
-		<li class="name">
+		<li class="audio_user_name">
 			<a href="<?php echo url() . 'audios/' . $user->user ?>">
 			<?php
 			echo \application\HTTP::XSSProtect( $user->name );
@@ -294,7 +294,7 @@ class Views {
 			?>
 			</a>
 		</li>
-		<li class="uname">
+		<li class="audio_user_user">
 			<a href="<?php echo url() . 'audios/' . $user->user ?>">
 				@<?php echo $user->user ?>
 			</a>
@@ -316,7 +316,7 @@ class Views {
 		echo '<div class="alert info">'. $info . '</div>';
 	}
 
-	public static function exit_404( $mss = '404' ) {
+	public static function exit_404() {
 		self::load_full_template('404');
 		exit;
 	}

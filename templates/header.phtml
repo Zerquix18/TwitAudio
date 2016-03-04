@@ -22,8 +22,7 @@ if( ! isset($template['robots']) )
 	</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="title" content="<?php echo $title ?>">
-	<meta name="template['robots']"
+	<meta name="robots"
 	content="<?php
 	echo $template['robots'] ? 'index,follow' : 'noindex,nofollow'
 	?>">
@@ -57,7 +56,7 @@ if( ! isset($template['robots']) )
 </head>
 <body <?php
 if( Views::is('txt') ) echo 'id="txt"';
-if( Views::is('404') ) echo 'id="p404"';
+if( Views::is('404') ) echo 'id="page_404"';
 if( Views::is('index') ) echo 'class="white"';
 ?>>
 <?php
@@ -83,7 +82,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			</label>
 		</div>
 	</form>
-	<ul id="userthings">
+	<ul id="sidebar_list">
 		<li>
 			<a
 			title="<?php _e('Go to the home page') ?>"
@@ -113,7 +112,8 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			title="<?php _e('Go to your profile') ?>"
 			href="<?php echo url('audios/' . $user->user->user ) ?>">
 				<img
-				id="pp" class="circle" width="25" height="25"
+				id="sidebar_profile_picture"
+				class="circle" width="25" height="25"
 				src="<?php echo $user->user->avatar ?>"
 				onerror="this.src='<?php Views::load_img('unknown.png') ?>'" >
 				&nbsp;
@@ -127,7 +127,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				<i class="fa fa-headphones"></i>
 				Audios
 				<?php if( $audios ): ?>
-				<span class="right bdge blue lighten-2">
+				<span class="right _badge blue lighten-2">
 				<?php echo format_number($audios) ?>
 				</span>
 				<?php endif ?>
@@ -142,7 +142,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				<i class="fa fa-star"></i>
 				<?php _e('Favorites') ?>
 				<?php if( $favorites ): ?>
-				<span class="right bdge yellow darken-2">
+				<span class="right _badge yellow darken-2">
 				<?php echo format_number($favorites) ?>
 				</span>
 				<?php endif ?>
