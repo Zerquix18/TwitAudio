@@ -101,29 +101,25 @@ class User extends \application\ModelBase {
 				/** effects for all the users **/
 				'echo',
 				'quick',
-				/** effects for paid users ($5) */
 				'reverse',
+				/** effects for paid users */
 				'slow',
 				'reverse_quick',
 				'hilbert',
 				'flanger',
-				/** effects for paid users ($10) **/
 				'delay',
 				'deep',
 				'low',
 				'fade',
 				'tremolo'
 			);
-		$max_duration = $this->get_limit('audio_duration');
-		$max_duration = $max_duration / 60;
 
-		if( 2 == $max_duration ) // normal user
-			return array_splice($all_effects, 0, 2);
+		$is_paid = $this->is_paid();
 
-		elseif( 5 == $max_duration ) // $5
-			return array_splice($all_effects, 0, 7);
+		if( ! $is_paid ) // normal user
+			return array_splice($all_effects, 0, 3);
 
-		return $all_effects; // $10
+		return $all_effects;
 	}
 
 	public function get_audios_count( $id = null ) {

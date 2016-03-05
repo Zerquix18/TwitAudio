@@ -321,9 +321,9 @@ function load_effects( audio_id ) {
 		'id': audio_id
 	};
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		cache: false,
-		url: ajaxurl + 'checkeffects.php',
+		url: ajaxurl + 'get/checkeffects',
 		data: params,
 		success: function( result ) {
 			result = JSON.parse(result);
@@ -603,7 +603,7 @@ $(document).on('click', '.laic', function(e) {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'favorite.php',
+		url: ajaxurl + 'post/favorite',
 		data : parms,
 		beforeSend: function() {
 			// FAKE AJAX
@@ -657,7 +657,7 @@ $(document).on('click', '.plei', function(e) {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'play.php',
+		url: ajaxurl + 'post/play',
 		data : {id: _id},
 		success: function(result) {
 			result = JSON.parse(result);
@@ -675,7 +675,7 @@ $(document).on('click', '.delit', function(e) {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'delete.php',
+		url: ajaxurl + 'post/delete',
 		data : {id: _id},
 		error: function() {
 			display_error('There was an error while deleting your audio');
@@ -729,7 +729,7 @@ $(window).scroll( function() {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + load + '.php',
+		url: ajaxurl + 'get/' + load,
 		data : data,
 		beforeSend : function() {
 			$("#load_more").remove();
