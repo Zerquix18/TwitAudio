@@ -49,7 +49,8 @@ class HTTP {
     	$str = preg_replace_callback(
     		'~([@])([^\s#@!\"\$\%&\'\(\)\*\+\,\-./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~',
     		function($m) {
-    			$dir = $m[1] == "#" ? "search/?q=%23" : "";
+    			/** @todo remove hashtags from source **/
+    			$dir = $m[1] == "#" ? "search/?q=%23" : "audios/";
     			return '<a href="' . url() . $dir . $m[2] . '">' . $m[0] . '</a>';
     		},
        		$str
