@@ -727,7 +727,7 @@ $(window).scroll( function() {
 	data.p = page;
 	data.q = to_load;
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		cache: false,
 		url: ajaxurl + 'get/' + load,
 		data : data,

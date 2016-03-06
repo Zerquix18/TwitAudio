@@ -25,7 +25,7 @@ class AudioController {
 		if( ! $current_user->can_listen( $audio->user->user ) )
 			Views::exit_404();
 
-		if( 0 != $audio->reply_to )
+		if( '0' !== $audio->reply_to )
 			HTTP::redirect(
 					url() . $audio->reply_to . '?reply_id=' . $audio->id
 				);
