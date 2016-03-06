@@ -68,16 +68,32 @@ Views::load_template('header', array(
   				<p class="title"><?php _e('Results') ?></p>
   				<div id="search">
   				<?php
-  				if( ! empty($query) ) {
-  					$function_to_call =
-  						$type == 'a' ? 'display_audio' : 'display_user';
-  					while( list(,$audio) = each($content['audios']) )
-  						Views::$function_to_call( $audio );
+  				if( ! empty($query) ):
+  					/* it's looking for something! */
+  					if( empty( $content['audios'] ) ):
+  						?>
+  					<p class="center grey-text">
+  						<?php _e("We could not find anything.
+  							Please try with a different criteria.") ?>
+  					</p>
+  					<?php else:
+  						$function_to_call =
+  							$type == 'a' ? 'display_audio' : 'display_user';
+  						while( list(,$audio) = each($content['audios']) )
+  							Views::$function_to_call( $audio );
 
-  					if( $content['load_more'] )
-  						Views::load_more('search', 2);
-  				} else
-  					''; // add a pretty message
+  						if( $content['load_more'] ):
+  							Views::load_more('search', 2);
+  						endif;
+
+  					endif;
+
+  				else: ?>
+  				<p class="center grey-text">
+  					<?php _e('Type something in the search box.
+  							The results will appear here.') ?>
+  				</p>
+  				<?php endif;
   				?>
   				</div>
   			</div>
