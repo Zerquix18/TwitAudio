@@ -53,6 +53,11 @@ if( ! isset($template['robots']) )
 	<?php endif ?>
 	<meta property="og:title" content="TwitAudio">
 	<meta property="og:image" content="<?php Views::load_img('logo-md.png') ?>">
+	<?php if( ! Views::is('index') ): ?>
+	<meta name="theme-color" content="#64b5f6">
+	<meta name="msapplication-navbutton-color" content="#64b5f6">
+	<meta name="apple-mobile-web-app-status-bar-style" content="#64b5f6">
+	<?php endif ?>
 </head>
 <body <?php
 if( Views::is('txt') ) echo 'id="txt"';
