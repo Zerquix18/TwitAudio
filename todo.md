@@ -1,6 +1,6 @@
 Now:
 ----
-* Finish Indiegogo article
+* Make effects dynamic for mobile and web
 
 Soon:
 ----
