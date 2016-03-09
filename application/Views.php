@@ -256,7 +256,7 @@ class Views {
 			</span>
 		</a>
 	<?php endif;
-		if( is_logged() && $audio->user == $GLOBALS['_USER']->id ): ?>
+		if( is_logged() && $user->id == $GLOBALS['_USER']->id ): ?>
 		<a
 		href="javascript:void(0);"
 		class="audio_btn delit"
