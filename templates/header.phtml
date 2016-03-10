@@ -35,14 +35,14 @@ if( ! isset($template['robots']) )
 	<script src="<?php Views::load_script('jquery-1.11.3.min.js') ?>"></script>
 	<?php endif;
 	if( Views::is('audio') && $template['robots']): ?>
-	<meta name="twitter:player" content="<?php echo 'https://twitaudio.com/frame/' . $audio->id ?>">
+	<meta name="twitter:player" content="<?php echo 'https://www.twitaudio.com/frame/' . $audio->id ?>">
 	<meta name="twitter:player:height" content="47">
 	<meta name="twitter:player:width" content="435">
 	<meta name="twitter:card" content="player">
 	<meta name="twitter:site" content="@twit_audio">
 	<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $audio->user->user) ?>">
-	<meta name="twitter:image" content="https://twitaudio.com/assets/img/image.jpg">
-	<meta name="twitter:url" content="https://twitaudio.com/<?php echo $audio->id ?>">
+	<meta name="twitter:image" content="https://www.twitaudio.com/assets/img/image.jpg">
+	<meta name="twitter:url" content="https://www.twitaudio.com/<?php echo $audio->id ?>">
 	<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
 	<?php elseif( ! Views::is('404') ): ?>
 	<meta name="twitter:card" content="summary" />

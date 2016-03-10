@@ -15,7 +15,7 @@ class Twitter {
 	const CONSUMER_KEY = 'jM8rVR9XiDRTuiV0qh7ULmi9b';
 	const CONSUMER_KEY_SECRET = 
 	'QKX2iCmKeKM6pOXFWYDdyIkqCNFjs9Jbf6T8QjcgpMopfaCUEp';
-	private $callback = 'https://twitaudio.com/callback';
+	private $callback = 'https://www.twitaudio.com/callback';
 	public $tw;
 	public function __construct(
 		$access_token = null,
