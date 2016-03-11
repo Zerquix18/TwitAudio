@@ -413,21 +413,23 @@ class MobileAJAXController {
 						array('error_code' => 7)
 					);
 			$audios = new \models\Audio();
-			$audio = $audio->get_audio_info($id, 'id,user,audio');
+			$audio = $audios->get_audio_info($id, 'id,user,audio');
 			if( ! $audio )
 				throw new MobileAJAXException(
 						__('The audio you tried to delete does not exist or is no longer available.'),
 						array('show_in_web' => true)
 					);
-			if( $audio->user !== $GLOBALS['_USER']->id )
+
+			if( $audio->user->id !== $GLOBALS['_USER']->id )
 				throw new MobileAJAXException(
 						'You are not the author of this audio'
 					);
+
 		} catch ( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
 		}
 
-		$delete = $audios->delete( $id );
+		$delete = $audios->delete( $audio );
 
 		HTTP::Result( array(
 				'success'   => true,

@@ -689,7 +689,7 @@ $(document).on('click', '.delit', function(e) {
 			// was not a reply
 			if( typeof audio_id !== 'undefined' && result.response == audio_id )
 				return window.location.replace('/');
-			$(".audio_" + result.response ).fadeOut(1000, function() {
+			$(".audio_" + result.id ).fadeOut(1000, function() {
 				$(this).remove();
 			});
 		}

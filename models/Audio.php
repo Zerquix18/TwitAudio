@@ -55,8 +55,10 @@ class Audio extends \application\ModelBase {
 
 		}
 
-		if( ! empty($audio->audio) )
+		if( ! empty($audio->audio) ) {
+			$audio->original_name = $audio->audio;
 			$audio->audio = url('assets/audios/' . $audio->audio);
+		}
 
 		return $audio;
 	}
@@ -383,9 +385,9 @@ class Audio extends \application\ModelBase {
 		);
 
 		if( ! empty($audio->audio) )
-			@unlink(
+			unlink(
 				$_SERVER['DOCUMENT_ROOT'] .
-				'assets/audios/' . $audio->audio
+				'/assets/audios/' . $audio->original_name
 			);
 	}
 
