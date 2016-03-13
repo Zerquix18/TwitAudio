@@ -151,7 +151,7 @@ class User extends \application\ModelBase {
 	**/
 
 	public function get_user_info( $id_or_user, $which_info = '*' ) {
-		$column = is_numeric( $id_or_user ) ? 'id' : 'user';
+		$column = ctype_digit( $id_or_user ) ? 'id' : 'user';
 		if( null !== $this->user && $id_or_user === $this->user->$column ) {
 			/** if it's the same user, don't do extra queries **/
 			if( '*' == $which_info )

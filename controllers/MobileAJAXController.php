@@ -321,7 +321,7 @@ class MobileAJAXController {
 						'Invalid ID'
 					);
 			/** validate start **/
-			if( is_numeric($start) ) {
+			if( ctype_digit($start) ) {
 				$start = (int) $_POST['start'];
 			}else{ // if not a number, translate it to a number
 				if( ! preg_match('/^([0-9]{1,2}):([0-9]{1,2})$/', $start) )
@@ -332,7 +332,7 @@ class MobileAJAXController {
 				$start = ( (int) $lel[0] * 60 ) + (int) $lel[1];
 			}
 			/** validate end **/
-			if( is_numeric($end) ) {
+			if( ctype_digit($end) ) {
 				$end = (int) $_POST['end'];
 			}else{
 				if( ! preg_match('/^([0-9]{1,2}):([0-9]{1,2})$/', $end) )

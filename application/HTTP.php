@@ -27,7 +27,7 @@ class HTTP {
 	}
 	/** sanitizing **/
 	public static function sanitize_pageNumber( $pageNumber ) {
-		if( ! is_numeric($pageNumber) )
+		if( ! ctype_digit($pageNumber) )
 			return false;
 		if( (int) $pageNumber < 0 )
 			return false;
