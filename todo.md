@@ -1,6 +1,7 @@
 Now:
 ----
-* Make effects dynamic for mobile and web
+* Fix is_numeric issue
+* Clean Javascript
 
 Soon:
 ----

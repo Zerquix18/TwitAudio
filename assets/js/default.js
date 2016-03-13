@@ -140,6 +140,7 @@ function up_form( is_voice ) {
 	var ajaxform = {
 		beforeSend : function() {
 			$("#player_cut").jPlayer("destroy");
+			clean_loaded_effects();
 		},
 		error : function(xhr) {
 			display_error('There was an error while uploading your audio. Please check your Internet connection');
@@ -147,6 +148,7 @@ function up_form( is_voice ) {
 			$("#up_progress").width(0);
 			$("#post").show();
 			stop_progressive();
+			$("#up_form").trigger('reset');
 		},
 		uploadProgress : function(event, position, total, percentComplete) {
 			$("#up_progress").animate({
@@ -155,6 +157,7 @@ function up_form( is_voice ) {
 		},
 		complete : function(xhr) {
 			stop_progressive();
+			$("#up_form").trigger('reset');
 			$("#up_progress").width("100%");
 			var result = JSON.parse(xhr.responseText);
 			if( false === result.success ) {
@@ -194,6 +197,7 @@ function up_form( is_voice ) {
 			load_effects( result.id );
 			load_post_form(result.id, result.tmp_url);
 			$(".original").data('url', result.tmp_url);
+			show_loading_effects( result.effects );
 		}
 	};
 	if( is_voice && recorderJS ) {
@@ -343,7 +347,8 @@ function load_effects( audio_id ) {
 				else
 					added_effects.push(name);
 				added_files.push( loaded_effects[i].file );
-				$("." + name).data('url', loaded_effects[i].file);
+				$(".choose_effect.effect_" + name)
+					.attr('data-url', loaded_effects[i].file);
 				$("#effect_preview_" + name).jPlayer({
 					ready: function(event) {
 						save_my_life++;
@@ -378,6 +383,57 @@ function load_effects( audio_id ) {
 			}
 		}
 	});
+}
+function show_loading_effects( effects ) {
+	// effects will be { effect_name : "Effect Name"}
+	// one is to display to the user
+	// and the other is for the internal code
+	$.each( effects, function( key, value ) {
+		// key => effect_name, ex: reverse_quick
+		// value => Effect Name, ex: Reverse Quick
+		// now, use effect_none to make the others:
+		var effect_id = 'effect_' + key;
+		$("#effect_none").clone() // make a copy
+		.attr('id', effect_id ) // change the ID
+		.appendTo('#effects_modal > .modal-content'); // insert in the list of effects
+
+		// change the title
+		$("#" + effect_id + " h5").text( value );
+
+		// now the atts
+		$("#" + effect_id + ' .preview .jp-jplayer')
+			.attr('id', 'effect_preview_' + key);
+
+		$("#" + effect_id + ' .jp-audio')
+			.attr('id', 'container_' + key);
+
+		// the choose button
+		$("#" + effect_id + ' .preview button')
+			.attr('data-choose', key)
+			.removeClass('effect_none').addClass( effect_id )
+			.on('click', choose_effect);
+
+		// now it is ready to be loaded by `load_effects` :)
+
+		$("#" + effect_id).show();
+	});
+}
+function clean_loaded_effects() {
+	$(".effect_preview").not('#effect_none').remove(); // bye!
+}
+function choose_effect() {
+	if( undefined === $(this).data('url') )
+		return false; // no urls loaded
+	$.jPlayer.pause();
+	$("#player_preview").jPlayer('setMedia', {
+		'mp3' : $(this).data('url')
+	});
+	$("#effects_modal").closeModal();
+	$("#audio_effect").val( $(this).data('choose') );
+	if( 'original' == $(this).data('choose') )
+		display_info('OK. Got it.');
+	else
+		display_info('Effect added!');
 }
 /** event listeners **/
 $(document).ready( function() {
@@ -543,6 +599,7 @@ $("#cut_form").ajaxForm({
 			], 3);
 		$("#loading").show();
 		$.jPlayer.pause();
+		clean_loaded_effects();
 	},
 	error : function() {
 		stop_progressive();
@@ -570,6 +627,7 @@ $("#cut_form").ajaxForm({
 		load_effects( result.id );
 		load_post_form( result.id, result.tmp_url);
 		$(".original").data('url', result.tmp_url);
+		show_loading_effects( result.effects );
 	}
 });
 $("#post_form").ajaxForm({
@@ -806,19 +864,4 @@ $("#search_type").on( 'change', function() {
 		$('#search_sort').material_select('destroy');
 		$("#search_sort").attr('disabled', 'disabled');
 	}
-});
-$(".choose_effect").on('click', function(e) {
-	e.preventDefault();
-	if( undefined === $(this).data('url') )
-		return false; // no urls loaded
-	$.jPlayer.pause();
-	$("#player_preview").jPlayer('setMedia', {
-		'mp3' : $(this).data('url')
-	});
-	$("#effects_modal").closeModal();
-	$("#audio_effect").val( $(this).data('choose') );
-	if( 'original' == $(this).data('choose') )
-		display_info('OK. Got it.');
-	else
-		display_info('Effect added!');
 });

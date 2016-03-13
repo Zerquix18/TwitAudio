@@ -158,36 +158,16 @@ $minutes_limit = $user->get_limit('audio_duration') / 60;
 	<div class="modal-content">
 		<h4>Add Effects</h4>
 		<div class="divider"></div>
-		<?php
-			$available_effects = $user->get_available_effects();
-			/** keep the names ordered alphabetically */
-			$names = array(
-				'deep'		=> 'Deep',
-				'delay'		=> 'Delay',
-				'echo'		=> 'Echo',
-				'fade'		=> 'Fade',
-				'flanger'	=> 'Flanger',
-				'hilbert'		=> 'Hilbert',
-				'low'		=> 'Low',
-				'quick'		=> 'Quick',
-				'reverse'	=> 'Reversed',
-				'reverse_quick' => 'Reversed quick',
-				'slow'		=> 'Slow',
-				'tremolo'	=> 'Tremolo',
-			);
-			foreach( $available_effects as $effectname): ?>
-				<h5><?php
-					echo $names[ $effectname ]
-				?></h5>
-				<div id="effect_<?php echo $effectname ?>" class="effect_preview">
-					<div class="loading">
-						<i class="fa fa-spinner fa-spin"></i>&nbsp;
-						Loading effect...
-					</div>
-					<div class="preview" style="display:none;">
-<?php // todo: indent ?>
-<div id="effect_preview_<?php echo $effectname ?>" class="jp-jplayer"></div>
-    <div id="container_<?php echo $effectname ?>" class="jp-audio sm">
+		<!-- copy and edit this in order to display the effects -->
+			<div id="effect_none" class="effect_preview" style="display:none">
+				<h5>Effect None</h5>
+				<div class="loading">
+					<i class="fa fa-spinner fa-spin"></i>&nbsp;
+					<?php _e('Loading effect...') ?>
+				</div>
+				<div class="preview" style="display:none">
+					<div id="effect_preview_none" class="jp-jplayer"></div>
+    <div id="container_none" class="jp-audio sm">
         <div class="jp-type-single">
             <div class="jp-gui jp-interface">
                 <ul class="jp-controls">
@@ -217,20 +197,17 @@ $minutes_limit = $user->get_limit('audio_duration') / 60;
     </div>
     				<button
     				type="button"
-    				class="btn choose choose_effect <?php
-    					echo $effectname
-    				?>"
-    				data-choose="<?php echo $effectname ?>"
+    				class="btn choose choose_effect effect_none"
+    				data-choose="effect_none"
     				>
     					<?php _e('Choose') ?>
     				</button>
 					</div>
 				</div>
-			<?php
-			endforeach;
-		?>
 	</div>
 	<div class="modal-footer">
-	      <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat choose_effect original" data-choose="original">Use the original</a>
+	      <a
+	      href="javascript:void(0)"
+	      class="modal-action modal-close waves-effect waves-blue btn-flat choose_effect original" data-choose="original">Use the original</a>
 	</div>
 </div>

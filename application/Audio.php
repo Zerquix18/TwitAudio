@@ -267,4 +267,21 @@ class Audio {
 			@unlink( $effectinfo['filename'] );
 
 	}
+	public static function get_effects() {
+		$names = array(
+			'deep'		=> 'Deep',
+			'delay'		=> 'Delay',
+			'echo'		=> 'Echo',
+			'fade'		=> 'Fade',
+			'flanger'	=> 'Flanger',
+			'hilbert'	=> 'Hilbert',
+			'low'		=> 'Low',
+			'quick'		=> 'Quick',
+			'reverse'	=> 'Reversed',
+			'reverse_quick' => 'Reversed quick',
+			'slow'		=> 'Slow',
+			'tremolo'	=> 'Tremolo',
+		);
+		return $names;
+	}
 }

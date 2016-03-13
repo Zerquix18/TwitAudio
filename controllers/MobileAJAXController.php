@@ -379,17 +379,26 @@ class MobileAJAXController {
 		$_SESSION[$id]['tmp_url']  = $new_audio;
 		$_SESSION[$id]['duration'] =
 									floor($audio->info['playtime_seconds']);
+
+		$available_effects = $users->get_available_effects();
+
 		$_SESSION[$id]['effects'] =
 			\application\Audio::apply_effects(
 				$audio->audio,
-				$users->get_available_effects()
+				$available_effects
 			);
+
+		$total_effects = \application\Audio::get_effects();
+		$effects = array();
+		while( list(,$effect) = each($available_effects) )
+			$effects[ $effect ] = $total_effects[ $effect ];
 
 		HTTP::Result( array(
 				'success' => true,
 				'id'      => $id,
 				'tmp_url' =>
-				url() . 'assets/tmp/' . last( explode('/', $audio->audio) ) 
+				url() . 'assets/tmp/' . last( explode('/', $audio->audio) ),
+				'effects' => $effects
 			)
 		);
 	}
@@ -1112,7 +1121,7 @@ class MobileAJAXController {
 
 		try {
 			if( isset($_POST['bin']) && ! empty($_FILES['up_file']['name']) ) {
-				/** someone is tryna trick */
+				/** someone is tryna trick**/
 				throw new MobileAJAXException(
 						'You cannot send both bin and up_file!'
 					);
@@ -1232,9 +1241,9 @@ class MobileAJAXController {
 		$id = uniqid();
 		// saves some info
 		$_SESSION[$id] = array(
-			'tmp_url' => $audio->audio,
+			'tmp_url'  => $audio->audio,
 			'is_voice' => $is_voice,
-			'duration' => floor( $audio->info['playtime_seconds'])
+			'duration' => floor( $audio->info['playtime_seconds']),
 		);
 
 		#needs cut:
@@ -1248,16 +1257,29 @@ class MobileAJAXController {
 				)
 			);
 
+		$available_effects = $users->get_available_effects();
+
 		$_SESSION[$id]['effects'] = \application\Audio::apply_effects(
 				$audio->audio,
-				$users->get_available_effects()
+				$available_effects
 		);
+
+		/**
+		* send the available effects and its names
+		* so we could display "loading..."
+		* and show the effects that are loading
+		**/
+		$total_effects = \application\Audio::get_effects();
+		$effects = array();
+		while( list(,$effect) = each($available_effects) )
+			$effects[ $effect ] = $total_effects[ $effect ];
 
 		HTTP::Result( array(
 				'success'   => true,
 				'id'        => $id,
 				'tmp_url'   =>
-				url() . 'assets/tmp/'. last( explode('/', $audio->audio) )
+				url() . 'assets/tmp/'. last( explode('/', $audio->audio) ),
+				'effects'   => $effects,
 			)
 		);
 
