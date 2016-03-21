@@ -5,21 +5,24 @@
 * @copyright Copyright (c) 2016 - Luis A. Martínez
 **/
 
+session_cache_limiter('public');
+session_cache_expire(30);
 session_name('ta_session');
+if( 'mob' != substr( $_SERVER['REQUEST_URI'], 1, 3) ) {
+	if( ! isset($_COOKIE['ta_session']) )
+		session_id( generate_id_for('session') );
 
-if( ! isset($_COOKIE['ta_session']) )
-	session_id( generate_id_for('session') );
-
-if( ! isset($_COOKIE['ta_session']) ||  
-		preg_match(
-			"/^(ta-)[\w]{29}+$/",
-			$_COOKIE['ta_session']
-		)
-	) {
-	// if cookie isn't valid,
-	// PHP will throw a unavoidable warning
-	// when calling session_start(); {
-	session_start();
+	if( ! isset($_COOKIE['ta_session']) ||  
+			preg_match(
+				"/^(ta-)[\w]{29}+$/",
+				$_COOKIE['ta_session']
+			)
+		) {
+		// if cookie isn't valid,
+		// PHP will throw a unavoidable warning
+		// when calling session_start();
+		session_start();
+	}
 }
 
 // just a helper:
@@ -44,32 +47,33 @@ function is_logged() {
 
 /** mobile **/
 
-function checkAuthorization() {
+function check_authorization() {
 	global $_USER, $db;
 	$TACrypt = new \application\TACrypt();
 	$headers = apache_request_headers();
 	if( empty($headers['Authorization']) )
-		return \application\HTTP::MobileResult(
-				__('Authorization required'),
-				false //success
-			);
-	$authorization = @$TACrypt->decrypt64( $headers['authorization'] );
-
+		return \application\HTTP::Result( array(
+				'success'  => false,
+				'response' => __('Authorization required'),
+			)
+		);
+	$authorization = $TACrypt->decrypt64( $headers['Authorization'] );
 	if( ! $authorization )
-		return \application\HTTP::MobileResult(
-				__('Invalid authorization'),
-				false //success
-			);
-
+		return \application\HTTP::Result( array(
+				'success'  => false,
+				'response' => __('Invalid authorization'),
+			)
+		);
 	$session = $db->query(
 			'SELECT user_id FROM sessions
 			 WHERE sess_id = ? AND is_mobile = \'1\'',
 			$authorization
 	);
 	if( $session->nums === 0 )
-		return \application\HTTP::MobileResult(
-			__('Invalid authorization'),
-			false //success
+		return \application\HTTP::Result( array(
+				'success'  => false,
+				'response' => __('Invalid authorization')
+			)
 		);
 	// for global use
 	$_USER = $db->query(

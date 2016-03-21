@@ -33,7 +33,8 @@ class MobileAJAXController {
 		* Example: User cannot call /ajax/post/cut using GET
 		* That's illegal
 		**/
-		if( strtoupper($method) !== $_SERVER['REQUEST_METHOD'] )
+		$method = strtoupper($method);
+		if( $method !== $_SERVER['REQUEST_METHOD'] )
 			Views::exit_404();
 
 		/**
@@ -46,9 +47,10 @@ class MobileAJAXController {
 			Views::exit_404();
 
 		$this->method = $method;
-		$this->via = $via;
+		$this->via    = $via;
+		$this->action = $action;
 
-		return $this->$action();
+		$this->$action();
 	}
 	/**
 	*
@@ -69,7 +71,8 @@ class MobileAJAXController {
 	* /ajax/post/upload => true, POST to upload audios
 	* /ajax/get/upload => nope! that's to POST, not GET
 	]
-	* NOTE: A method cannot answer BOTH!
+	* NOTE: A method can answer both if you separate it
+	* with a |. Ex: "POST|GET", "GET|POST", "PUT|DELETE"
 	* 
 	* 'via' =>
 	*	'mob xor ajax', establish the via, separated by commas,
@@ -94,14 +97,20 @@ class MobileAJAXController {
 				'require_login' =>  false,
 			);
 		$options = array_merge( $default_options, $options );
-		/** set the method **/
-		if( strcasecmp( $options['method'], $this->method) !== 0 )
+		/** set the method(s) **/
+		$methods = explode("|", $options['method']);
+		if( ! in_array( $this->method, $methods ) )
 			Views::exit_404();
-		
 		/** set the vias **/
 		$vias = explode(',', $options['vias'] );
 		if( ! in_array( $this->via, $vias) )
 			Views::exit_404();
+
+		// in the web we also return html
+		// and it jquery returns error because the content
+		// does not match with the headers
+		if( 'mob' == $this->via )
+			header('Content-Type: application/json');
 
 		if( $this->via !== 'mob' && ! $options['require_login'] )
 			return;
@@ -118,7 +127,7 @@ class MobileAJAXController {
 		} else { 
 			//any mobile request except signin requires login
 			if( 'signin' !== $this->action )
-				checkAuthorization();
+				check_authorization();
 		}
 	}
 
@@ -575,13 +584,36 @@ class MobileAJAXController {
 			Views::load_more('audios', $result['page'] + 1 );
 	}
 	/**
+	* It will return the data for the home page
+	*
+	**/
+	private function home() {
+		$this->set_rules( array(
+				'method'        => 'GET',
+				'vias'          => 'mob',
+				'require_login' => true,
+			)
+		);
+		$audios = new \models\Audio();
+		$data = array(
+				'recent_popular'	=> array(
+					    'audios'    => $audios->get_popular_audios()
+				),
+				'recent_audios'		=> array(
+						'audios'    => $audios->get_recent_audios_by_user()
+				)
+			);
+		HTTP::Result( array('success' => true) + $data );
+	}
+	/**
 	* Will delete the sess_id from the table
 	* In the mobile side
 	**/
 	private function logout() {
 		$this->set_rules( array(
-				'method' 	=> 'POST',
-				'vias' 		=> 'mob'
+				'method' 	    => 'POST',
+				'vias' 		    => 'mob',
+				'require_login' => true,
 			)
 		);
 		// ↓ declared in application/sessions.php
@@ -1013,23 +1045,37 @@ class MobileAJAXController {
 	**/
 	private function settings() {
 		$this->set_rules( array(
-				'method'		=> 'POST',
+				'method'		=> 'POST|GET',
 				'vias'			=> 'mob,ajax',
 				'require_login' => true,
 			)
 		);
+		if( 'GET' == $this->method ) {
+			// to get the settings:
+			$user = new \models\User();
+			HTTP::Result( array(
+					'success'     => true,
+					'audios_public' => (bool) $user->user->audios_public,
+					'favs_public'   => (bool) $user->user->favs_public,
+					'time'          => (bool) $user->user->time
+				)
+			);
+		}
+
+		// to update the settings:
+
 		// if( "0" ) == false... fuck
 		$favs_public	= HTTP::post('favs_public');
 		$audios_public	= HTTP::post('audios_public');
 		
 		try {
 
-			if( ! in_array( $favs_public, array('1','0') ) )
+			if( ! in_array( $favs_public, array('1','0'), true ) )
 				throw new MobileAJAXException(
 						'favs public must be 1 or 0'
 					);
 
-			if( ! in_array( $audios_public, array('1','0') ) )
+			if( ! in_array( $audios_public, array('1','0'), true ) )
 				throw new MobileAJAXException(
 						'audios public must be 1 or 0'
 					);
@@ -1060,7 +1106,7 @@ class MobileAJAXController {
 	* 'access_token_secret'
 	**/
 	private function signin() {
-		$thhis->set_rules( array(
+		$this->set_rules( array(
 				'method'		=> 'POST',
 				'vias'			=> 'mob'
 			)
@@ -1097,7 +1143,7 @@ class MobileAJAXController {
 	* And saves all the data in the $_SESSION var
 	* Params:
 	* 'up_file'		: If it was an uploaded file in the web, up_file
-	*				will be the file uploaded. In mobile, thhis will the file
+	*				will be the file uploaded. In mobile, this will the file
 	* 'bin'			: Instead, if it was a voice note in the web,
 	* 				the binary will come encoded in base64
 	* 'is_voice'	: 1 or 0
@@ -1182,8 +1228,8 @@ class MobileAJAXController {
 		 				);
 				}
 				$move = move_uploaded_file(
-					$_FILES['up_file']['tmp_name'],
-					$file = $_SERVER['DOCUMENT_ROOT'] . // <- it's a point! omg
+						$_FILES['up_file']['tmp_name'],
+						$file = $_SERVER['DOCUMENT_ROOT'] . // <- it's a point!
 						'/assets/tmp/' . uniqid() . '.' . $format
 					);
 				if( ! $move ) {
