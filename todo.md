@@ -1,6 +1,8 @@
 Now:
 ----
-* Clean Javascript
+* Fix delete error in prompt
+* Fix error in title of the audio pages
+* Clean CSS
 
 Soon:
 ----
