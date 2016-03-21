@@ -159,7 +159,7 @@ class Views {
 	<?php endif; if( ! empty( $audio->audio ) ):  // if its not a reply ?>
 	<div class="audio_play">
 	<script>
-	$(document).ready( function() {
+	window.onload_functions.push( function() {
 		$("#player_<?php echo $audio->id ?>").jPlayer({
 			ready: function(event) {
 				$(this).jPlayer("setMedia", {

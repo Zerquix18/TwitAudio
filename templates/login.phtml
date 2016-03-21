@@ -41,9 +41,9 @@ if( ! Views::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
 	</div>
 </div>
 <script>
-window.onload = function() {
+window.onload_functions.push( function() {
 	$("#welcome").openModal();
-};
+});
 </script>
 <?php endif; // endif first time
 
@@ -57,13 +57,13 @@ if( ! Views::is('404', 'txt') && ( $logout_request || $login_error) ):
 	if( $logout_request):
 		session_logout(); // defined in application/session.php
 	?>
-		<script>window.onload = function() {
+		<script>window.onload_functions.push( function() {
 			display_info("<?php _e('You are now logged out.') ?>", 10000);
-		};</script>
+		});</script>
 <?php elseif( $login_error ): // if not logout ?>
-		<script>window.onload = function() {
+		<script>window.onload_functions.push( function() {
 			display_error("<?php echo $_SESSION['login_error'] ?>", 10000);
-		};</script>
+		});</script>
 <?php
 		unset($_SESSION['login_error']);
 endif;

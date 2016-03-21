@@ -31,9 +31,7 @@ if( ! isset($template['robots']) )
 	<link rel="stylesheet" href="<?php Views::load_style('font-awesome.css') ?>">
 	<link rel="apple-touch-icon" href="<?php Views::load_img('apple-icon.png') ?>">
 	<link rel="icon" href="<?php Views::load_img('favicon.ico') ?>">
-	<?php if( ! Views::is('index') ): ?>
-	<script src="<?php Views::load_script('jquery-1.11.3.min.js') ?>"></script>
-	<?php endif;
+	<?php
 	if( Views::is('audio') && $template['robots']): ?>
 	<meta name="twitter:player" content="<?php echo 'https://www.twitaudio.com/frame/' . $audio->id ?>">
 	<meta name="twitter:player:height" content="47">
@@ -58,6 +56,7 @@ if( ! isset($template['robots']) )
 	<meta name="msapplication-navbutton-color" content="#64b5f6">
 	<meta name="apple-mobile-web-app-status-bar-style" content="#64b5f6">
 	<?php endif ?>
+	<script type="text/javascript">window.onload_functions = [];</script>
 </head>
 <body <?php
 if( Views::is('txt') ) echo 'id="txt"';

@@ -1,0 +1,19 @@
+{
+	"vendor": [
+		"jquery-1.11.3.min.js",
+		"materialize.js",
+		"ajaxform.js",
+		"jquery.jplayer.min.js",
+		"recorder.js"
+	],
+	"app": [
+		"audio_actions.js",
+		"effects.js",
+		"forms.js",
+		"functions.js",
+		"load_more.js",
+		"progressive.js",
+		"ready.js",
+		"record.js"
+	]
+}

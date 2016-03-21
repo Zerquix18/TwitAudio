@@ -417,11 +417,12 @@ class Audio extends \application\ModelBase {
 	}
 
 	public function register_play( $audio_id ) {
+		$user_ip = get_ip(); // ← /application/functions.php
 		$was_played = $this->db->query(
 				"SELECT COUNT(*) AS size FROM plays
 				 WHERE user_ip = ?
 				 AND audio_id = ?",
-				\get_ip(), // ← /application/functions.php
+				$user_ip,
 				$audio_id
 			);
 		$was_played = (int) $was_played->size;
@@ -433,8 +434,8 @@ class Audio extends \application\ModelBase {
 			$audio_id
 		);
 		$this->db->insert("plays", array(
-				$ip,
-				$id,
+				$user_ip,
+				$audio_id,
 				time()
 			)
 		);

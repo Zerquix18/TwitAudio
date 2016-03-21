@@ -13,11 +13,45 @@ fi
 
 #clones the repo in temporary folder
 
-git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git ../git_tmp
+#git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git ../git_tmp
 
-# permissions agen:
+cp -rf ../TwitAudio/* ../git_tmp/
 
-chmod -R 777 ../git_tmp
+cd ../git_tmp
+
+# minifies JS:
+
+make_file_from_dir() {
+	key=$1
+	i=0
+	result=()
+	file_='assets/js/scripts.json'
+	array=($(jq --raw-output -c .$key[$i] $file_))
+	while true;
+	do
+		array=($(jq --raw-output -c .$key[$i] $file_))
+		if [ "$array" == "null" ]; then
+			break
+		fi
+		result+=("$array")
+		((i++))
+	done
+	# now $result are the files
+	> "assets/js/$key.js" #make an empty file
+	# append now $result[$i].js to $key.js
+	for filename in "${result[@]}"
+	do
+		file_to_concatenate="assets/js/$key/$filename"
+		cat "$file_to_concatenate" >> "assets/js/$key.js"
+	done
+	# now minify the entire file
+	curl -X POST -s --data-urlencode "input@assets/js/$key.js" https://javascript-minifier.com/raw -o "assets/js/$key.js"
+}
+
+make_file_from_dir 'vendor'
+make_file_from_dir 'app'
+
+cd ../TwitAudio
 
 # copies everything in the current dir
 
@@ -31,8 +65,6 @@ rm -rf ../git_tmp
 
 chmod -R 777 .
 
-# now, minify CSS and Javascript
+# now, minify CSS
 
 curl -X POST -s --data-urlencode 'input@assets/css/default.css' https://cssminifier.com/raw -o 'assets/css/default.css'
-
-curl -X POST -s --data-urlencode 'input@assets/js/default.js' https://javascript-minifier.com/raw -o 'assets/js/default.js'
