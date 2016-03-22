@@ -13,9 +13,7 @@ fi
 
 #clones the repo in temporary folder
 
-#git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git ../git_tmp
-
-cp -rf ../TwitAudio/* ../git_tmp/
+git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git ../git_tmp
 
 cd ../git_tmp
 
