@@ -55,6 +55,13 @@ class Audio extends \application\ModelBase {
 
 		}
 
+		if( property_exists($audio, 'favorites') )
+			$audio->favorites = (int) $audio->favorites;
+		
+		if( property_exists($audio, 'plays') )
+			$audio->plays = (int) $audio->plays;
+		
+
 		if( ! empty($audio->audio) ) {
 			$audio->original_name = $audio->audio;
 			$audio->audio = url('assets/audios/' . $audio->audio);
