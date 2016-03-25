@@ -20,14 +20,13 @@ Views::load_template('header', array(
 	)
 );
 ?>
-<div class="content" id="main">
+<div class="content main">
 	<div class="row">
 		<div class="col l9 m12 s12">
 			<div class="box">
 				<img
 				src="<?php echo \get_avatar($user->avatar) ?>"
-				class="circle z-depth-3 materialboxed"
-				id="profile_picture"
+				class="circle z-depth-3 materialboxed profile-picture"
 				data-caption="<?php
 				echo sprintf(
 					__("%s's profile picture"),
@@ -36,19 +35,19 @@ Views::load_template('header', array(
 				?>"
 				onerror="this.src='<?php Views::load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
 				>
-				<h5 id="name">
+				<h5 class="profile-name">
 					<?php
 					echo HTTP::XSSprotect($user->name);
 					Views::show_verified_badge($user->verified)
 					?>
 				</h5>
-				<p id="user" class="grey-text lighten-2-text">
+				<p class="grey-text lighten-2-text profile-user">
 					@<?php echo $user->user ?>
 				</p>
-				<div id="bio">
+				<div class="profile-bio">
 			<?php echo HTTP::XSSprotect($user->bio) ?>
 				</div>
-				<ul class="tabs" id="profile_navigation">
+				<ul class="tabs profile-navigation">
 					<li class="tab">
 						<a class="blue-text <?php
 					if( 'audios' == $page ) echo 'active' ?>"

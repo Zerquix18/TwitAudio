@@ -1,0 +1,150 @@
+/**
+*
+* Global CSS
+* Here goes the styles that helps or appear
+* in all the pages
+*
+* @author Zerquix18
+*
+**/
+html, body {
+	height: 100%;
+}
+body {
+	background-color: #EEEEEE;
+	height: 100%;
+}
+/** font of the logo **/
+@font-face {
+    font-family: 'Coolvetica';
+	src: url('../fonts/coolvetica.eot?#iefix') format('embedded-opentype'), 
+		 url('../fonts/coolvetica.woff') format('woff'), 
+		 url('../fonts/coolvetica.ttf') format('truetype'),
+		 url('../fonts/coolvetica.svg#svgCoolvetica') format('svg');
+}
+.logo {
+	font-family: 'Coolvetica', Helvetica, Serif, Arial, Times;
+}
+
+/*
+* these are the page with dynamic content
+* and the sidebar
+**/
+
+/** avoid the sidebar **/
+.content {
+	padding-left: 250px;
+}
+.main {
+	padding-top: 20px;
+}
+@media only screen and (max-width : 992px) {
+	/* here the sidebar does not appear */
+	.content {
+		padding-left: 0;
+	}
+	.main {
+		padding-top: 5px;
+	}
+}
+
+/** _badge because Materialize already has .badge **/
+
+._badge {
+	display: inline-block;
+	min-width: 10px;
+	padding: 3px 7px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #ffffff;
+	line-height: 1;
+	vertical-align: middle;
+	white-space: nowrap;
+	text-align: center;
+	background-color: #777777;
+	border-radius: 10px;
+	font-family: Helvetica;
+}
+
+/** The real box **/
+
+.box {
+	padding: 10px;
+	background-color: #FFF;
+	border: 1px solid #e5e5e5;
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	        border-radius: 5px;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	   -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	        box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	margin-bottom: 10px;
+}
+
+.divider {
+	margin: 15px 0;
+}
+.alert {
+	padding: 10px;
+	border: 1px solid transparent;
+	-webkit-border-radius: 4px;
+	   -moz-border-radius: 4px;
+	        border-radius: 4px;
+	color: #FFF;
+	word-wrap: break-word;
+	text-align: center;
+	font-family: Helvetica, 'Helvetica Neue', 'Roboto', Serif, Arial, times;
+}
+.error {
+	background-color: #e74c3c;
+}
+.success {
+	background-color: #3fad46;
+}
+.info {
+	background-color: #5bc0de;
+}
+.verified {
+	padding: 5px;
+	color: #FFF;
+	-webkit-border-radius: 50%;
+	   -moz-border-radius: 50%;
+	        border-radius: 50%;
+	margin: 0 3px;
+	background-color: #64b5f6;
+	vertical-align: middle;
+}
+hr {
+	display: block;
+	height: 1px;
+	border: 0;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #ccc;
+	margin: 1em 0;
+	padding: 0; 
+}
+a.no-deco,
+a.no-deco:hover,
+a.no-deco:visited,
+a.no-deco:active {
+	text-decoration: none;
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}
+/** title in boxes */
+.title {
+	display: block;
+	width:100%;
+	text-align: center;
+	color: #9e9e9e;
+	margin-bottom: 10px; 
+	font-family: Helvetica, 'Helvetica Neue', 'Roboto', Arial, Serif;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.center {
+	display: block;
+	margin: 0 auto;
+}

@@ -1,0 +1,78 @@
+/**
+*
+* Home CSS
+* Here goes the styles for the Home Page (being logged out)
+*
+* @author Zerquix18
+*
+**/
+.home-header {
+	height: 500px;
+	width: 100%;
+	background: url('../img/homepage-bg.png');
+	background-attachment: fixed;
+	-webkit-background-size: 100% 100%;
+	   -moz-background-size: 100% 100%;
+         -o-background-size: 100% 100%;
+            background-size: 100% 100%;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+@media (max-width: 380px) {
+	.home {
+		height: 450px;
+	}
+}
+.home-logo {
+	padding-top: 20px;
+}
+.home-logo img {
+	display: block;
+	margin: 0 auto;
+}
+.home-logo img.logo-full {
+	width: 323px;
+	height: 244px;
+}
+@media (max-width: 415px) {
+	.home-logo img.logo-full {
+		width: 275px;
+		height: 200px;
+	}
+}
+@media (max-width: 360px) {
+	.home-logo img.logo-full {
+		width: 200px;
+		height: 150px;
+	}
+}
+.home-slogan {
+	text-align: center;
+	font-weight: bold;
+	color: #FFF;
+	font-size: 35px;
+}
+@media (max-width: 636px) {
+	.home-slogan {
+		font-size: 25px;
+	}
+}
+@media (max-width: 320px) {
+	.home-slogan {
+		font-size: 17px;
+	}
+}
+.home-features {
+	padding: 30px 0;
+}
+.home-features p {
+	text-align: center;
+}
+.home-features i {
+	color: #42a5f5;
+}
+.home-features .col p:nth-child(2) {
+	font-size: 2.0em;
+	margin-bottom: 0;
+	margin-top: 0;
+}

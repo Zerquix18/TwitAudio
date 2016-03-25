@@ -1,0 +1,17 @@
+{
+	"vendor": [
+		"materialize.css",
+		"font-awesome.css"
+	],
+	"app": [
+		"global.css",
+		"home.css",
+		"text.css",
+		"sidebar.css",
+		"audio.css",
+		"misc.css",
+		"page_404.css",
+		"profile.css",
+		"post_box.css"
+	]
+}

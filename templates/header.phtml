@@ -26,9 +26,39 @@ if( ! isset($template['robots']) )
 	content="<?php
 	echo $template['robots'] ? 'index,follow' : 'noindex,nofollow'
 	?>">
-	<link rel="stylesheet" href="<?php Views::load_style('materialize.css') ?>">
-	<link rel="stylesheet" href="<?php Views::load_style('default.css') ?>">
-	<link rel="stylesheet" href="<?php Views::load_style('font-awesome.css') ?>">
+	<?php
+	$all_styles = file_get_contents(
+			$_SERVER['DOCUMENT_ROOT'] . '/assets/css/styles.json'
+		);
+	$all_styles = json_decode( $all_styles, true );
+	if( '0' === $GLOBALS['_CONFIG']['minify_html'] ) {
+		// if not live
+		foreach( $all_styles as $dir => $styles ):
+			$styles_count = count($styles);
+			for($i = 0; $i < $styles_count; $i++):
+		?>
+				<link
+				rel="stylesheet"
+				href="<?php
+				Views::load_style(
+						'load_style.php?style=' . $dir . '/' . $styles[$i]
+					)
+				?>"
+				>
+		<?php
+			endfor;
+		endforeach;
+	}else{
+		// live!
+		foreach( $all_styles as $dir => $all_styles ): ?>
+		<link
+		rel="stylesheet"
+		href="<?php Views::load_style( $dir . '.css' ) ?>"
+		>
+		<?php 
+		endforeach;
+	}
+	?>
 	<link rel="apple-touch-icon" href="<?php Views::load_img('apple-icon.png') ?>">
 	<link rel="icon" href="<?php Views::load_img('favicon.ico') ?>">
 	<?php
@@ -59,8 +89,8 @@ if( ! isset($template['robots']) )
 	<script type="text/javascript">window.onload_functions = [];</script>
 </head>
 <body <?php
-if( Views::is('txt') ) echo 'id="txt"';
-if( Views::is('404') ) echo 'id="page_404"';
+if( Views::is('txt') ) echo 'class="text"';
+if( Views::is('404') ) echo 'class="page-404"';
 if( Views::is('index') ) echo 'class="white"';
 ?>>
 <?php
@@ -73,7 +103,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		<div class="input-field">
 			<input
 				type="text"
-				class="validate"
+				class="validate sidebar-search"
 				id="q"
 				name="q"
 				title="<?php
@@ -86,7 +116,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			</label>
 		</div>
 	</form>
-	<ul id="sidebar_list">
+	<ul class="sidebar-list">
 		<li>
 			<a
 			title="<?php _e('Go to the home page') ?>"
@@ -116,8 +146,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			title="<?php _e('Go to your profile') ?>"
 			href="<?php echo url('audios/' . $user->user->user ) ?>">
 				<img
-				id="sidebar_profile_picture"
-				class="circle" width="25" height="25"
+				class="circle sidebar-profile_picture" width="25" height="25"
 				src="<?php echo $user->user->avatar ?>"
 				onerror="this.src='<?php Views::load_img('unknown.png') ?>'" >
 				&nbsp;
@@ -173,7 +202,7 @@ endif;
 <div class="navbar-fixed">
 	<nav class="blue lighten-2 <?php if($show_sidebar) echo 'content' ?>">
 	<?php if( $show_sidebar ): ?>
-		<a href="javascript:void(0);" data-activates="slide-out" class="button-collapse" id="open_sidebar"><i class="mdi-navigation-menu"></i></a>
+		<a href="javascript:void(0);" data-activates="slide-out" class="button-collapse open-sidebar"><i class="mdi-navigation-menu"></i></a>
 	<?php endif ?>
 		<div class="nav-wrapper">
 			<a href="<?php echo url() ?>" class="brand-logo center logo">TwitAudio</a>

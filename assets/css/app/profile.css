@@ -1,0 +1,36 @@
+/**
+* Stuff related to the profiles
+*
+* @author Zerquix18
+*
+**/
+.profile-picture {
+	display: block;
+	margin: 10px auto;
+	border-width: 5px;
+	border-style: solid;
+	border-color: #FFF;
+	height: 150px;
+	width: 150px;
+}
+.profile-name,
+.profile-user,
+.profile-bio {
+	display: block;
+	text-align: center;
+	font-family: 'Roboto', Helvetica, 'Helvetica Neue', Times, Serif, Arial;
+	margin: 0;
+}
+.profile-name {
+	font-weight: bold;
+}
+.profile-bio {
+	font-size: 17px;
+	margin:0 auto;
+}
+.tabs .indicator {
+	background-color: #2196f3;
+}
+.profile-navigation {
+	margin-bottom: 20px;
+}

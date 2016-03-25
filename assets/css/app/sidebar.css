@@ -1,0 +1,45 @@
+/**
+* Styles for the sidebar
+*
+* @author Zerquix18
+*
+**/
+/** the search input */
+.sidebar-search {
+	padding-left: 5px;
+	padding-right: 5px;
+	color: #FFF;
+}
+/********* Sidebar *******/
+.side-nav li {
+	padding: 0;
+}
+.sidebar-list li:hover {
+	background-color: #616161;
+}
+.sidebar-list a {
+	height: 40px;
+	line-height: 40px;
+	font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
+}
+/*
+* if you quit .side-nav from start
+* the code will not work
+* don't ask why
+**/
+.side-nav .sidebar-list a {
+	color: #FFF;
+}
+.sidebar-list i {
+	font-size: 20px;
+	margin: 0 5px;
+}
+.sidebar-list ._badge {
+	margin-top: 10px;
+}
+.sidebar-profile_picture {
+	vertical-align: middle;
+}
+.open-sidebar {
+	margin-left: 10px;
+}

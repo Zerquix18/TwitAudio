@@ -19,7 +19,7 @@ cd ../git_tmp
 
 # minifies JS:
 
-make_file_from_dir() {
+make_jsfile_from_dir() {
 	key=$1
 	i=0
 	result=()
@@ -46,8 +46,40 @@ make_file_from_dir() {
 	curl -X POST -s --data-urlencode "input@assets/js/$key.js" https://javascript-minifier.com/raw -o "assets/js/$key.js"
 }
 
-make_file_from_dir 'vendor'
-make_file_from_dir 'app'
+make_jsfile_from_dir 'vendor'
+make_jsfile_from_dir 'app'
+
+# minifies CSS:
+
+make_cssfile_from_dir() {
+	key=$1
+	i=0
+	result=()
+	file_='assets/css/styles.json'
+	array=($(jq --raw-output -c .$key[$i] $file_))
+	while true;
+	do
+		array=($(jq --raw-output -c .$key[$i] $file_))
+		if [ "$array" == "null" ]; then
+			break
+		fi
+		result+=("$array")
+		((i++))
+	done
+	# now $result are the files
+	> "assets/js/$key.css" #make an empty file
+	# append now $result[$i].css to $key.css
+	for filename in "${result[@]}"
+	do
+		file_to_concatenate="assets/css/$key/$filename"
+		cat "$file_to_concatenate" >> "assets/css/$key.css"
+	done
+	# now minify the entire file
+	curl -X POST -s --data-urlencode "input@assets/css/$key.css" https://cssminifier.com/raw -o "assets/css/$key.css"
+}
+
+make_jsfile_from_dir 'vendor'
+make_jsfile_from_dir 'app'
 
 cd ../TwitAudio
 

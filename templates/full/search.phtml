@@ -16,7 +16,7 @@ Views::load_template('header', array(
 );
 
 ?>
-<div class="content" id="main">
+<div class="content main">
 	<div class="row">
 		<div class="col l9 m12 s12">
 			<div class="box">
@@ -28,7 +28,7 @@ Views::load_template('header', array(
 						&nbsp;<?php _e('Search...') ?>
 					</label>
 				</div>
-				<div id="search_options">
+				<div class="search_options">
 				<div class="input-field col s3 left">
 				<select id="search_type" name="t">
 					<option value="a"
@@ -60,7 +60,10 @@ Views::load_template('header', array(
 				<label><?php _e('Sort') ?></label>
 				</div>
   				</div>
-  				<button id="search_button" type="submit" class="waves-effect waves-light btn blue lighten-1">
+  				<button
+  				type="submit"
+  				class="search-btn waves-effect waves-light btn blue lighten-1"
+  				>
   					<?php _e('Search') ?>
   				</button>
   				</form>

@@ -1,0 +1,353 @@
+/*
+* Styles for the audio box
+* And the player
+*
+* @author Zerquix18
+*
+*/
+.audio {
+	width: 100%;
+	min-height: 47px;
+	margin-bottom: 10px;
+}
+.audio a img {
+	float: left;
+	vertical-align: middle;
+}
+.audio-user-name {
+	font-size: 17px;
+	font-weight: bold;
+	color: #3B3B3B;
+	display: inline;
+	margin-left: 10px;
+}
+.audio-user-user {
+	font-size: 13px;
+	color: #CCC;
+}
+.audio-date {
+	float:right;
+	font-size:15px;
+	color: #CCC;
+	vertical-align: top;
+}
+@media (max-width: 300px) {
+	.audio-user-name {
+		font-size: 13px;
+	}
+	.audio-user-user {
+		font-size: 10px;
+	}
+	.audio-date {
+		font-size: 10px;
+	}
+}
+.audio-footer {
+	vertical-align: bottom;
+	text-align: center;
+	margin-right: 10px;
+	margin-top: 20px;
+}
+.audio-btn {
+	margin-left: 5px;
+	text-decoration: none;
+	color: #CBCBCB;
+	font-size: 18px;
+}
+.audio-play {
+	margin-top: 5px;
+	margin-left: 60px;
+}
+.audio-description {
+	margin-top: 5px;
+	margin-left: 60px;
+	margin-bottom: 5px;
+}
+/** Audio shown in the audio page **/
+.audio-big .audio-user-name {
+	font-size: 20px;
+	margin-left: 5px;
+}
+.audio-big .audio-user-user {
+	font-size: 15px;
+	margin-left: 5px;
+}
+.audio-big .audio-play {
+	margin-left: 80px;
+}
+.audio-big ul.jp-controls {
+	height: 35px;
+}
+.audio-big div.jp-volume-bar,
+.audio-big div.jp-progress {
+	top: 13px;
+	height:11px;
+}
+.audio-big div.jp-play-bar,
+.audio-big div.jp-seek-bar,
+.audio-big div.jp-volume-bar-value {
+	height: 11px;
+}
+.audio-big div.jp-current-time,
+.audio-big div.jp-duration {
+	top: 35px;
+}
+.audio-big .control {
+	left: 15px;
+	top: 8px;
+	font-size: 18px;
+}
+.audio-big .vcontrol {
+	top: 10px;
+	font-size: 15px;
+}
+.audio-big .audio-btn i {
+	font-size: 25px;
+}
+.audio-big .audio-desc {
+	margin-left: 80px;
+}
+.laic {
+	cursor: pointer;
+}
+.laic:hover,
+.favorited {
+	color: #ffc107;
+}
+.delit:hover {
+	color: #FF0000;
+}
+.links {
+	text-align: center;
+}
+.links li {
+	display: inline-block;
+	margin-left: 5px;
+}
+.links a {
+	float: left;
+}
+.linked-reply {
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-left: 5px;
+}
+/* CONTROLS OF THE PLAYER */
+.jp-interface {
+	position: relative;
+	z-index: 1;
+	overflow: visible;
+}
+.jp-interface ul,
+.jp-interface ul li{
+	top:0;
+	left:0;
+	right:0;
+	margin:0;
+	padding:0;
+}
+.jp-controls{
+	position: relative;
+	margin: 0;
+	padding: 0;
+	width: auto;
+	height: 22px;
+	background-color: #EDEDED;
+	-webkit-box-shadow: inset 0 1px 0 0 #fff;
+	   -moz-box-shadow: inset 0 1px 0 0 #fff;
+	        box-shadow: inset 0 1px 0 0 #fff;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #babec4;
+	list-style: none;
+	overflow: hidden;
+}
+.jp-controls a,
+.jp-toggles a {
+	text-decoration: none;
+	display: none;
+	overflow: hidden;
+}
+/* BUTTONS */
+.jp-play,
+.jp-pause {
+	width: 30px;
+}
+.control {
+	position: absolute;
+	left: 11px;
+	top: 3px;
+	color: #393939;
+	font-size: 12px;
+}
+.vcontrol {
+	position: absolute;
+	color: #393939;
+	right: 70px;
+	top: 2px;
+}
+.jp-stop {
+	display: none;
+}
+.jp-volume-max {
+	display: none;
+}
+.jp-current-time {
+	position: absolute;
+	z-index:1;
+	top:21px;
+	left:0;
+	width:50px;
+	height:25px;
+	text-align:right;
+	font-size:13px;
+	color:#626262;
+	line-height:25px;
+	overflow:hidden;
+}
+.jp-duration{
+	position:absolute;
+	z-index:1;
+	top:21px;
+	right:0;
+	width:55px;
+	height:25px;
+	text-align:left;
+	font-size:13px;
+	color:#626262;
+	line-height:25px;
+	overflow:hidden;
+}
+/* VOLUME BAR */
+.jp-volume-bar {
+	position: absolute;
+	top:8px;
+	right:10px;
+	height:8px;
+	width:50px;
+	background: #c9cdd1;
+
+	background: -webkit-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:    -moz-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:     -ms-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:      -o-linear-gradient(top, #c9cdd1 0% ,#d8dbde 100%);
+	background:         linear-gradient(to bottom, #c9cdd1 0%, #d8dbde 100%);
+	background:        -webkit-gradient(
+							linear, left top, left bottom,
+							color-stop(0%,#c9cdd1),color-stop(100%,#d8dbde)
+						);
+
+	filter: progid:DXImageTransform.Microsoft.gradient(
+			startColorstr='#c9cdd1',
+			endColorstr='#d8dbde',
+			GradientType=0
+		);
+	
+	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+
+	   -moz-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
+	   					inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+	   					inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+
+			box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+
+	overflow: hidden;
+	cursor: pointer; 
+}
+
+.jp-volume-bar-value {
+	width: 0;
+	height: 7px;
+	background: #009AFF;
+	background: -webkit-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:    -moz-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:     -ms-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:      -o-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:         linear-gradient(to bottom, #009AFF 0,#0088D5 100%);
+	background:        -webkit-gradient(
+							linear, left top, left bottom,
+							color-stop(0,#009AFF), color-stop(100%,#0088D5)
+						);
+
+	filter: progid:DXImageTransform.Microsoft.gradient(
+		startColorstr='#009AFF',
+		endColorstr='#0088D5',
+		GradientType=0
+	);
+	
+	border-width: 1px;
+	border-style: solid;
+	border-color: #0077EF;
+}
+/* PROGRESS BAR */
+div.jp-progress {
+	position: absolute;
+	z-index: 2;
+	top: 8px;
+	right: 105px;
+	left: 45px;
+	height: 8px;
+	
+	background: #c9cdd1;
+	background: -webkit-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:    -moz-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:     -ms-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:      -o-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
+	background:         linear-gradient(to bottom, #c9cdd1 0%,#d8dbde 100%);
+	background:        -webkit-gradient(
+							linear, left top, left bottom, 
+							color-stop(0%,#c9cdd1), color-stop(100%,#d8dbde)
+						);
+
+
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9cdd1', endColorstr='#d8dbde',GradientType=0 );
+	
+	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+
+	   -moz-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+						inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+
+	        box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
+	        			inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+	        			inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+		
+	overflow: hidden;
+	cursor: pointer;
+}
+.jp-seek-bar {
+	margin: 0;
+	height: 8px;
+	padding: 0;
+	}
+.jp-seeking-bg {
+	background: none;
+}
+div.jp-play-bar {
+	width: 0;
+	height: 8px;
+	background: #009AFF;
+	background: -webkit-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:    -moz-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:     -ms-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:      -o-linear-gradient(top, #009AFF 0, #0088D5 100%);
+	background:         linear-gradient(to bottom, #009AFF 0, #0088D5 100%);
+	background:        -webkit-gradient(
+							linear, left top, left bottom,
+							color-stop(0,#009AFF), color-stop(100%,#0088D5)
+						);
+	filter: progid:DXImageTransform.Microsoft.gradient(
+			startColorstr='#009AFF',
+			endColorstr='#0088D5',
+			GradientType=0
+		);
+	border-width: 1px;
+	border-style: solid;
+	border-color: #0077EF;
+}

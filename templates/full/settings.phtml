@@ -3,8 +3,10 @@ $user = new \models\User();
 $user = $user->user;
 use \application\Views;
 ?>
-<form method="POST" id="settings_form" method="POST"
-	  action="<?php echo url() . 'ajax/post/settings' ?>">
+<form
+	method="POST"
+	id="settings_form"
+	action="<?php echo url() . 'ajax/post/settings' ?>">
 	<p class="title"><?php _e('Privacy') ?></p>
 	<input type="hidden" name="audios_public" value="0">
 	<input type="checkbox"
@@ -34,7 +36,7 @@ use \application\Views;
 	<p><?php _e('If your audios are private, only your followers will be able to see/listen to them. On the other hand, if your favorites are private, only you will be able to see them.') ?>
 	</p>
 	<hr>
-	<button type="submit" class="btn waves-effect waves-light">
+	<button type="submit" class="btn waves-effect waves-light center">
 		<?php _e('Update settings') ?>&nbsp;
 		<i class="fa fa-send"></i>
 	</button>

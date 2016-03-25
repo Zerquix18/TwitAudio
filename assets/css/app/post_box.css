@@ -1,0 +1,85 @@
+#post {
+	margin: 0 auto;
+	width: 250px;
+}
+#post i {
+	font-size: 70px;
+	margin: 0 10px;
+}
+#record,
+#upload {
+	cursor: pointer;
+	text-align: center;
+}
+#or {
+	line-height: 70px;
+}
+#or,
+.a_text {
+	color: #616161;
+	font-family: Helvetica, 'Nelvetica Neue', 'Helvetica Neue LT',
+				'Roboto', Arial, Serif;
+}
+#waiting {
+	height: 100px;
+}
+#waiting > div.valign {
+	margin: 0 auto;
+	font-size: 16px;
+}
+#loading {
+	margin: 20px 0;
+	padding: 0 40px;    
+}
+#whatsloading {
+	display: block;
+	text-align: center;
+}
+#record_form {
+	margin: 20px auto;
+	text-align: center;
+}
+#record_actions * {
+	font-size: 20px;
+	color: #424242;
+}
+#count {
+	margin-right: 5px;
+}
+#stop,
+#cancel {
+	cursor: pointer;
+}
+#cut_form {
+	min-height: 100px;
+	text-align: center;
+	margin-top: 10px;
+}
+#cut_block {
+	margin: 10px auto;
+}
+#start, #end {
+	width: 35px;
+}
+#desc_ {
+	margin: 30px 0 0 10px;
+}
+#send_to_twitter {
+	margin-left: 10px;
+}
+#post_buttons {
+	margin:0 auto;
+	width: 300px;
+}
+@media (max-width: 400px) {
+	#post_buttons {
+		width: 270px;
+	}
+}
+.choose {
+	margin: 25px auto;
+	display: block;
+}
+#post_footer {
+	min-height: 40px;
+}

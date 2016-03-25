@@ -1,0 +1,76 @@
+/**
+*
+* Miscelaneus stuff
+* Just used in small spaces
+* and not in big/multiple pages
+*
+**/
+
+/** SEARCH FORM **/
+
+.search_options {
+	height: 70px;
+	margin-bottom: 10px;
+}
+.search_btn {
+	margin-top: 15px;
+	display: block;
+	margin: 0 auto;
+}
+
+ul.user li {
+	display: inline-block;
+	vertical-align: middle;
+}
+ul.user .name {
+	font-size: 25px;
+}
+ul.user .uname {
+	font-size: 20px;
+}
+ul.user li a {
+	float: left;
+	color: inherit;
+	text-decoration: none;
+}
+ul.user .verified {
+	font-size: 15px;
+}
+
+/** Audio page **/
+
+.reply-options {
+	min-height: 50px;
+	padding-left: 10px;
+}
+.ads-footer {
+	max-width: 720px;
+	display: block;
+	margin: 10px auto 20px auto;
+}
+.signin {
+	display: block;
+	margin: 0 auto;
+	width: 158px;
+}
+.share_buttons {
+	text-align: right;
+}
+
+/** sidebar **/
+
+.more {
+	overflow: hidden;
+}
+
+b.caret {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 2px;
+	vertical-align: middle;
+	border-top: 4px dashed;
+	border-top: 4px solid \9;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
+}

@@ -96,11 +96,11 @@ class Views {
 		$get_avatar = $big ? $user->avatar_bigger : $user->avatar;
 	?>
 	<div class="audio <?php
-	if($big) echo 'big';
+	if($big) echo 'audio-big';
 	echo ' audio_' . $audio->id;
 	?>"
 	id="<?php echo $audio->id ?>">
-	<div class="audio_header">
+	<div class="audio-header">
 		<a href="<?php echo url('audios/'. $user->user) ?>">
 			<img class="circle"
 			src="<?php echo $get_avatar ?>"
@@ -114,23 +114,23 @@ class Views {
 		<?php endif ?>
 			>
 		</a>
-		<span class="audio_user_name">
+		<span class="audio-user-name">
 			<a
-			class="nodeco"
+			class="no-deco"
 			href="<?php echo $profile_url ?>"
 			>
 				<?php echo HTTP::XSSprotect( $user->name ) ?>
 			</a>
 		</span>
-		<span class="audio_user_user">
+		<span class="audio-user-user">
 			<a
-			class="nodeco"
+			class="no-deco"
 			href="<?php echo $profile_url ?>"
 			>
 				@<?php echo $user->user ?>
 			</a>
 		</span>
-		<span class="audio_date">
+		<span class="audio-date">
 			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
 			<a href="<?php
 			echo \url();
@@ -146,18 +146,18 @@ class Views {
 		<?php
 		if( property_exists($audio, 'is_linked') ):
 		?>
-		<div class="chip" id="linked">
+		<div class="chip linked_reply">
 			<i class="fa fa-link"></i>&nbsp;
 			<?php _e('Linked reply') ?>
 		</div>
 		<?php endif ?>
 	</div>
 	<?php if( ! empty($audio->description) ): ?>
-		<div class="audio_desc">
+		<div class="audio-description">
 			<?php echo HTTP::sanitize( $audio->description ) ?>
 		</div>
 	<?php endif; if( ! empty( $audio->audio ) ):  // if its not a reply ?>
-	<div class="audio_play">
+	<div class="audio-play">
 	<script>
 	window.onload_functions.push( function() {
 		$("#player_<?php echo $audio->id ?>").jPlayer({
@@ -189,10 +189,10 @@ class Views {
                 <ul class="jp-controls">
                     <li><a href="javascript:;" class="jp-play plei" data-id="<?php echo $audio->id ?>" tabindex="1"><i class="fa fa-play control"></i></a></li>
                     <li><a href="javascript:;" class="jp-pause" tabindex="1"><i class="fa fa-pause control"></i></a></li>
-                    <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+                    <li><a href="javascript:;" class="jp-stop" tabindex="1"></a></li>
                     <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute"><i class="fa fa-volume-up vcontrol"></i></a></li>
                     <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute"><i class="fa fa-volume-down vcontrol"></i></a></li>
-                    <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+                    <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume"></a></li>
                 </ul>
                 <div class="jp-progress">
                     <div class="jp-seek-bar">
@@ -213,10 +213,10 @@ class Views {
     </div>
 	</div>
 	<?php endif # / if its not a reply ?>
-	<div class="audio_footer">
+	<div class="audio-footer">
 	<?php if( ! empty($audio->audio) ): # if not a reply ?>
 		<a
-		class="audio_btn"
+		class="audio-btn"
 		id="plays_<?php echo $audio->id ?>"
 		title="<?php
 		echo _n(
@@ -232,7 +232,7 @@ class Views {
 			</span>
 		</a>
 	<?php endif ?>
-		<a class="audio_btn
+		<a class="audio-btn
 		<?php if( is_logged() ):
 			echo 'laic';
 			if($audio->favorited)
@@ -246,7 +246,7 @@ class Views {
 			</span>
 		</a>
 	<?php if( ! empty($audio->audio) ): # if not a reply ?>
-		<a class="audio_btn"
+		<a class="audio-btn"
 		      href="<?php echo url() . $audio->id ?>#replies"
 		      title="<?php _e('Leave a reply') ?>"
 		      >
@@ -259,7 +259,7 @@ class Views {
 		if( is_logged() && $user->id == $GLOBALS['_USER']->id ): ?>
 		<a
 		href="javascript:void(0);"
-		class="audio_btn delit"
+		class="audio-btn delit"
 		data-id="<?php echo $audio->id ?>"
 		title="<?php _e('Delete this audio') ?>"
 		>
@@ -286,7 +286,7 @@ class Views {
 					>
 				</a>
 			</li>
-		<li class="audio_user_name">
+		<li class="audio-user-name">
 			<a href="<?php echo url() . 'audios/' . $user->user ?>">
 			<?php
 			echo \application\HTTP::XSSProtect( $user->name );
@@ -294,7 +294,7 @@ class Views {
 			?>
 			</a>
 		</li>
-		<li class="audio_user_user">
+		<li class="audio-user-user">
 			<a href="<?php echo url() . 'audios/' . $user->user ?>">
 				@<?php echo $user->user ?>
 			</a>
