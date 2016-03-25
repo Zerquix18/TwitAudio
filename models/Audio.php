@@ -60,6 +60,12 @@ class Audio extends \application\ModelBase {
 		
 		if( property_exists($audio, 'plays') )
 			$audio->plays = (int) $audio->plays;
+
+		if( property_exists($audio, 'time') )
+			$audio->time = (int) $audio->time;
+
+		if( property_exists($audio, 'duration') )
+			$audio->duration = (int) $audio->duration;
 		
 
 		if( ! empty($audio->audio) ) {

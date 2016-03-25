@@ -178,6 +178,18 @@ class User extends \application\ModelBase {
 			$user->avatar_bigger = \get_avatar( $user->avatar, 'bigger');
 			$user->avatar_big    = \get_avatar( $user->avatar );
 		}
+
+		if( property_exists($user, 'id') )
+			$user->id = (int) $user->id;
+
+		if( property_exists($user, 'favs_public') )
+			$user->favs_public = (bool) $user->favs_public;
+
+		if( property_exists($user, 'audios_public') )
+			$user->audios_public = (bool) $user->audios_public;
+
+		$user->can_listen = $this->can_listen( $user->id );
+
 		return $user;
 	}
 

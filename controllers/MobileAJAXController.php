@@ -776,7 +776,10 @@ class MobileAJAXController {
 		if( false === ( $user = HTTP::get('user') ) )
 			$user = $users->user->user; //->user
 
-		$user_info = $users->get_user_info($user);
+		$user_info = $users->get_user_info(
+				$user,
+				'id,user,avatar,bio,verified,favs_public,audios_public'
+			);
 
 		try {
 			if( ! $user_info )
@@ -788,18 +791,7 @@ class MobileAJAXController {
 			$e->print_result( $this->via );
 		}
 
-		HTTP::Result( array(
-					'success'   => true,
-					'id' 		=> (int) $user_info->id,
-					'user'		=> $user_info->user,
-					'avatar'	=> get_avatar($user_info->avatar),
-					'bio'		=> $user_info->bio,
-					'verified' 	=> (bool) $user_info->verified,
-					'favs_public' => (bool) $user_info->favs_public,
-					'audios_public' => (bool) $user_info->audios_public,
-					'can_listen' => $users->can_listen( $user_info->id )
-				)
-			);
+		HTTP::Result( array( 'success' => true ) + $user_info );
 
 	}
 	/**
