@@ -67,7 +67,7 @@ make_cssfile_from_dir() {
 		((i++))
 	done
 	# now $result are the files
-	> "assets/js/$key.css" #make an empty file
+	> "assets/css/$key.css" #make an empty file
 	# append now $result[$i].css to $key.css
 	for filename in "${result[@]}"
 	do
@@ -78,8 +78,8 @@ make_cssfile_from_dir() {
 	curl -X POST -s --data-urlencode "input@assets/css/$key.css" https://cssminifier.com/raw -o "assets/css/$key.css"
 }
 
-make_jsfile_from_dir 'vendor'
-make_jsfile_from_dir 'app'
+make_cssfile_from_dir 'vendor'
+make_cssfile_from_dir 'app'
 
 cd ../TwitAudio
 
