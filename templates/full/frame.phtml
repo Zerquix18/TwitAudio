@@ -13,19 +13,52 @@ $audio = $template['audio']
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="<?php Views::load_style('default.css') ?>">
-	<link rel="stylesheet" href="<?php Views::load_style('font-awesome.css') ?>">
+    <?php
+    $all_styles = file_get_contents(
+            $_SERVER['DOCUMENT_ROOT'] . '/assets/css/styles.json'
+        );
+    $all_styles = json_decode( $all_styles, true );
+    if( '0' === $GLOBALS['_CONFIG']['minify_html'] ) {
+        // if not live
+        foreach( $all_styles as $dir => $styles ):
+            $styles_count = count($styles);
+            for($i = 0; $i < $styles_count; $i++):
+        ?>
+                <link
+                rel="stylesheet"
+                href="<?php
+                Views::load_style(
+                        'load_style.php?style=' . $dir . '/' . $styles[$i]
+                    )
+                ?>"
+                >
+        <?php
+            endfor;
+        endforeach;
+    }else{
+        // live!
+        foreach( $all_styles as $dir => $all_styles ): ?>
+        <link
+        rel="stylesheet"
+        href="<?php Views::load_style( $dir . '.css' ) ?>"
+        >
+        <?php 
+        endforeach;
+    }
+    ?>
 	<link rel="apple-touch-icon" href="<?php Views::load_img('apple-icon.png') ?>">
 	<link rel="icon" href="<?php Views::load_img('favicon.ico') ?>">
-	<script src="<?php Views::load_script('jquery-1.11.3.min.js') ?>"></script>
 	<style type="text/css">
 	body{background:none;height:auto;}
 	</style>
+    <script type="text/javascript">
+        window.onload_functions = [];
+    </script>
 </head>
 <body>
 <script>
 //<![CDATA[
-$(document).ready( function() {
+window.onload_functions.push( function() {
 
     $("#player_<?php echo $audio->id ?>").jPlayer({
         ready: function(event) {
@@ -79,7 +112,34 @@ $(document).ready( function() {
     <script>
     ajaxurl = '<?php echo url() . "assets/ajax/" ?>';
     </script>
-   <script src="<?php Views::load_script('jquery.jplayer.min.js') ?>"></script>
-    <script src="<?php Views::load_script('default.js') ?>"></script>
+    <?php
+    $all_scripts = file_get_contents(
+            $_SERVER['DOCUMENT_ROOT'] . '/assets/js/scripts.json'
+        );
+    $all_scripts = json_decode( $all_scripts, true );
+    if( '0' === $GLOBALS['_CONFIG']['minify_html'] ) {
+        // if not live
+        foreach( $all_scripts as $dir => $scripts ):
+            $scripts_length = count($scripts);
+            for($i = 0; $i < $scripts_length; $i++):
+        ?>
+                <script
+                type="text/javascript"
+                src="<?php Views::load_script( $dir . '/' . $scripts[$i] ) ?>"
+                ></script>
+        <?php
+            endfor;
+        endforeach;
+    }else{
+        // live!
+        foreach( $all_scripts as $dir => $scripts ): ?>
+        <script
+        type="text/javascript"
+        src="<?php Views::load_script( $dir . '.js' ) ?>"
+        ></script>
+        <?php 
+        endforeach;
+    }
+    ?>
     </body>
     </html>

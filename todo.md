@@ -3,7 +3,7 @@ Now:
 * Fix delete error in prompt
 * Fix error in title of the audio pages
 * Clean CSS
-* Fix frames
+* Fix play
 
 Soon:
 ----
