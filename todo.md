@@ -2,8 +2,7 @@ Now:
 ----
 * Fix delete error in prompt
 * Fix error in title of the audio pages
-* Clean CSS
-* Fix play
+* Make only one JS function to load the player
 
 Soon:
 ----
