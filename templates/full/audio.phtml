@@ -14,9 +14,12 @@ $replies = $template['replies'];
 $linked  = $template['linked'];
 
 $title = $user->user . ': ';
-if( strlen($audio->description) > 10 )
+$description_len = strlen( $audio->description );
+if( 0 == $description_len )
+	$title = sprintf("%s's audio", $user->user);
+elseif( $description_len > 10 )
 	$title .= substr($audio->description, 0, 10) . '...';
-else
+elseif( $description_len < 10 )
 	$title .= $audio->description;
 Views::load_template('header', array(
 		'title'		=> $title,
@@ -117,6 +120,6 @@ echo http_build_query( array(
 </div>
 <script type="text/javascript">
 var audio_id = '<?php echo $audio->id ?>',
-linked = "<?php if( ! empty($linked) ) echo $linked ?>";
+	linked   = "<?php if( ! empty($linked) ) echo $linked ?>";
 </script>
 <?php Views::load_template('footer');
