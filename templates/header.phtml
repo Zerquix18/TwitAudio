@@ -69,7 +69,7 @@ if( ! isset($template['robots']) )
 	<meta name="twitter:card" content="player">
 	<meta name="twitter:site" content="@twit_audio">
 	<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $audio->user->user) ?>">
-	<meta name="twitter:image" content="h<?php Views::load_image('image.jpg') ?>">
+	<meta name="twitter:image" content="<?php Views::load_img('image.jpg') ?>">
 	<meta name="twitter:url" content="https://www.twitaudio.com/<?php echo $audio->id ?>">
 	<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
 	<?php elseif( ! Views::is('404') ): ?>
