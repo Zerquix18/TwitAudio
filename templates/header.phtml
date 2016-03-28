@@ -6,7 +6,7 @@
 * @copyright Copyright (c) 2015 Luis A. Martínez
 *
 **/
-use \application\Views;
+use \application\View;
 use \application\HTTP;
 
 if( ! isset($template['robots']) )
@@ -40,7 +40,7 @@ if( ! isset($template['robots']) )
 				<link
 				rel="stylesheet"
 				href="<?php
-				Views::load_style(
+				View::load_style(
 						'load_style.php?style=' . $dir . '/' . $styles[$i]
 					)
 				?>"
@@ -53,35 +53,35 @@ if( ! isset($template['robots']) )
 		foreach( $all_styles as $dir => $all_styles ): ?>
 		<link
 		rel="stylesheet"
-		href="<?php Views::load_style( $dir . '.css' ) ?>"
+		href="<?php View::load_style( $dir . '.css' ) ?>"
 		>
 		<?php 
 		endforeach;
 	}
 	?>
-	<link rel="apple-touch-icon" href="<?php Views::load_img('apple-icon.png') ?>">
-	<link rel="icon" href="<?php Views::load_img('favicon.ico') ?>">
+	<link rel="apple-touch-icon" href="<?php View::load_img('apple-icon.png') ?>">
+	<link rel="icon" href="<?php View::load_img('favicon.ico') ?>">
 	<?php
-	if( Views::is('audio') && $template['robots']): ?>
+	if( View::is('audio') && $template['robots']): ?>
 	<meta name="twitter:player" content="<?php echo 'https://www.twitaudio.com/frame/' . $audio->id ?>">
 	<meta name="twitter:player:height" content="47">
 	<meta name="twitter:player:width" content="435">
 	<meta name="twitter:card" content="player">
 	<meta name="twitter:site" content="@twit_audio">
 	<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $audio->user->user) ?>">
-	<meta name="twitter:image" content="<?php Views::load_img('image.jpg') ?>">
+	<meta name="twitter:image" content="<?php View::load_img('image.jpg') ?>">
 	<meta name="twitter:url" content="https://www.twitaudio.com/<?php echo $audio->id ?>">
 	<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
-	<?php elseif( ! Views::is('404') ): ?>
+	<?php elseif( ! View::is('404') ): ?>
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:site" content="@twit_audio" />
 	<meta name="twitter:title" content="TwitAudio" />
 	<meta name="twitter:description" content="Share voice notes and audio files with Twitter" />
-	<meta name="twitter:image" content="<?php Views::load_img('logo-md.png') ?>" />
+	<meta name="twitter:image" content="<?php View::load_img('logo-md.png') ?>" />
 	<?php endif ?>
 	<meta property="og:title" content="TwitAudio">
-	<meta property="og:image" content="<?php Views::load_img('logo-md.png') ?>">
-	<?php if( ! Views::is('index') ): ?>
+	<meta property="og:image" content="<?php View::load_img('logo-md.png') ?>">
+	<?php if( ! View::is('index') ): ?>
 	<meta name="theme-color" content="#64b5f6">
 	<meta name="msapplication-navbutton-color" content="#64b5f6">
 	<meta name="apple-mobile-web-app-status-bar-style" content="#64b5f6">
@@ -89,13 +89,13 @@ if( ! isset($template['robots']) )
 	<script type="text/javascript">window.onload_functions = [];</script>
 </head>
 <body <?php
-if( Views::is('txt') ) echo 'class="text"';
-if( Views::is('404') ) echo 'class="page-404"';
-if( Views::is('index') ) echo 'class="white"';
+if( View::is('txt') ) echo 'class="text"';
+if( View::is('404') ) echo 'class="page-404"';
+if( View::is('index') ) echo 'class="white"';
 ?>>
 <?php
-$show_sidebar = ! Views::is('404', 'txt');
-if( ! Views::is('index') ): // do I show navbar? if it not home page
+$show_sidebar = ! View::is('404', 'txt');
+if( ! View::is('index') ): // do I show navbar? if it not home page
 if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 ?>
 <div id="slide-out" class="side-nav fixed  grey darken-3">
@@ -148,7 +148,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				<img
 				class="circle sidebar-profile_picture" width="25" height="25"
 				src="<?php echo $user->user->avatar ?>"
-				onerror="this.src='<?php Views::load_img('unknown.png') ?>'" >
+				onerror="this.src='<?php View::load_img('unknown.png') ?>'" >
 				&nbsp;
 				<?php echo HTTP::xss_protect( $user->user->name ) ?>
 			</a>

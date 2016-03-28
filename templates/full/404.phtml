@@ -1,15 +1,15 @@
 <?php
-use \application\Views;
+use \application\View;
 header("HTTP/1.1 404 Not Found");
-Views::set_page('404');
-Views::load_template('header', array(
+View::set_page('404');
+View::load_template('header', array(
 		'title'	 => 'Error 404',
 		'robots' => false
 	)
 )
 ?>
 <div class="container">
-	<img src="<?php Views::load_img('p404.png') ?>">
+	<img src="<?php View::load_img('p404.png') ?>">
 	<h3 class="not-found-text">
 		<?php _e('We could not find that!') ?>
 	</h3>
@@ -46,4 +46,4 @@ Views::load_template('header', array(
 		<?php endif ?>
 	</ul>
 </div>
-<?php Views::load_template('footer');
+<?php View::load_template('footer');

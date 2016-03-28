@@ -10,7 +10,7 @@
 **/
 namespace controllers;
 
-use \application\Views;
+use \application\View;
 /**
 *
 * There is a place in the distance
@@ -23,7 +23,7 @@ class TextPagesController {
 			'/application/html/' .$page . '.html';
 			
 		if( ! file_exists( $file ) || ! is_readable($file) )
-			Views::exit_404();
+			View::exit_404();
 
 		$text = file_get_contents( $file );
 		$text = nl2br( $text );
@@ -33,6 +33,6 @@ class TextPagesController {
 				'page'		=> 		$page
 			);
 
-		Views::load_full_template('text', $template);
+		View::load_full_template('text', $template);
 	}
 }

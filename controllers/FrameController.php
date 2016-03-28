@@ -7,7 +7,7 @@
 *
 **/
 namespace controllers;
-use \application\Views, \models\Audio;
+use \application\View, \models\Audio;
 
 class FrameController {
 
@@ -16,13 +16,13 @@ class FrameController {
 		$audio = $audios->get_audio_info($audio_id);
 		
 		if( ! $audio )
-			Views::exit_404();
+			View::exit_404();
 
 		$user = $audio->user;
 
 		if( 0 == $user->audios_public )
-			Views::exit_404();
+			View::exit_404();
 
-		Views::load_full_template('frame', array('audio' => $audio ) );
+		View::load_full_template('frame', array('audio' => $audio ) );
 	}
 }

@@ -6,7 +6,7 @@
 * A really dirty file
 *
 **/
-use \application\Views;
+use \application\View;
 $audio = $template['audio']
 ?>
 <!DOCTYPE html>
@@ -27,7 +27,7 @@ $audio = $template['audio']
                 <link
                 rel="stylesheet"
                 href="<?php
-                Views::load_style(
+                View::load_style(
                         'load_style.php?style=' . $dir . '/' . $styles[$i]
                     )
                 ?>"
@@ -40,14 +40,14 @@ $audio = $template['audio']
         foreach( $all_styles as $dir => $all_styles ): ?>
         <link
         rel="stylesheet"
-        href="<?php Views::load_style( $dir . '.css' ) ?>"
+        href="<?php View::load_style( $dir . '.css' ) ?>"
         >
         <?php 
         endforeach;
     }
     ?>
-	<link rel="apple-touch-icon" href="<?php Views::load_img('apple-icon.png') ?>">
-	<link rel="icon" href="<?php Views::load_img('favicon.ico') ?>">
+	<link rel="apple-touch-icon" href="<?php View::load_img('apple-icon.png') ?>">
+	<link rel="icon" href="<?php View::load_img('favicon.ico') ?>">
 	<style type="text/css">
 	body{background:none;height:auto;}
 	</style>
@@ -125,7 +125,7 @@ window.onload_functions.push( function() {
         ?>
                 <script
                 type="text/javascript"
-                src="<?php Views::load_script( $dir . '/' . $scripts[$i] ) ?>"
+                src="<?php View::load_script( $dir . '/' . $scripts[$i] ) ?>"
                 ></script>
         <?php
             endfor;
@@ -135,7 +135,7 @@ window.onload_functions.push( function() {
         foreach( $all_scripts as $dir => $scripts ): ?>
         <script
         type="text/javascript"
-        src="<?php Views::load_script( $dir . '.js' ) ?>"
+        src="<?php View::load_script( $dir . '.js' ) ?>"
         ></script>
         <?php 
         endforeach;

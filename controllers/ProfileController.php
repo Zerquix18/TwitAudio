@@ -11,7 +11,7 @@
 **/
 namespace controllers;
 
-use \application\Views;
+use \application\View;
 use \models\Audio;
 use \models\User;
 
@@ -21,7 +21,7 @@ class ProfileController {
 		$users_model = new User();
 		$user = $users_model->get_user_info( $user );
 		if( ! $user )
-			Views::exit_404();
+			View::exit_404();
 
 		$audios_model = new Audio;
 
@@ -74,6 +74,6 @@ class ProfileController {
 				'total_favorites' => $total_favorites
 			);
 
-		Views::load_full_template('profile', $template);
+		View::load_full_template('profile', $template);
 	}
 }

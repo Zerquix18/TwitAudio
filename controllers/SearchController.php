@@ -9,7 +9,7 @@
 *
 **/
 namespace controllers;
-use \application\Views, \application\HTTP, \models\Search;
+use \application\View, \application\HTTP, \models\Search;
 
 class SearchController {
 
@@ -29,7 +29,7 @@ class SearchController {
 				)
 			);
 		}
-		Views::load_full_template('search', array(
+		View::load_full_template('search', array(
 				'query'		=> $query,
 				'type'		=> $type,
 				'order' 	=> $order,

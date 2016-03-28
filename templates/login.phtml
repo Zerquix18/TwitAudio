@@ -5,11 +5,11 @@
 * it gonna show the info after login or logout in any page
 * let's go
 **/
-use \application\Views;
+use \application\View;
 
 #first, show the modal if it's the first time the user logs in
 
-if( ! Views::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
+if( ! View::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
 	unset($_SESSION['first_time']) ?>
  <div id="welcome" class="modal bottom-sheet">
 	<div class="modal-content">
@@ -48,12 +48,12 @@ window.onload_functions.push( function() {
 <?php endif; // endif first time
 
 # so finally, show the messages of error
-$logout_request = Views::is('index')
+$logout_request = View::is('index')
 					&& is_logged()
 					&& \application\HTTP::get('logout');
 					
 $login_error = isset($_SESSION['login_error']);
-if( ! Views::is('404', 'txt') && ( $logout_request || $login_error) ):
+if( ! View::is('404', 'txt') && ( $logout_request || $login_error) ):
 	if( $logout_request):
 		session_logout(); // defined in application/session.php
 	?>
@@ -67,12 +67,12 @@ if( ! Views::is('404', 'txt') && ( $logout_request || $login_error) ):
 <?php
 		unset($_SESSION['login_error']);
 endif;
-if( Views::is('index') ):
+if( View::is('index') ):
 #in index these scripts never load. in this case they must
 ?>
-<script src="<?php Views::load_script('jquery-1.11.3.min.js') ?>"></script>
-<script src="<?php Views::load_script('materialize.js') ?>"></script>
-<script src="<?php Views::load_script('default.js') ?>"></script>
+<script src="<?php View::load_script('jquery-1.11.3.min.js') ?>"></script>
+<script src="<?php View::load_script('materialize.js') ?>"></script>
+<script src="<?php View::load_script('default.js') ?>"></script>
 <?php
 endif; // end if is index
 

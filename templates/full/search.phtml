@@ -1,7 +1,7 @@
 <?php
-use \application\Views, \application\HTTP;
+use \application\View, \application\HTTP;
 
-Views::set_page('search');
+View::set_page('search');
 
 $query = $template['query'];
 $type  = $template['type'];
@@ -10,7 +10,7 @@ $content = $template['content'];
 
 $title =  HTTP::xss_protect( $query ) . ' ' . __('Search');
 
-Views::load_template('header', array(
+View::load_template('header', array(
 		'title'	=> $title
 	)
 );
@@ -83,10 +83,10 @@ Views::load_template('header', array(
   						$function_to_call =
   							$type == 'a' ? 'display_audio' : 'display_user';
   						while( list(,$audio) = each($content['audios']) )
-  							Views::$function_to_call( $audio );
+  							View::$function_to_call( $audio );
 
   						if( $content['load_more'] ):
-  							Views::load_more('search', 2);
+  							View::load_more('search', 2);
   						endif;
 
   					endif;
@@ -102,7 +102,7 @@ Views::load_template('header', array(
   			</div>
 		</div>
 		<div class="col l3 m12 s12">
-			<?php Views::load_template('sidebar') ?>
+			<?php View::load_template('sidebar') ?>
 		</div>
 	</div>
 </div>
@@ -120,4 +120,4 @@ var search = "<?php echo urlencode($query) ?>",
 	
 </script>
 <?php
-endif; Views::load_template('footer');
+endif; View::load_template('footer');

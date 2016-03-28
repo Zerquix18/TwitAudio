@@ -17,7 +17,7 @@ namespace controllers;
 
 # without this the life would be hollow
 use \application\HTTP;
-use \application\Views;
+use \application\View;
 use \application\MobileAJAXException;
 
 class MobileAJAXController {
@@ -35,16 +35,16 @@ class MobileAJAXController {
 		**/
 		$method = strtoupper($method);
 		if( $method !== $_SERVER['REQUEST_METHOD'] )
-			Views::exit_404();
+			View::exit_404();
 
 		/**
 		* These methods should not be called
 		**/
 		if( in_array( $action, array('__construct', 'set_rules') ) )
-			Views::exit_404();
+			View::exit_404();
 
 		if( ! method_exists($this, $action ) )
-			Views::exit_404();
+			View::exit_404();
 
 		$this->method = $method;
 		$this->via    = $via;
@@ -100,11 +100,11 @@ class MobileAJAXController {
 		/** set the method(s) **/
 		$methods = explode("|", $options['method']);
 		if( ! in_array( $this->method, $methods ) )
-			Views::exit_404();
+			View::exit_404();
 		/** set the vias **/
 		$vias = explode(',', $options['vias'] );
 		if( ! in_array( $this->via, $vias) )
-			Views::exit_404();
+			View::exit_404();
 
 		// in the web we also return html
 		// and it jquery returns error because the content
@@ -195,9 +195,9 @@ class MobileAJAXController {
 			HTTP::result( array('success' => true ) + $result );
 		// AJAX side:
 		while( list(,$audio) = each($result['audios']) )
-			Views::display_audio( $audio );
+			View::display_audio( $audio );
 		if( $result['load_more'] )
-			Views::load_more('audios', $result['page'] + 1 );
+			View::load_more('audios', $result['page'] + 1 );
 
 		// blow the roof of the place!
 	}
@@ -581,9 +581,9 @@ class MobileAJAXController {
 				);
 		// AJAX side:
 		while( list(,$audio) = each($result['audios']) )
-			Views::display_audio( $audio );
+			View::display_audio( $audio );
 		if( $result['load_more'] )
-			Views::load_more('audios', $result['page'] + 1 );
+			View::load_more('audios', $result['page'] + 1 );
 	}
 	/**
 	* It will return the data for the home page
@@ -888,9 +888,9 @@ class MobileAJAXController {
 			HTTP::result( array('success' => true) + $replies );
 		// AJAX side:
 		while( list(,$audio) = each($replies['audios']) )
-			Views::display_audio( $audio );
+			View::display_audio( $audio );
 		if( $replies['load_more'] )
-			Views::load_more('audios', $replies['page'] + 1 );
+			View::load_more('audios', $replies['page'] + 1 );
 	}
 
 	/**
@@ -970,7 +970,7 @@ class MobileAJAXController {
 		if( 'mob' == $this->via )
 			HTTP::result( array('success' => true) + $reply );
 		else
-			Views::display_audio( $reply );
+			View::display_audio( $reply );
 	}
 
 	/**
@@ -1026,10 +1026,10 @@ class MobileAJAXController {
   			$result['type'] == 'a' ? 'display_audio' : 'display_user';
 
   		while( list(,$audio) = each($result['audios']) )
-  			Views::$function_to_call( $audio );
+  			View::$function_to_call( $audio );
 
   		if( $result['load_more'] )
-  			Views::load_more('search', $page + 1);
+  			View::load_more('search', $page + 1);
 	}
 	/**
 	* Updates the settings

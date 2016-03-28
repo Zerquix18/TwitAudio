@@ -8,7 +8,7 @@
 **/
 namespace controllers;
 
-use \application\Views,
+use \application\View,
 	\models\Audio,
 	\models\User,
 	\application\HTTP;
@@ -19,11 +19,11 @@ class AudioController {
 		$audios = new Audio;
 		$audio = $audios->get_audio_info( $audio_id );
 		if( ! $audio )
-			Views::exit_404();
+			View::exit_404();
 
 		$current_user = new User;
 		if( ! $current_user->can_listen( $audio->user->user ) )
-			Views::exit_404();
+			View::exit_404();
 
 		if( '0' !== $audio->reply_to )
 			HTTP::redirect(
@@ -61,7 +61,7 @@ class AudioController {
 			}
 		}
 		/** / LINKED REPLIES **/
-		Views::load_full_template('audio', array(
+		View::load_full_template('audio', array(
 				'audio'		=> $audio,
 				'replies'	=> $replies,
 				'linked'    => isset($linked) ? $linked : ''

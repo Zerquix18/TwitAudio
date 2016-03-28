@@ -6,9 +6,9 @@
 * @author Zerquix18 
 **/
 
-use \application\Views;
+use \application\View;
 
-Views::set_page('txt');
+View::set_page('txt');
 
 $replace = array(
 		'about' 	=> __('About'),
@@ -18,7 +18,7 @@ $replace = array(
 		'contact' 	=> __('Contact'),
 		'licensing' => __('Licensing'),
 	);
-Views::load_template('header', array(
+View::load_template('header', array(
 		'title' 	=> str_replace(
 							array_keys($replace),
 							array_values($replace),
@@ -32,5 +32,5 @@ Views::load_template('header', array(
 		<?php echo $template['text'] ?>
 	</div>
 </div>
-<?php Views::load_template('footer');
+<?php View::load_template('footer');
 /* COUNTDOWN TO THE SCIENTIST! */

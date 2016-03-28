@@ -5,8 +5,8 @@
 * from the AudioController
 *
 **/
-use \application\Views;
-Views::set_page('audio');
+use \application\View;
+View::set_page('audio');
 
 $audio   = $template['audio'];
 $user  	 = $audio->user;
@@ -21,7 +21,7 @@ elseif( $description_len > 10 )
 	$title .= substr($audio->description, 0, 10) . '...';
 elseif( $description_len < 10 )
 	$title .= $audio->description;
-Views::load_template('header', array(
+View::load_template('header', array(
 		'title'		=> $title,
 		'robots'	=> (bool) $user->audios_public
 	)
@@ -32,7 +32,7 @@ Views::load_template('header', array(
 		<div class="col l9 m12 s12">
 			<div class="box">
 				<?php
-				Views::display_audio($audio, array('size' => 'big') )
+				View::display_audio($audio, array('size' => 'big') )
 				?>
 				<div class="share_buttons">
 					<script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
@@ -93,28 +93,28 @@ echo http_build_query( array(
 			urlencode( url() . substr($_SERVER['REQUEST_URI'], 1) )
 			?>"
 			>
-				<img src="<?php Views::load_img('signin.png') ?>">
+				<img src="<?php View::load_img('signin.png') ?>">
 			</a>
 		<?php endif ?>
 			<div class="divider"></div>
 				<div id="replies">
 			<?php
 				if( empty($replies) )
-					Views::alert_info(
+					View::alert_info(
 						__("There are not replies yet... Be the first!")
 					);
 				else {
 					while( list(,$reply) = each($replies['audios']) )
-						Views::display_audio( $reply );
+						View::display_audio( $reply );
 					if( $replies['load_more'] )
-						Views::load_more('replies', 2);
+						View::load_more('replies', 2);
 				}
 			?>
 				</div>
 			</div>
 		</div>
 		<div class="col l3 m12 s12">
-			<?php Views::load_template('sidebar') ?>
+			<?php View::load_template('sidebar') ?>
 		</div>
 	</div>
 </div>
@@ -122,4 +122,4 @@ echo http_build_query( array(
 var audio_id = '<?php echo $audio->id ?>',
 	linked   = "<?php if( ! empty($linked) ) echo $linked ?>";
 </script>
-<?php Views::load_template('footer');
+<?php View::load_template('footer');

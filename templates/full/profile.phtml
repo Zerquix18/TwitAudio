@@ -1,9 +1,9 @@
 <?php
 
-use \application\Views;
+use \application\View;
 use \application\HTTP;
 
-Views::set_page('profile');
+View::set_page('profile');
 $user 	 = $template['user'];
 $page 	 = $template['page'];
 $errors  = $template['errors'];
@@ -15,7 +15,7 @@ if( 'favorites' == $page )
 	$title = sprintf( __('%s favorites'), $user->user );
 else
 	$title = sprintf( __('%s audios'), $user->user);
-Views::load_template('header', array(
+View::load_template('header', array(
 		'title'	=> $title
 	)
 );
@@ -33,12 +33,12 @@ Views::load_template('header', array(
 					$user->user
 				)
 				?>"
-				onerror="this.src='<?php Views::load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
+				onerror="this.src='<?php View::load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
 				>
 				<h5 class="profile-name">
 					<?php
 					echo HTTP::xss_protect($user->name);
-					Views::show_verified_badge($user->verified)
+					View::show_verified_badge($user->verified)
 					?>
 				</h5>
 				<p class="grey-text lighten-2-text profile-user">
@@ -91,9 +91,9 @@ Views::load_template('header', array(
 			}else{
 
 				while( list(,$audio) = each($content['audios']) )
-					Views::display_audio( $audio );
+					View::display_audio( $audio );
 				if( $content['load_more'] )
-					Views::load_more( $page, 2);
+					View::load_more( $page, 2);
 
 			}
 		?>
@@ -101,11 +101,11 @@ Views::load_template('header', array(
 			</div>
 		</div>
 		<div class="col l3 m12 s12">
-			<?php Views::load_template('sidebar') ?>
+			<?php View::load_template('sidebar') ?>
 		</div>
 	</div>
 </div>
 <script type="text/javascript">
 var profile = '<?php echo $user->user ?>';
 </script>
-<?php Views::load_template('footer');
+<?php View::load_template('footer');

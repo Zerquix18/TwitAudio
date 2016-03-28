@@ -1,16 +1,16 @@
 <?php
-use \application\Views;
-Views::set_page('index');
-Views::load_template('header')
+use \application\View;
+View::set_page('index');
+View::load_template('header')
 ?>
 <div class="home-header">
 	<div class="container home-logo">
-		<img class="logo-full" src="<?php Views::load_img('logo-full.png') ?>">
+		<img class="logo-full" src="<?php View::load_img('logo-full.png') ?>">
 		<h2 class="home-slogan">
 		<?php _e('Share voice notes and audio files using Twitter') ?>
 		</h2>
 		<a href="<?php echo url('signin') ?>">
-			<img src="<?php Views::load_img('signin.png') ?>">
+			<img src="<?php View::load_img('signin.png') ?>">
 		</a>
 	</div>
 </div>
@@ -63,4 +63,4 @@ Views::load_template('header')
 		</div>
 	</div>
 </div>
-<?php Views::load_template('footer');
+<?php View::load_template('footer');

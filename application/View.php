@@ -1,13 +1,13 @@
 <?php
 /**
-* Views
+* View
 * Loads everything related to front-end
 *
 **/
 namespace application;
 use \application\HTTP;
 
-class Views {
+class View {
 
 	/** Set the current page **/
 
@@ -295,7 +295,7 @@ class Views {
 					<img class="circle"
 						 src="<?php echo $user->avatar ?>"
 						 onerror="this.src='<?php
-						 Views::load_img('unknown.png')
+						 self::load_img('unknown.png')
 						 ?>'"
 						 height="48"
 						 width="48"
