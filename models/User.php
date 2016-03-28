@@ -17,6 +17,12 @@ class User extends \application\ModelBase {
 
 	/** functions exclusively for the logged user **/
 
+	/**
+	* Checks if the logged user
+	* can listen to the audios of $id
+	* @return bool
+	**/
+
 	public function can_listen( $id ) {
 		$is_logged = ( null !== $this->user );
 
@@ -75,7 +81,9 @@ class User extends \application\ModelBase {
 
 		return $check;
 	}
-
+	/**
+	* Get a limit of the current user
+	**/
 	public function get_limit( $limit ) {
 		$duration = (int) $this->user->upload_seconds_limit;
 		switch( $limit ) {
@@ -95,7 +103,9 @@ class User extends \application\ModelBase {
 				break;
 		}
 	}
-
+	/**
+	* @return array
+	**/
 	public function get_available_effects() {
 		$all_effects = array(
 				/** effects for all the users **/
@@ -121,7 +131,10 @@ class User extends \application\ModelBase {
 
 		return $all_effects;
 	}
-
+	/**
+	* Get the count of audios of $id
+	* @return integer
+	**/
 	public function get_audios_count( $id = null ) {
 		$audios = $this->db->query(
 			'SELECT COUNT(*) AS size FROM audios
@@ -132,6 +145,10 @@ class User extends \application\ModelBase {
 		);
 		return (int) $audios->size;
 	}
+	/**
+	* Get the count of favorites of $id
+	* @return integer
+	**/
 	public function get_favorites_count( $id = null ) {
 		$favorites = $this->db->query(
 			'SELECT COUNT(*) AS size FROM audios
@@ -147,7 +164,7 @@ class User extends \application\ModelBase {
 	/**
 	* Loads the info of $id_or_user
 	* $which_info are the columns of the database to request.
-	*
+	* @return stdClass
 	**/
 	private function complete_user( \stdClass $user ) {
 
@@ -195,7 +212,10 @@ class User extends \application\ModelBase {
 
 		return $this->complete_user($user);
 	}
-
+	/**
+	* Checks if user is premium
+	* @return bool
+	**/
 	function is_paid() {
 		$duration = (int) $this->user->upload_seconds_limit;
 		return $duration > 120;

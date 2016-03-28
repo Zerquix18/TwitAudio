@@ -148,7 +148,7 @@ class Audio {
 			$this->error_code = 3;
 			return false;
 		}
-
+		return true;
 	}
 	
 	public static function get_name($name) {
@@ -174,17 +174,19 @@ class Audio {
 		exec($command . " 2>&1", $output);
 		return implode("\n", $output);
 	}
-	
+	/**
+	* @return string
+	**/
 	public function cut( $start, $end ) {
 		if( $this->error )
-			return false;
+			return '';
 		// full time
 		$duration = floor($this->info['playtime_seconds']);
 		if( $start < 0 || $end > $duration ) {
 			// cannot be cut m8
 			$this->error = __("There was an error while cutting your audio...");
 			$this->error_code = 8;
-			return false;
+			return '';
 		}
 		$difference = $end-$start;
 		// trims...
@@ -197,7 +199,7 @@ class Audio {
 			array("", "sox WARN mp3: MAD lost sync" ) ) ) {
 			$this->error = __("Oh snap! There was an error while cutting your audio...");
 			$this->error_code = 6;
-			return false;
+			return '';
 		}
 		unlink($this->audio);
 		$this->audio = $new_name;
@@ -206,6 +208,9 @@ class Audio {
 		return $this->audio;
 	}
 	/** static functions **/
+	/**
+	* @return array
+	**/
 	public static function apply_effects( $filename, array $effects ) {
 
 		if( ! file_exists($filename) )
@@ -246,6 +251,9 @@ class Audio {
 		}
 		return $result;
 	}
+	/**
+	* @return array
+	**/
 	public static function get_finished_effects( array $info ) {
 		$result = array();
 		foreach( $info as $effectname => $effectinfo ) {
@@ -260,6 +268,9 @@ class Audio {
 		}
 		return $result;
 	}
+	/**
+	* @return void
+	**/
 	public static function clean_tmp( array $session_id ) {
 		@unlink( $session_id['tmp_url'] );
 		
@@ -267,6 +278,9 @@ class Audio {
 			@unlink( $effectinfo['filename'] );
 
 	}
+	/**
+	* @return array
+	**/
 	public static function get_effects() {
 		$names = array(
 			'deep'		=> 'Deep',

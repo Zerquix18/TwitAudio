@@ -8,7 +8,7 @@ $type  = $template['type'];
 $sort  = $template['order'];
 $content = $template['content'];
 
-$title =  HTTP::XSSProtect( $query ) . ' ' . __('Search');
+$title =  HTTP::xss_protect( $query ) . ' ' . __('Search');
 
 Views::load_template('header', array(
 		'title'	=> $title

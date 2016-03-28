@@ -150,7 +150,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				src="<?php echo $user->user->avatar ?>"
 				onerror="this.src='<?php Views::load_img('unknown.png') ?>'" >
 				&nbsp;
-				<?php echo HTTP::XSSprotect( $user->user->name ) ?>
+				<?php echo HTTP::xss_protect( $user->user->name ) ?>
 			</a>
 		</li>
 		<li>

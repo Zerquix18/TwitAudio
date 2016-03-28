@@ -54,18 +54,30 @@ class Views {
 		}
 	}
 
-	public static function load_script( $scriptname ) {
-		echo url( 'assets/js/' . $scriptname );
+	public static function load_script( $script_name ) {
+		echo url( 'assets/js/' . $script_name );
 	}
 
-	public static function load_style( $stylename ) {
-		echo url( 'assets/css/' . $stylename );
+	public static function load_style( $style_name ) {
+		echo url( 'assets/css/' . $style_name );
 	}
 
-	public static function load_img( $imgname ) {
-		echo url( 'assets/img/' . $imgname );
+	public static function load_img( $img_name ) {
+		echo url( 'assets/img/' . $img_name );
 	}
-
+	/**
+	* alias
+	* @see load_img
+	**/
+	public static function load_image( $image_name) {
+		return self::load_img( $image_name );
+	}
+	/**
+	* Returns the twitter image
+	* with different sizes
+	* $link must be the common twitter url
+	* @return string
+	**/
 	public static function get_twitter_image( $link, array $options ) {
 		$hola = explode(".", $link);
 		$format = end($hola);
@@ -80,7 +92,11 @@ class Views {
 		else
 			return $link . '_normal.' . $format;
 	}
-
+	/**
+	* Shows the verified badge
+	* In case the user is verified
+	* @param $numb
+	**/
 	public static function show_verified_badge( $numb ) {
 		if( 0 == $numb )
 			return;
@@ -119,7 +135,7 @@ class Views {
 			class="no-deco"
 			href="<?php echo $profile_url ?>"
 			>
-				<?php echo HTTP::XSSprotect( $user->name ) ?>
+				<?php echo HTTP::xss_protect( $user->name ) ?>
 			</a>
 		</span>
 		<span class="audio-user-user">
@@ -289,7 +305,7 @@ class Views {
 		<li class="audio-user-name">
 			<a href="<?php echo url() . 'audios/' . $user->user ?>">
 			<?php
-			echo \application\HTTP::XSSProtect( $user->name );
+			echo \application\HTTP::xss_protect( $user->name );
 			self::show_verified_badge($user->verified);
 			?>
 			</a>

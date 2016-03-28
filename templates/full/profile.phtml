@@ -37,7 +37,7 @@ Views::load_template('header', array(
 				>
 				<h5 class="profile-name">
 					<?php
-					echo HTTP::XSSprotect($user->name);
+					echo HTTP::xss_protect($user->name);
 					Views::show_verified_badge($user->verified)
 					?>
 				</h5>
@@ -45,7 +45,7 @@ Views::load_template('header', array(
 					@<?php echo $user->user ?>
 				</p>
 				<div class="profile-bio">
-			<?php echo HTTP::XSSprotect($user->bio) ?>
+			<?php echo HTTP::xss_protect($user->bio) ?>
 				</div>
 				<ul class="tabs profile-navigation">
 					<li class="tab">

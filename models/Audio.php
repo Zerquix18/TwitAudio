@@ -14,7 +14,7 @@ class Audio extends \application\ModelBase {
 	}
 	/**
 	* Loads the user info, how many favorites
-	* and how many replies the audio has.
+	* and how many replies, etc. the audio has.
 	* And adds it to the object.
 	*
 	**/
@@ -137,133 +137,134 @@ class Audio extends \application\ModelBase {
 	/************************ loaders *******************/
 
 	public function load_audios( $user_id, $page = 1) {
-			$query = "SELECT id,user,audio,reply_to,description,
-							 time,plays,favorites,duration
-						FROM audios
-					  WHERE user = ?
-					  AND reply_to = '0'
-					  AND status = '1'
-					  ORDER BY time DESC";
-			$count = $this->db->query(
-					"SELECT COUNT(*) AS size FROM audios
-					 WHERE user = ? AND reply_to = '0'",
-					 $user_id
-					);
-			$count = (int) $count->size;
-			if( 0 == $count )
-				return array(
-						'audios'	 => array(),
-						'load_more'  => false,
-						'page' 		 => $page,
-						'total'		 => $count
-					);
-			$total_pages = ceil( $count / 10 );
-			if( $page > $total_pages )
-				return array(
-						'audios'	 => array(),
-						'load_more'  => false,
-						'page' 		 => $page,
-						'total'		 => $count
-					);
-
-			$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-			$audios = $this->db->query($query, $user_id);
-			$result = array(
-					'audios'	=>	array()
+		$query = "SELECT id,user,audio,reply_to,description,
+						 time,plays,favorites,duration
+					FROM audios
+				  WHERE user = ?
+				  AND reply_to = '0'
+				  AND status = '1'
+				  ORDER BY time DESC";
+		$count = $this->db->query(
+				"SELECT COUNT(*) AS size FROM audios
+				 WHERE user = ? AND reply_to = '0'",
+				 $user_id
 				);
-			while( $audio = $audios->r->fetch_object() )
-				$result['audios'][] = $this->complete_audio($audio);
+		$count = (int) $count->size;
+		if( 0 == $count )
+			return array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
+				);
+		$total_pages = ceil( $count / 10 );
+		if( $page > $total_pages )
+			return array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
+				);
+
+		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+		$audios = $this->db->query($query, $user_id);
+		$result = array(
+				'audios'	=>	array()
+			);
+		while( $audio = $audios->r->fetch_object() )
+			$result['audios'][] = $this->complete_audio($audio);
 	
-			$result['load_more'] = $page < $total_pages;
-			$result['page'] 	 = $page + 1;
-			$result['total'] 	 = $count;
-			return $result;
+		$result['load_more'] = $page < $total_pages;
+		$result['page'] 	 = $page + 1;
+		$result['total'] 	 = $count;
+		return $result;
 	}
 	public function load_replies( $audio_id, $page = 1 ) {
-			$query = "SELECT id,user,audio,reply_to,description,
-							 time,plays,favorites,duration
-						FROM audios
-					  WHERE reply_to = ?
-					  AND status = '1'
-					  ORDER BY time DESC";
-			$count = $this->db->query(
-					"SELECT COUNT(*) AS size FROM audios
-					 WHERE reply_to = ?",
-					 $audio_id
-					);
-			$count = (int) $count->size;
-			if( 0 == $count )
-				return array(
-						'audios'	 => array(),
-						'load_more'  => false,
-						'page' 		 => $page,
-						'total'		 => $count
-					);
-
-			$total_pages = ceil( $count / 10 );
-			if( $page > $total_pages )
-				return array(
-						'audios'	 => array(),
-						'load_more'  => false,
-						'page' 		 => $page,
-						'total'		 => $count
-					);
-
-			$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-			$audios = $this->db->query($query, $audio_id);
-			$result = array(
-					'audios'	=>	array()
+		$query = "SELECT id,user,audio,reply_to,description,
+						 time,plays,favorites,duration
+					FROM audios
+				  WHERE reply_to = ?
+				  AND status = '1'
+				  ORDER BY time DESC";
+		$count = $this->db->query(
+				"SELECT COUNT(*) AS size FROM audios
+				 WHERE reply_to = ?",
+				 $audio_id
 				);
-			while( $audio = $audios->r->fetch_object() )
-				$result['audios'][] = $this->complete_audio($audio);
+		$count = (int) $count->size;
+		if( 0 == $count )
+			return array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
+				);
+
+		$total_pages = ceil( $count / 10 );
+		if( $page > $total_pages )
+			return array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
+				);
+
+		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+		$audios = $this->db->query($query, $audio_id);
+		$result = array(
+				'audios'	=>	array()
+			);
+		while( $audio = $audios->r->fetch_object() )
+			$result['audios'][] = $this->complete_audio($audio);
 	
-			$result['load_more'] = ($page < $total_pages);
-			$result['page'] = $page + 1;
-			$result['total'] = $count;
-			return $result;
+		$result['load_more'] = ($page < $total_pages);
+		$result['page'] = $page + 1;
+		$result['total'] = $count;
+		return $result;
 	}
 	public function load_favorites( $user_id, $page = 1 ) {
-			$query = "SELECT DISTINCT A.* FROM audios
-						AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-						AND F.user_id = ? AND A.status = '1'
-						ORDER BY F.time DESC";
-			$count = $this->db->query(
-					"SELECT COUNT(*) AS size FROM audios
-					 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-					 AND F.user_id = ? AND A.status = '1'",
-					$user_id
+		$query = "SELECT DISTINCT A.* FROM audios
+					AS A INNER JOIN favorites AS F ON A.id = F.audio_id
+					AND F.user_id = ? AND A.status = '1'
+					ORDER BY F.time DESC";
+		$count = $this->db->query(
+				"SELECT COUNT(*) AS size FROM audios
+				 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
+				 AND F.user_id = ? AND A.status = '1'",
+				$user_id
+			);
+		$count = (int) $count->size;
+		if( 0 == $count )
+			return array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
 				);
-			$count = (int) $count->size;
-			if( 0 == $count )
-				return array(
-						'audios'	 => array(),
-						'load_more'  => false,
-						'page' 		 => $page,
-						'total'		 => $count
-					);
 
-			$total_pages = ceil( $count / 10 );
-			if( $page > $total_pages )
-				return array(
-						'audios'	 => array(),
-						'load_more'  => false,
-						'page' 		 => $page,
-						'total'		 => $count
-					);
-			
-			$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-			$audios = $this->db->query($query, $user_id);
-			$result = array(
-					'audios'	=>	array()
+		$total_pages = ceil( $count / 10 );
+		if( $page > $total_pages )
+			return array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
 				);
-			while( $audio = $audios->r->fetch_object() )
-				$result['audios'][] = $this->complete_audio($audio);
+			
+		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
+		$audios = $this->db->query($query, $user_id);
+		$result = array(
+				'audios'	=>	array()
+			);
+		while( $audio = $audios->r->fetch_object() )
+			$result['audios'][] = $this->complete_audio($audio);
 	
-			$result['load_more'] = $page < $total_pages;
-			$result['page'] = $page + 1;
-			$result['total'] = $count;
-			return $result;
+		$result['load_more'] = $page < $total_pages;
+		$result['page'] = $page + 1;
+		$result['total'] = $count;
+		return $result;
 	}
+	
 	/** actions ! **/
 
 	public function create_audio( array $options ) {

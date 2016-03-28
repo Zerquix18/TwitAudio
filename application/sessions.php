@@ -45,21 +45,24 @@ function is_logged() {
 	return $GLOBALS['just_1_query']; // such a pro, thats me
 }
 
-/** mobile **/
+/**
+* Checks authorization header in the mobile side
+* @return void
+**/
 
 function check_authorization() {
 	global $_USER, $db;
 	$TACrypt = new \application\TACrypt();
 	$headers = apache_request_headers();
 	if( empty($headers['Authorization']) )
-		return \application\HTTP::Result( array(
+		\application\HTTP::result( array(
 				'success'  => false,
 				'response' => __('Authorization required'),
 			)
 		);
 	$authorization = $TACrypt->decrypt64( $headers['Authorization'] );
 	if( ! $authorization )
-		return \application\HTTP::Result( array(
+		\application\HTTP::result( array(
 				'success'  => false,
 				'response' => __('Invalid authorization'),
 			)
@@ -70,7 +73,7 @@ function check_authorization() {
 			$authorization
 	);
 	if( $session->nums === 0 )
-		return \application\HTTP::Result( array(
+		\application\HTTP::result( array(
 				'success'  => false,
 				'response' => __('Invalid authorization')
 			)

@@ -35,30 +35,30 @@ class MobileAJAXException extends \Exception {
 	*
 	* Will exit the result, send the param via
 	* In the MobileAJAXController just send $this->via
-	*
+	* @return void
 	**/
 	public function print_result( $via ) {
 		if( 'mob' == $via )
-			HTTP::Result( array(
+			HTTP::result( array(
 					'success'  => false,
 					'response' => $this->message,
 					'error_code' => $this->code
 				)
 			);
 		elseif( 'ajax' == $via && $this->options['show_in_web'] )
-			HTTP::Result( array(
+			HTTP::result( array(
 					'success'  => false,
 					'response' => $this->message,
 				)
 			);
 		elseif( 'ajax' == $via && $GLOBALS['_CONFIG']['display_errors'])
-			HTTP::Result( array(
+			HTTP::result( array(
 					'success'  => false,
 					'response' => $this->message,
 				)
 			);
 		else
-			HTTP::Result( array(
+			HTTP::result( array(
 					'success'  => false,
 					'response' => //↓
 					__('There was a problem while processing your request'),

@@ -117,7 +117,7 @@ class MobileAJAXController {
 
 		if( 'ajax' == $this->via ) {
 			if( ! is_logged() ) {
-				HTTP::Result( array(
+				HTTP::result( array(
 						'success'  => false,
 						'response' => __('Authorization required'),
 					)
@@ -169,7 +169,9 @@ class MobileAJAXController {
 					array('error_code' => 7)
 				);
 
-			if( false === ($page = HTTP::sanitize_pageNumber($page) ) )
+			$page = HTTP::sanitize_page_number( $page );
+
+			if( 0 === $page )
 				throw new MobileAJAXException(
 					'Page must be numeric and above 0'
 				);
@@ -190,7 +192,7 @@ class MobileAJAXController {
 		$result = $audios->load_audios( $user_id, $page );
 		// Mobile side:
 		if( 'mob' == $this->via )
-			HTTP::Result( array('success' => true ) + $result );
+			HTTP::result( array('success' => true ) + $result );
 		// AJAX side:
 		while( list(,$audio) = each($result['audios']) )
 			Views::display_audio( $audio );
@@ -237,7 +239,7 @@ class MobileAJAXController {
 			$e->print_result( $this->via );
 		}
 
-		HTTP::Result( array('success' => true ) + $audio );
+		HTTP::result( array('success' => true ) + $audio );
 	}
 	/**
 	*
@@ -298,7 +300,7 @@ class MobileAJAXController {
 				'are_all_loaded'	=>	$are_all_loaded
 			);
 		
-		HTTP::Result( $return );
+		HTTP::result( $return );
 	}
 
 	/**
@@ -378,8 +380,8 @@ class MobileAJAXController {
 
 		$new_audio = $audio->cut( $start, $end );;
 
-		if( ! $new_audio )
-			HTTP::Result( array(
+		if( empty($new_audio) )
+			HTTP::result( array(
 					'success'  => false,
 					'response' => $audio->error,
 				)
@@ -402,7 +404,7 @@ class MobileAJAXController {
 		while( list(,$effect) = each($available_effects) )
 			$effects[ $effect ] = $total_effects[ $effect ];
 
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success' => true,
 				'id'      => $id,
 				'tmp_url' =>
@@ -449,7 +451,7 @@ class MobileAJAXController {
 
 		$delete = $audios->delete( $audio );
 
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success'   => true,
 				'id'       => $id
 			)
@@ -507,7 +509,7 @@ class MobileAJAXController {
 		}else{
 			$count = (int) $audio->favorites;
 		}
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success' => true,
 				'count'   => $count
 			)
@@ -542,8 +544,8 @@ class MobileAJAXController {
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-
-			if( false === ($page = HTTP::sanitize_pageNumber($page) ) )
+			$page = HTTP::sanitize_page_number($page);
+			if( 0 === $page )
 				throw new MobileAJAXException(
 					'Page must be numeric and above 0'
 				);
@@ -574,7 +576,7 @@ class MobileAJAXController {
 		$result = $audios->load_favorites( $user_id, $page );
 		// Mobile side:
 		if( 'mob' == $this->via )
-			HTTP::Result(
+			HTTP::result(
 					array('success' => true) + $result
 				);
 		// AJAX side:
@@ -603,7 +605,7 @@ class MobileAJAXController {
 						'audios'    => $audios->get_recent_audios_by_user()
 				)
 			);
-		HTTP::Result( array('success' => true) + $data );
+		HTTP::result( array('success' => true) + $data );
 	}
 	/**
 	* Will delete the sess_id from the table
@@ -662,7 +664,7 @@ class MobileAJAXController {
 		else
 			$count = (int) $audio->plays - 1;
 
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success' => true,
 				'count'   => $count
 			)
@@ -752,7 +754,7 @@ class MobileAJAXController {
 		\application\Audio::clean_tmp( $_SESSION[$id] );
 		unset( $_SESSION[$id] );
 
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success'   => true,
 				'response'  => __('Audio posted successfully!')
 			)
@@ -791,7 +793,7 @@ class MobileAJAXController {
 			$e->print_result( $this->via );
 		}
 
-		HTTP::Result( array( 'success' => true ) + (array) $user_info );
+		HTTP::result( array( 'success' => true ) + (array) $user_info );
 
 	}
 	/**
@@ -821,8 +823,8 @@ class MobileAJAXController {
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-
-			if( false === ($page = HTTP::sanitize_pageNumber($page) ) )
+			$page = HTTP::sanitize_page_number($page);
+			if( 0 === $page )
 				throw new MobileAJAXException(
 						'Page must be numeric or above 0'
 					);
@@ -883,7 +885,7 @@ class MobileAJAXController {
 		/** / LINKED REPLIES **/
 		// Mobile side:
 		if( 'mob' == $this->via )
-			HTTP::Result( array('success' => true) + $replies );
+			HTTP::result( array('success' => true) + $replies );
 		// AJAX side:
 		while( list(,$audio) = each($replies['audios']) )
 			Views::display_audio( $audio );
@@ -966,7 +968,7 @@ class MobileAJAXController {
 		);
 
 		if( 'mob' == $this->via )
-			HTTP::Result( array('success' => true) + $reply );
+			HTTP::result( array('success' => true) + $reply );
 		else
 			Views::display_audio( $reply );
 	}
@@ -1000,8 +1002,8 @@ class MobileAJAXController {
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-
-			if( false === ( $page = HTTP::sanitize_pageNumber( $page ) ) )
+			$page = HTTP::sanitize_page_number($page);
+			if( 0 === $page )
 				throw new MobileAJAXException(
 						'Page must be a number and above 0'
 					);
@@ -1018,7 +1020,7 @@ class MobileAJAXController {
 			)
 		);
 		if( 'mob' == $this->via )
-			HTTP::Result( array('success' => true ) + $result );
+			HTTP::result( array('success' => true ) + $result );
 
 		$function_to_call =
   			$result['type'] == 'a' ? 'display_audio' : 'display_user';
@@ -1045,7 +1047,7 @@ class MobileAJAXController {
 		if( 'GET' == $this->method ) {
 			// to get the settings:
 			$user = new \models\User();
-			HTTP::Result( array(
+			HTTP::result( array(
 					'success'     => true,
 					'audios_public' => (bool) $user->user->audios_public,
 					'favs_public'   => (bool) $user->user->favs_public,
@@ -1083,7 +1085,7 @@ class MobileAJAXController {
 			)
 		);
 
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success'   => true,
 				'response'  => __('Settings updated successfully!'),
 			)
@@ -1127,7 +1129,7 @@ class MobileAJAXController {
 			$e->print_result( $this->via );
 		}
 
-		HTTP::Result( array('success' => true) + $create_user );
+		HTTP::result( array('success' => true) + $create_user );
 	}
 	/**
 	* Uploads an audio
@@ -1286,7 +1288,7 @@ class MobileAJAXController {
 
 		#needs cut:
 		if( $audio->error && $audio->error_code == 3 )
-			HTTP::Result( array(
+			HTTP::result( array(
 					'success'  => false,
 					'response' => $audio->error,
 					'id'       => $id,
@@ -1312,7 +1314,7 @@ class MobileAJAXController {
 		while( list(,$effect) = each($available_effects) )
 			$effects[ $effect ] = $total_effects[ $effect ];
 
-		HTTP::Result( array(
+		HTTP::result( array(
 				'success'   => true,
 				'id'        => $id,
 				'tmp_url'   =>

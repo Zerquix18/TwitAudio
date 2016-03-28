@@ -55,7 +55,7 @@ class Twitter {
 			$arr['in_reply_to_status_id'] = $reply_to;
 		$this->tweet = $this->tw->post('statuses/update', $arr );
 		if( isset($this->tweet->errors, $this->tweet->error) )
-			return false;
+			return '';
 		return $this->tweet->id_str;
 	}
 }
