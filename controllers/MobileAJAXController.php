@@ -791,7 +791,7 @@ class MobileAJAXController {
 			$e->print_result( $this->via );
 		}
 
-		HTTP::Result( array( 'success' => true ) + $user_info );
+		HTTP::Result( array( 'success' => true ) + (array) $user_info );
 
 	}
 	/**

@@ -149,7 +149,30 @@ class User extends \application\ModelBase {
 	* $which_info are the columns of the database to request.
 	*
 	**/
+	private function complete_user( \stdClass $user ) {
 
+		if( property_exists($user, 'avatar') ) {
+			$user->avatar_bigger = \get_avatar( $user->avatar, 'bigger');
+			$user->avatar_big    = \get_avatar( $user->avatar );
+		}
+
+		if( property_exists($user, 'id') ) {
+			$user->id = (int) $user->id;
+			$user->can_listen = $this->can_listen( $user->id );
+		}
+
+		if( property_exists($user, 'favs_public') )
+			$user->favs_public   = (bool) $user->favs_public;
+
+		if( property_exists($user, 'audios_public') )
+			$user->audios_public = (bool) $user->audios_public;
+
+		if( property_exists($user, 'verified') )
+			$user->verified      = (bool) $user->verified;
+
+
+		return $user;
+	}
 	public function get_user_info( $id_or_user, $which_info = '*' ) {
 		$column = ctype_digit( $id_or_user ) ? 'id' : 'user';
 		if( null !== $this->user && $id_or_user === $this->user->$column ) {
@@ -161,11 +184,7 @@ class User extends \application\ModelBase {
 			foreach( explode(',', $which_info) as $column ) {
 				$result->$column = $this->user->$column;
 			}
-			if( property_exists($result, 'avatar') ) {
-				$result->avatar_bigger = \get_avatar( $result->avatar, 'bigger');
-				$result->avatar_big    = \get_avatar( $result->avatar );
-			}
-			return $result;
+			return $this->complete_user($result);
 		}
 		$user = $this->db->select('users', $which_info)
 				->where($column, $id_or_user)
@@ -174,23 +193,7 @@ class User extends \application\ModelBase {
 		if( 0 == $user->nums )
 			return false;
 
-		if( property_exists($user, 'avatar') ) {
-			$user->avatar_bigger = \get_avatar( $user->avatar, 'bigger');
-			$user->avatar_big    = \get_avatar( $user->avatar );
-		}
-
-		if( property_exists($user, 'id') )
-			$user->id = (int) $user->id;
-
-		if( property_exists($user, 'favs_public') )
-			$user->favs_public = (bool) $user->favs_public;
-
-		if( property_exists($user, 'audios_public') )
-			$user->audios_public = (bool) $user->audios_public;
-
-		$user->can_listen = $this->can_listen( $user->id );
-
-		return $user;
+		return $this->complete_user($user);
 	}
 
 	function is_paid() {
@@ -273,11 +276,11 @@ class User extends \application\ModelBase {
 		);
 
 		return array(
-				'id'		 => $id,
+				'id'		 => (bool) $id,
 				'user'		 => $user,
 				'name'		 => $name,
 				'avatar'	 => $avatar,
-				'verified'	 => $verified,
+				'verified'	 => (bool) $verified,
 				'sess_id'	 => $sess_id,
 				'first_time' => $first_time
 			);
