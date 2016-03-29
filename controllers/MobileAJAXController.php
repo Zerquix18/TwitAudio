@@ -780,7 +780,7 @@ class MobileAJAXController {
 
 		$user_info = $users->get_user_info(
 				$user,
-				'id,user,avatar,bio,verified,favs_public,audios_public'
+				'id,user,name,avatar,bio,verified,favs_public,audios_public'
 			);
 
 		try {
