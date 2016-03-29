@@ -338,8 +338,10 @@ $("#form_reply").ajaxForm({
 	},
 	error: function() {
 		display_error('There was an error while adding your reply.');
+		$("#reply_box, #reply_options button").removeAttr('disabled');
 	},
-	success: function( xhr ) {
+	complete: function( xhr ) {
+		$("#reply_box, #reply_options button").removeAttr('disabled');
 		var result = xhr.responseText;
 		if( is_JSON(result) ) {
 			result = JSON.parse(result);
@@ -355,9 +357,6 @@ $("#form_reply").ajaxForm({
 		else
 			$("#load_more").before(result);
 
-	},
-	complete: function() {
-		$("#reply_box, #reply_options button").removeAttr('disabled');
 	}
 });
 
