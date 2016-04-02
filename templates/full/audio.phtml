@@ -86,14 +86,15 @@ echo http_build_query( array(
 				</form>
 		<?php else: ?>
 			<a
-			class="signin"
 			title="<?php _e('You must be logged in to leave a reply') ?>"
 			href="<?php
 			echo url() . 'signin?back_to=' .
 			urlencode( url() . substr($_SERVER['REQUEST_URI'], 1) )
 			?>"
 			>
-				<img src="<?php View::load_img('signin.png') ?>">
+				<img
+				class="signin"
+				src="<?php View::load_img('signin.png') ?>">
 			</a>
 		<?php endif ?>
 			<div class="divider"></div>

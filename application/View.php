@@ -21,6 +21,10 @@ class View {
 		global $_PAGE;
 		$_PAGE = $page;
 	}
+	public static function set_title( $title ) {
+		global $_TITLE;
+		$_TITLE = $title;
+	}
 
 	/** Loads templates / assets **/
 

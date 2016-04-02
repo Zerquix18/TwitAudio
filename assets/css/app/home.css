@@ -26,13 +26,11 @@
 .home-logo {
 	padding-top: 20px;
 }
-.home-logo img {
-	display: block;
-	margin: 0 auto;
-}
 .home-logo img.logo-full {
 	width: 323px;
 	height: 244px;
+	display: block;
+	margin: 0 auto;
 }
 @media (max-width: 415px) {
 	.home-logo img.logo-full {
