@@ -153,7 +153,8 @@ class MobileAJAXController {
 		if( 'mob' == $this->via ) {
 			// if the param 'user' was not sent
 			// take the logged user
-			if( false === ($user = HTTP::get('user') ) )
+			$user = HTTP::get('user');
+			if( empty($user) )
 				$user = $GLOBALS['_USER']->user;
 			
 		}else
@@ -531,7 +532,8 @@ class MobileAJAXController {
 		);
 		if( 'mob' == $this->via ) {
 			// take the logged user in case the param user was not sent
-			if( false === ($user = HTTP::get('user') ) )
+			$user = HTTP::get('user');
+			if( empty($user) )
 				$user = $GLOBALS['_USER']->user;
 		}else
 			$user = HTTP::get('q');
@@ -775,7 +777,8 @@ class MobileAJAXController {
 			)
 		);
 		$users = new \models\User();
-		if( false === ( $user = HTTP::get('user') ) )
+		$user = HTTP::get('user');
+		if( empty($user) )
 			$user = $users->user->user; //->user
 
 		$user_info = $users->get_user_info(
