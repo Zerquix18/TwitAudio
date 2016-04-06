@@ -40,10 +40,10 @@ var lamepath   = "<?php View::load_script('vendor/lame.all.js') ?>";
 var ajaxurl    = '<?php echo url() . "ajax/" ?>';
 var swfpath    = '<?php echo url() . "assets/swf/" ?>';
 <?php if( is_logged() && ! View::is('404') ):
-	$user = new \models\User();
+	$current_user = (new \models\User())->get_current_user();
 ?>
-var upload_file_limit = "<?php echo $user->get_limit('file_upload') ?>";
-var max_duration = "<?php echo $user->get_limit('audio_duration') ?>";
+var upload_file_limit = "<?php echo $current_user->get_limit('file_upload') ?>";
+var max_duration      = "<?php echo $current_user->get_limit('audio_duration') ?>";
 <?php endif ?>
 </script>
 <?php if( View::is('index', 'txt') ): // index or any text page (terms,about,etc) ?>

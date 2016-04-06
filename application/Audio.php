@@ -32,8 +32,8 @@ class Audio {
 
 	public function __construct($audio_path, array $options) {
 		$id3 = new \getID3();
-		$this->info = $id3->analyze($audio_path);
-		$this->audio = $this->original_name = $audio_path;
+		$this->info   = $id3->analyze( $audio_path );
+		$this->audio  = $this->original_name = $audio_path;
 		$this->format = last( explode(".", $audio_path) );
 		$this->load_options( $options );
 		if( $this->options['validate'] )
@@ -41,10 +41,10 @@ class Audio {
 	}
 	private function load_options( array $options ) {
 		$default_options = array(
-				'validate'			=> true,
-				'is_voice'			=> false,
-				'decrease_bitrate' 	=> false,
-				'max_duration'		=> '120',
+				'validate'          => true,
+				'is_voice'          => false,
+				'decrease_bitrate'  => false,
+				'max_duration'      => '120',
 			);
 		$this->options = array_merge( $default_options, $options );
 	}
@@ -54,7 +54,7 @@ class Audio {
 		return end($array); // <- fak u
 	}
 	private function validate() {
-		// if getid3 couldn't get the format or not allowed
+		// if getid3 couldn't get the format or it's not allowed
 		if( ! array_key_exists('fileformat', $this->info)
 			|| ! in_array(
 				$this->format = $this->info['fileformat'],

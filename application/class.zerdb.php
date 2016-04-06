@@ -278,7 +278,7 @@ class zerdb {
 			$this->nums = $lol->nums = $query->num_rows;
 			$lol->r = $query;
 			if( $this->nums == 1):
-				foreach($query->fetch_array() as $a => $b)
+				foreach($query->fetch_assoc() as $a => $b)
 					$lol->$a = stripslashes($b);
 				$query->data_seek(0);
 			endif;

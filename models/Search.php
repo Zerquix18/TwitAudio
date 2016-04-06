@@ -86,7 +86,8 @@ class Search extends \application\ModelBase {
 					'audios'	 => array(),
 					'load_more'  => false,
 					'page' 		 => $page,
-					'total'		 => $count
+					'total'		 => $count,
+					'type'       => $type,
 				);
 		$total_pages = ceil( $count / 10 );
 		if( $page > $total_pages )
@@ -94,7 +95,8 @@ class Search extends \application\ModelBase {
 					'audios'	 => array(),
 					'load_more'  => false,
 					'page' 		 => $page,
-					'total'		 => $count
+					'total'		 => $count,
+					'type'       => $type,
 				);
 		if( 'a' == $type ):
 			if( 'd' == $sort )
@@ -109,21 +111,16 @@ class Search extends \application\ModelBase {
 		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
 		$search = $this->db->query($query, $criteria);
 		$users_model  = new User;
+		$current_user = $users_model->get_current_user();
 		$audios_model = new Audio;
-		while( $res = $search->r->fetch_object() ) {
+		while( $res = $search->r->fetch_assoc() ) {
 			if( 'a' === $type ):
-				if( $users_model->can_listen($res->user) ):
+				if( $current_user->can_listen($res['user']) ):
 					$result['audios'][] =
 							$audios_model->complete_audio( $res );
 				endif;
 			else: // if looking for users
-			// please ignore the hack below
-				$result['audios'][] =
-				(object) array_merge(
-							(array) $res,
-							array('avatar_big' => \get_avatar($res->avatar)
-						)
-					);
+				$result['audios'][] = $users_model->complete_user($res);
 			endif;
 		}
 		$result['page']		 = $page;

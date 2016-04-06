@@ -137,26 +137,28 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		</li>
 	<?php else:
 	// get counts
-	$user = new \models\User();
-	$audios = $user->get_audios_count();
-	$favorites = $user->get_favorites_count();
+	$users = new \models\User();
+	$current_user = $users->get_current_user();
+	// sending no id to get_audios|fav_count will take the logged user:
+	$audios       = $users->get_audios_count();
+	$favorites    = $users->get_favorites_count();
 	?>
 		<li>
 			<a
 			title="<?php _e('Go to your profile') ?>"
-			href="<?php echo url('audios/' . $user->user->user ) ?>">
+			href="<?php echo url('audios/' . $current_user->user ) ?>">
 				<img
 				class="circle sidebar-profile_picture" width="25" height="25"
-				src="<?php echo $user->user->avatar ?>"
+				src="<?php echo $current_user->avatar ?>"
 				onerror="this.src='<?php View::load_img('unknown.png') ?>'" >
 				&nbsp;
-				<?php echo HTTP::xss_protect( $user->user->name ) ?>
+				<?php echo HTTP::xss_protect( $current_user->name ) ?>
 			</a>
 		</li>
 		<li>
 			<a
 			title="<?php _e('See your audios') ?>"
-			href="<?php echo url('audios/' . $user->user->user) ?>">
+			href="<?php echo url('audios/' . $current_user->user) ?>">
 				<i class="fa fa-headphones"></i>
 				Audios
 				<?php if( $audios ): ?>
@@ -170,7 +172,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			<a
 			title="<?php _e('See your favorites') ?>"
 			href="<?php
-				echo url('favorites/' . $user->user->user)
+				echo url('favorites/' . $current_user->user)
 			?>">
 				<i class="fa fa-star"></i>
 				<?php _e('Favorites') ?>

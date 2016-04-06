@@ -12,9 +12,9 @@ $total_audios	 = $template['total_audios'];
 $total_favorites = $template['total_favorites'];
 
 if( 'favorites' == $page )
-	$title = sprintf( __('%s favorites'), $user->user );
+	$title = sprintf( __('%s favorites'), $user['user'] );
 else
-	$title = sprintf( __('%s audios'), $user->user);
+	$title = sprintf( __('%s audios'), $user['user']);
 View::load_template('header', array(
 		'title'	=> $title
 	)
@@ -25,34 +25,34 @@ View::load_template('header', array(
 		<div class="col l9 m12 s12">
 			<div class="box">
 				<img
-				src="<?php echo \get_avatar($user->avatar) ?>"
+				src="<?php echo \get_avatar($user['avatar']) ?>"
 				class="circle z-depth-3 materialboxed profile-picture"
 				data-caption="<?php
 				echo sprintf(
 					__("%s's profile picture"),
-					$user->user
+					$user['user']
 				)
 				?>"
 				onerror="this.src='<?php View::load_img('unknown.png') ?>'; $(this).removeClass('materialboxed')"
 				>
 				<h5 class="profile-name">
 					<?php
-					echo HTTP::xss_protect($user->name);
-					View::show_verified_badge($user->verified)
+					echo HTTP::xss_protect($user['name']);
+					View::show_verified_badge($user['verified'])
 					?>
 				</h5>
 				<p class="grey-text lighten-2-text profile-user">
-					@<?php echo $user->user ?>
+					@<?php echo $user['user'] ?>
 				</p>
 				<div class="profile-bio">
-			<?php echo HTTP::xss_protect($user->bio) ?>
+			<?php echo HTTP::xss_protect($user['bio']) ?>
 				</div>
 				<ul class="tabs profile-navigation">
 					<li class="tab">
 						<a class="blue-text <?php
 					if( 'audios' == $page ) echo 'active' ?>"
 						href="<?php
-			echo url() . 'audios/' . $user->user
+			echo url() . 'audios/' . $user['user']
 						?>">
 						<?php _e('Audios') ?>&nbsp;
 		<?php if( false !== $content && $total_audios > 0 ): ?>
@@ -66,7 +66,7 @@ View::load_template('header', array(
 						<a class="blue-text <?php
 					if( 'favorites' == $page ) echo 'active' ?>"
 						href="<?php
-			echo url() . 'favorites/' . $user->user
+			echo url() . 'favorites/' . $user['user']
 						?>">
 						<?php _e('Favorites') ?>&nbsp;
 			<?php if( false !== $content && $total_favorites > 0 ): ?>
@@ -106,6 +106,6 @@ View::load_template('header', array(
 	</div>
 </div>
 <script type="text/javascript">
-var profile = '<?php echo $user->user ?>';
+var profile = '<?php echo $user['user'] ?>';
 </script>
 <?php View::load_template('footer');

@@ -37,12 +37,15 @@ class MobileAJAXController {
 		if( $method !== $_SERVER['REQUEST_METHOD'] )
 			View::exit_404();
 
-		/**
-		* These methods should not be called
-		**/
+		
+		// These methods should not be called
 		if( in_array( $action, array('__construct', 'set_rules') ) )
 			View::exit_404();
 
+		/**
+		* The page called does not exist here
+		* Ex: ajax/post/mecomounburrito
+		**/
 		if( ! method_exists($this, $action ) )
 			View::exit_404();
 
@@ -92,8 +95,8 @@ class MobileAJAXController {
 	public function set_rules( array $options ) {
 		global $db, $_USER;
 		$default_options = array(
-				'method'		=>	'GET',
-				'vias'			=>  'mob,ajax',
+				'method'        => 'GET',
+				'vias'          =>  'mob,ajax',
 				'require_login' =>  false,
 			);
 		$options = array_merge( $default_options, $options );
@@ -145,60 +148,50 @@ class MobileAJAXController {
 	**/
 	private function audios() {
 		$this->set_rules( array(
-				'method'		=> 'GET',
-				'vias'			=> 'mob,ajax',
-				'require_login' => false // this will only act for web
+				'method'        => 'GET',
+				'vias'          => 'mob,ajax',
+				'require_login' => false
 			)
 		);
-		if( 'mob' == $this->via ) {
-			// if the param 'user' was not sent
-			// take the logged user
-			$user = HTTP::get('user');
-			if( empty($user) )
-				$user = $GLOBALS['_USER']->user;
-			
-		}else
-			$user = HTTP::get('q');
+		$users = new \models\User();
+		$param = 'mob' == $this->via ? 'user' : 'q';
+		$user  = HTTP::get( $param );
+		if( empty($user) && 'mob' == $this->via ) {
+			$current_user = $users->get_current_user();
+			$user = $current_user->id;
+		}
 
 		$page = HTTP::get('p');
+		$page = HTTP::sanitize_page_number($page) ?: 1;
 
 		/** validation **/
 		try {
-			if( ! ($user && $page) )
+			if( empty($user) )
 				throw new MobileAJAXException(
-					'Missing parameters',
+					'Missing or wrong parameters',
 					array('error_code' => 7)
 				);
 
-			$page = HTTP::sanitize_page_number( $page );
-
-			if( 0 === $page )
-				throw new MobileAJAXException(
-					'Page must be numeric and above 0'
-				);
-
-			$usersModel = new \models\User();
-			$info = $usersModel->get_user_info( $user, 'id' );
-
-			if( ! $info )
+			$info = $users->get_user_info($user, 'id');
+			if( empty($info) )
 				throw new MobileAJAXException('User does not exist');
 
-			$user_id = $info->id;
+			$user_id = $info['id'];
 
 		} catch ( MobileAJAXException $e ) {
-			return $e->print_result( $this->via );
+			$e->print_result( $this->via );
 		}
 
 		$audios = new \models\Audio();
-		$result = $audios->load_audios( $user_id, $page );
+		$result = $audios->load_audios($user_id, $page);
 		// Mobile side:
 		if( 'mob' == $this->via )
-			HTTP::result( array('success' => true ) + $result );
+			HTTP::result(array('success' => true) + $result);
 		// AJAX side:
 		while( list(,$audio) = each($result['audios']) )
 			View::display_audio( $audio );
 		if( $result['load_more'] )
-			View::load_more('audios', $result['page'] + 1 );
+			View::load_more('audios', $result['page'] + 1);
 
 		// blow the roof of the place!
 	}
@@ -213,6 +206,8 @@ class MobileAJAXController {
 			)
 		);
 		$id = HTTP::get('id');
+		$audios = new \models\Audio();
+		$current_user = (new \models\User())->get_current_user();
 		try {
 			if( ! $id )
 				throw new MobileAJAXException(
@@ -220,18 +215,16 @@ class MobileAJAXController {
 						array('error_code' => 7)
 					);
 
-			$audios = new \models\Audio;
-			$audio = $audio->get_audio_info(
+			$audio = $audios->get_audio_info(
 					$id,
 					'id,user,audio,reply_to,description,time,plays,favorites,duration'
 				);
-			if( ! $audio )
+			if( empty($audio) )
 				throw new MobileAJAXException(
 						__('This audio does not exist or is no longer available.')
 					);
 
-			$current_user = new \models\User;
-			if( ! $current_user->can_listen( $audio->user->id ) )
+			if( ! $current_user->can_listen( $audio['user']['id'] ) )
 				throw new MobileAJAXException(
 						__('You cannot listen to the audios of this user.')
 					);
@@ -239,8 +232,7 @@ class MobileAJAXController {
 		} catch( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
 		}
-
-		HTTP::result( array('success' => true ) + $audio );
+		HTTP::result( array('success' => true) + $audio );
 	}
 	/**
 	*
@@ -251,8 +243,8 @@ class MobileAJAXController {
 	**/
 	private function checkeffects() {
 		$this->set_rules( array(
-				'method'			=>	'GET',
-				'vias'				=>	'mob,ajax',
+				'method'			=> 'GET',
+				'vias'				=> 'mob,ajax',
 				'require_login'		=> true,
 			)
 		);
@@ -278,7 +270,7 @@ class MobileAJAXController {
 		);
 		$loaded_effects_count = count($loaded_effects);
 
-		$current_user = new \models\User;
+		$current_user = (new \models\User)->get_current_user();
 
 		$are_all_loaded =
 		count( $current_user->get_available_effects() )
@@ -296,9 +288,9 @@ class MobileAJAXController {
 		}
 
 		$return = array(
-				'success'			=>  true,
-				'loaded_effects'	=>	$loaded_effects,
-				'are_all_loaded'	=>	$are_all_loaded
+				'success'         => true,
+				'loaded_effects'  => $loaded_effects,
+				'are_all_loaded'  => $are_all_loaded
 			);
 		
 		HTTP::result( $return );
@@ -310,76 +302,85 @@ class MobileAJAXController {
 	* 'id'		: The temporary id stored in $_SESSION
 	* 'start'	: The second to start to cut or
 	* 			  this format nn:nn (ex:0:34)
-	* 'end'		: Same as 'start' but to end (omg :o)
+	* 'end'		: Same as 'start'
 	*
 	**/
 	private function cut() {
 		$this->set_rules( array(
-				'method'			=>	'POST',
-				'vias'				=>	'ajax',
-				'require_login'		=> true,
+				'method'        => 'POST',
+				'vias'          => 'ajax',
+				'require_login' => true,
 			)
 		);
-		$id 	= HTTP::post('id');
-		$start 	= HTTP::post('start');
-		$end 	= HTTP::post('end');
+		$id     = HTTP::post('id');
+		$start  = HTTP::post('start');
+		$end    = HTTP::post('end');
+		$users  = new \models\User();
+		$current_user = $users->get_current_user();
 		try {
+
 			if( ! ($id && $start && $end ) )
-				throw new MobileAJAXException(
-						'Missing parameters'
-					);
+				throw new MobileAJAXException('Missing parameters');
+
 			if( ! isset($_SESSION[ $id ] ) )
 				throw new MobileAJAXException(
 						'Invalid ID'
 					);
+
 			/** validate start **/
 			if( ctype_digit($start) ) {
-				$start = (int) $_POST['start'];
+				$start = (int) $start;
 			}else{ // if not a number, translate it to a number
 				if( ! preg_match('/^([0-9]{1,2}):([0-9]{1,2})$/', $start) )
 					throw new MobileAJAXException(
 							'Start has a wrong format'
 						);
-				$lel = explode(":", $start);
-				$start = ( (int) $lel[0] * 60 ) + (int) $lel[1];
+				// 0 = mins, 1 = seconds
+				$min_sec = explode(":", $start);
+				$start = ( (int) $min_sec[0] * 60 ) + (int) $min_sec[1];
 			}
 			/** validate end **/
 			if( ctype_digit($end) ) {
-				$end = (int) $_POST['end'];
+				$end = (int) $end;
 			}else{
 				if( ! preg_match('/^([0-9]{1,2}):([0-9]{1,2})$/', $end) )
 					throw new MobileAJAXException(
 							'End has a wrong format'
 						);
-				$lel = explode(":", $end);
-				$end = ( (int) $lel[0] * 60 ) + (int) $lel[1];
+				// 0 = mins, 1 = seconds
+				$min_sec = explode(":", $end);
+				$end = ( (int) $min_sec[0] * 60 ) + (int) $min_sec[1];
 			}
 			$difference = $end-$start;
-			$users = new \models\User();
-			if( $start >= $end )
+			if( $start >= $end ) {
 				throw new MobileAJAXException(
 						"Start can't be higher than end"
 					);
-			if( $difference > $users->get_limit('audio_duration') )
+			}
+			if( $difference > $current_user->get_limit('audio_duration') ) {
 				throw new MobileAJAXException(
-						"The difference between start and end is higher than your current limit's.",
+						'The difference between start and end is' .
+						' higher than your current limit\'s.',
 						array('show_in_web' => true)
 					);
-			if( $difference < 1 )
+			}
+			if( $difference < 1 ) {
 				throw new MobileAJAXException(
 						'The difference must be longer than 1 second',
 						array('show_in_web' => true)
 					);
+			}
+
 		} catch ( MobileAJAXException $e ) {
-			return $e->print_result( $this->via );
+			$e->print_result( $this->via );
 		}
 
-		$audio = new \application\Audio($_SESSION[$id]['tmp_url'], array(
-				'validate' => false,
-			)
-		);
+		$audio = new \application\Audio(
+				$_SESSION[$id]['tmp_url'],
+				array('validate' => false)
+			);
 
-		$new_audio = $audio->cut( $start, $end );;
+		$new_audio = $audio->cut( $start, $end );
 
 		if( empty($new_audio) )
 			HTTP::result( array(
@@ -392,7 +393,7 @@ class MobileAJAXController {
 		$_SESSION[$id]['duration'] =
 									floor($audio->info['playtime_seconds']);
 
-		$available_effects = $users->get_available_effects();
+		$available_effects = $current_user->get_available_effects();
 
 		$_SESSION[$id]['effects'] =
 			\application\Audio::apply_effects(
@@ -405,11 +406,13 @@ class MobileAJAXController {
 		while( list(,$effect) = each($available_effects) )
 			$effects[ $effect ] = $total_effects[ $effect ];
 
+		$tmp_url = url() . 'assets/tmp/' .
+							last( explode('/', $audio->audio) );
+
 		HTTP::result( array(
 				'success' => true,
 				'id'      => $id,
-				'tmp_url' =>
-				url() . 'assets/tmp/' . last( explode('/', $audio->audio) ),
+				'tmp_url' => $tmp_url,
 				'effects' => $effects
 			)
 		);
@@ -427,13 +430,14 @@ class MobileAJAXController {
 			)
 		);
 		$id = HTTP::post('id');
+		$audios = new \models\Audio();
+		$current_user = ( new \models\User() )->get_current_user();
 		try {
 			if( ! $id )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-			$audios = new \models\Audio();
 			$audio = $audios->get_audio_info($id, 'id,user,audio');
 			if( ! $audio )
 				throw new MobileAJAXException(
@@ -441,7 +445,7 @@ class MobileAJAXController {
 						array('show_in_web' => true)
 					);
 
-			if( $audio->user->id !== $GLOBALS['_USER']->id )
+			if( $audio['user']['id'] !== $current_user->id )
 				throw new MobileAJAXException(
 						'You are not the author of this audio'
 					);
@@ -454,7 +458,7 @@ class MobileAJAXController {
 
 		HTTP::result( array(
 				'success'   => true,
-				'id'       => $id
+				'id'        => $id
 			)
 		);
 	}
@@ -475,23 +479,23 @@ class MobileAJAXController {
 		);
 		$id 	= HTTP::post('id');
 		$action = HTTP::post('action');
+		$audios = new \models\Audio();
 		try {
 			if( ! ($id && $action) )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 1)
 					);
-
-			$audios = new \models\Audio();
-			$audio = $audios->get_audio_info( $id, 'id,user,favorites' );
+			$audio = $audios->get_audio_info($id, 'id,user,favorites');
 			if( ! $audio )
 				throw new MobileAJAXException(
 						__('The audio you tried to favorite does not exist or is no longer available.'),
 						array('show_in_web' => true)
 					);
 
-			$current_user = new \models\User();
-			if( ! $current_user->can_listen( $audio->user->user ) )
+			$current_user = ( new \models\User() )->get_current_user();
+
+			if( ! $current_user->can_listen( $audio['user']['id'] ) )
 				throw new MobileAJAXException(
 						__('The audios of this users are private'),
 						array('show_in_web' => true)
@@ -500,15 +504,13 @@ class MobileAJAXController {
 		} catch ( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
 		}
-
-		if( false === $audio->favorited && 'fav' == $action ) {
-			$audios->favorite( $audio->id );
-			$count = (int) $audio->favorites + 1;
-		}elseif( true === $audio->favorited && 'unfav' == $action ) {
-			$audios->unfavorite( $audio->id );
-			$count = (int) $audio->favorites - 1;
-		}else{
-			$count = (int) $audio->favorites;
+		$count = $audio['favorites'];
+		if( ! $audio['favorited'] && 'fav' == $action ) {
+			$audios->favorite( $audio['id'] );
+			$count += 1;
+		}elseif( $audio['favorited'] && 'unfav' == $action ) {
+			$audios->unfavorite( $audio['id'] );
+			$count -= 1;
 		}
 		HTTP::result( array(
 				'success' => true,
@@ -530,45 +532,37 @@ class MobileAJAXController {
 				'require_login' => false
 			)
 		);
-		if( 'mob' == $this->via ) {
-			// take the logged user in case the param user was not sent
-			$user = HTTP::get('user');
-			if( empty($user) )
-				$user = $GLOBALS['_USER']->user;
-		}else
-			$user = HTTP::get('q');
+		$users = new \models\User();
+		$current_user = $users->get_current_user();
+		$param = 'mob' == $this->via ? 'user' : 'q';
+		$user  = HTTP::get( $param );
+		if( empty($user) && 'mob' == $this->via ) {
+			$user = $current_user->id;
+		}
 
 		$page = HTTP::get('p');
+		$page = HTTP::sanitize_page_number($page) ?: 1;
 
 		try {
-			if( ! ($user && $page) )
+			if( empty($user) )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-			$page = HTTP::sanitize_page_number($page);
-			if( 0 === $page )
-				throw new MobileAJAXException(
-					'Page must be numeric and above 0'
-				);
 
-			$usersModel = new \models\User();
-			$info = $usersModel->get_user_info( $user, 'id,favs_public' );
+			$info = $users->get_user_info( $user, 'id,favs_public');
 
-			if( ! $info )
+			if( empty($info) )
 				throw new MobileAJAXException(
 					__('The user does not exist')
 					);
-				// arent public 			// not logged
-			if( 0 == $info->favs_public && ( null == $users->user 
-					// logged but not the same user
-				|| $users->user->id !== $info->id ) )
-
+			if( ! $info['favs_public'] || ! is_logged()
+									   || $current_user->id !== $info['id'] ) {
 				throw new MobileAJAXException(
 						'The favorites of this user are private'
 					);
-
-			$user_id = $info->id;
+			}
+			$user_id = $info['id'];
 
 		} catch ( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
@@ -578,9 +572,7 @@ class MobileAJAXController {
 		$result = $audios->load_favorites( $user_id, $page );
 		// Mobile side:
 		if( 'mob' == $this->via )
-			HTTP::result(
-					array('success' => true) + $result
-				);
+			HTTP::result( array('success' => true) + $result );
 		// AJAX side:
 		while( list(,$audio) = each($result['audios']) )
 			View::display_audio( $audio );
@@ -638,33 +630,32 @@ class MobileAJAXController {
 		);
 		$id = HTTP::post('id');
 		try {
-			if( ! $id )
+			if( empty($id) )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 7)
 					);
 
 			$audios = new \models\Audio();
-			$audio = $audios->get_audio_info( $id, 'plays,reply_to');
-			if( ! $audio )
+			$audio  = $audios->get_audio_info( $id, 'plays,reply_to');
+			if( empty($audio) )
 				throw new MobileAJAXException(
 						'The audio does not exist'
 					);
 
-			if( 0 != $audio->reply_to )
+			if( 0 != $audio['reply_to'] )
 				throw new MobileAJAXException(
-						'Replies are not playable'
+						'Cannot register a play in a reply'
 					);
 
 		} catch ( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
 		}
-
+		$count = $audio['plays'];
 		$register_play = $audios->register_play( $id );
+
 		if( $register_play )
-			$count = (int) $audio->plays + 1;
-		else
-			$count = (int) $audio->plays - 1;
+			$count += 1;
 
 		HTTP::result( array(
 				'success' => true,
@@ -690,9 +681,10 @@ class MobileAJAXController {
 			)
 		);
 		$id 		 	 = HTTP::post('id');
-		$description 	 = HTTP::post('description') ?: '';
+		$description 	 = HTTP::post('description');
 		$send_to_twitter = HTTP::post('s_twitter');
 		$effect 		 = HTTP::post('effect');
+		$current_user    = (new \models\User())->get_current_user();
 		try {
 			if( ! ( $id && $effect) )
 				throw new MobileAJAXException(
@@ -701,29 +693,27 @@ class MobileAJAXController {
 					);
 
 			if( ! isset($_SESSION[ $id ] ) )
-				throw new MobileAJAXException(
-						'Invalid ID'
-					);
-
-			$users = new \models\User();
+				throw new MobileAJAXException('Invalid ID');
 
 			if( $_SESSION[$id]['duration'] >
-								$users->get_limit('audio_duration') )
+								$current_user->get_limit('audio_duration') )
 				throw new MobileAJAXException(
-						"The duration of the audio is longer than your current limit's"
+						"The duration of the audio is longer" .
+						" than your current limit's"
 					);
 
 			if( mb_strlen( $description, 'utf-8' ) > 200 )
 				throw new MobileAJAXException(
-						__("Description can't be longer than 200 characters"),
+						'Description can\'t be longer than 200 characters',
 						array('show_in_web' => true)
 					);
 		} catch ( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
 		}
+		$available_effects = $current_user->get_available_effects();
 
-		if( 'original' != $effect
-			&& ! in_array($effect, $users->get_available_effects() ) )
+		if( 'original' != $effect &&
+			! in_array($effect, $available_effects ) )
 			$effect = 'original'; // no hack!
 
 		while( file_exists(
@@ -743,7 +733,7 @@ class MobileAJAXController {
 			$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' . $new_name
 		);
 
-		$audios = new \models\Audio;
+		$audios = new \models\Audio();
 		$audios->create_audio( array(
 				'audio_url'   => $new_name,
 				'description' => $description,
@@ -773,21 +763,23 @@ class MobileAJAXController {
 	private function profile() {
 		$this->set_rules( array(
 				'method'	=> 'GET',
-				'vias'		=> 'mob'
+				'vias'		=> 'mob,ajax'
 			)
 		);
 		$users = new \models\User();
-		$user = HTTP::get('user');
-		if( empty($user) )
-			$user = $users->user->user; //->user
-
-		$user_info = $users->get_user_info(
-				$user,
-				'id,user,name,avatar,bio,verified,favs_public,audios_public'
-			);
-
+		$user  = HTTP::get('user');
+		if( empty($user) ) {
+			$current_user = $users->get_current_user();
+			$user = $current_user->user;
+		}
 		try {
-			if( ! $user_info )
+
+			$user_info = $users->get_user_info(
+					$user,
+					'id,user,name,avatar,bio,verified,favs_public,audios_public'
+				);
+
+			if( empty($user_info) )
 				throw new MobileAJAXException(
 						'Requested user does not exist'
 					);
@@ -796,8 +788,7 @@ class MobileAJAXController {
 			$e->print_result( $this->via );
 		}
 
-		HTTP::result( array( 'success' => true ) + (array) $user_info );
-
+		HTTP::result( array('success' => true) + $user_info );
 	}
 	/**
 	* Loads the replies of an audio
@@ -819,37 +810,31 @@ class MobileAJAXController {
 			$audio_id = HTTP::get('q');
 
 		$page = HTTP::get('p');
-
+		$page = HTTP::sanitize_page_number($page) ?: 1;
+		$audios = new \models\Audio();
+		$current_user = ( new \models\User() )->get_current_user();
 		try {
-			if( ! ( $audio_id && $page ) )
+			if( empty($audio_id) )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-			$page = HTTP::sanitize_page_number($page);
-			if( 0 === $page )
-				throw new MobileAJAXException(
-						'Page must be numeric or above 0'
-					);
-
-			$audios = new \models\Audio();
 			$audio = $audios->get_audio_info(
 					$audio_id,
 					'reply_to,user,id'
 				);
-			if( ! $audio )
+			if( empty($audio) )
 				throw new MobileAJAXException(
 						__('The audio you request does not exist or is no longer available'),
 						array('show_in_web' => true)
 					);
 
-			if( $audio->reply_to != '0' )
+			if( $audio['reply_to'] != '0' )
 				throw new MobileAJAXException(
 						'Replies does not have replies'
 					);
 
-			$current_user = new \models\User();
-			if( ! $current_user->can_listen( $audio->user->id ) )
+			if( ! $current_user->can_listen( $audio['user']['id'] ) )
 				throw new MobileAJAXException(
 						__("You cannot listen to the audios of this user"),
 						array('show_in_web')
@@ -860,13 +845,14 @@ class MobileAJAXController {
 		}
 		$replies = $audios->load_replies( $audio_id, $page );
 		/** LINKED REPLIES **/
+		// here be dragons...
 		if( 'ajax' == $this->via
 			&& $reply_id = HTTP::get('reply_id') ) { // was the param sent?
 			$reply = $audios->get_audio_info(
 					$reply_id,
 					'reply_to'
 				);
-			if( $reply && $reply->reply_to == $audio_id ) {
+			if( ! empty($reply) && $reply['reply_to'] == $audio_id ) {
 				// reply exists and it's replying to this audio
 				$all_replies = $replies;
 				$replies = array( // move everything
@@ -876,8 +862,9 @@ class MobileAJAXController {
 						'total'     => $all_replies['total']
 					);
 				$count_replies = count($all_replies['audios']);
+				// re-fill 'audios' key'
 				for( $i = 0; $i < $count_replies; $i++ ) {
-					if( $all_replies['audios'][$i]->id == $reply_id ) {
+					if( $all_replies['audios'][$i]['id'] == $reply_id ) {
 						/** don't add the linked reply, cuz it was added first **/
 						continue;
 					}
@@ -908,25 +895,25 @@ class MobileAJAXController {
 	**/
 	private function reply() {
 		$this->set_rules( array(
-				'method'		=> 'POST',
-				'vias'			=> 'mob,ajax',
+				'method'        => 'POST',
+				'vias'          => 'mob,ajax',
 				'require_login' => true
 			)
 		);
-		$audio_id 		 = HTTP::post('id');
-		$reply 			 = HTTP::post('reply');
+		$audio_id        = HTTP::post('id');
+		$reply           = HTTP::post('reply');
 		$send_to_twitter = HTTP::post('s_twitter');
+		$audios          = new \models\Audio();
+		$current_user    = (new \models\User())->get_current_user();
 		try {
 			if( ! ($audio_id && $reply) )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 7)
 					);
-
-			$audios = new \models\Audio();
 			$audio = $audios->get_audio_info(
 					$audio_id,
-					'reply_to, tw_id, user'
+					'reply_to,tw_id,user'
 				);
 			if( ! $audio )
 				throw new MobileAJAXException(
@@ -934,24 +921,22 @@ class MobileAJAXController {
 						array('show_in_web' => true)
 					);
 
-			if( $audio->reply_to != '0' )
+			if( $audio['reply_to'] != '0' )
 				throw new MobileAJAXException(
 						'You cannot reply a reply'
 					);
 
-			$current_user = new \models\User();
-			if( ! $current_user->can_listen( $audio->user->user ) )
+			if( ! $current_user->can_listen( $audio['user']['user'] ) )
 				throw new MobileAJAXException(
 						'You cannot listen to the audios of this user'
 					);
 
 			$reply_length = mb_strlen($reply, 'utf-8');
-			if( 0 == $reply_length )
+			if( 0 === $reply_length )
 				throw new MobileAJAXException(
-						__('Reply cannot be empty'),
+						__('The reply cannot be empty'),
 						array('show_in_web' => true)
 					);
-
 			if( $reply_length > 200 )
 				throw new MobileAJAXException(
 						'Reply cannot be longer than 200 characters',
@@ -965,8 +950,8 @@ class MobileAJAXController {
 				'audio_id'        => $audio_id,
 				'reply'           => $reply,
 				'send_to_twitter' => '1' === $send_to_twitter,
-				'user_id'         => $audio->user->id,
-				'tw_id'           => $audio->tw_id
+				'user_id'         => $audio['user']['id'],
+				'tw_id'           => $audio['tw_id']
 			)
 		);
 
@@ -998,17 +983,13 @@ class MobileAJAXController {
 		$type  = HTTP::get('t');
 		$order = HTTP::get('o');
 		$page  = HTTP::get('p');
+		$page = HTTP::sanitize_page_number($page) ?: 1;
 
 		try {
-			if( ! ($query && $page) )
+			if( empty($query) )
 				throw new MobileAJAXException(
 						'Missing parameters',
 						array('error_code' => 7)
-					);
-			$page = HTTP::sanitize_page_number($page);
-			if( 0 === $page )
-				throw new MobileAJAXException(
-						'Page must be a number and above 0'
 					);
 
 		} catch ( MobileAJAXException $e ) {
@@ -1047,32 +1028,31 @@ class MobileAJAXController {
 				'require_login' => true,
 			)
 		);
+		$current_user = (new \models\User())->get_current_user();
 		if( 'GET' == $this->method ) {
 			// to get the settings:
-			$user = new \models\User();
 			HTTP::result( array(
-					'success'     => true,
-					'audios_public' => (bool) $user->user->audios_public,
-					'favs_public'   => (bool) $user->user->favs_public,
-					'time'          => (bool) $user->user->time
+					'success'       => true,
+					'audios_public' => $current_user->audios_public,
+					'favs_public'   => $current_user->favs_public,
+					'time'          => $current_user->time
 				)
 			);
 		}
 
 		// to update the settings:
 
-		// if( "0" ) == false... fuck
 		$favs_public	= HTTP::post('favs_public');
 		$audios_public	= HTTP::post('audios_public');
 		
 		try {
 
-			if( ! in_array( $favs_public, array('1','0'), true ) )
+			if( ! in_array( $favs_public, array('1','0') ) )
 				throw new MobileAJAXException(
 						'favs public must be 1 or 0'
 					);
 
-			if( ! in_array( $audios_public, array('1','0'), true ) )
+			if( ! in_array( $audios_public, array('1','0') ) )
 				throw new MobileAJAXException(
 						'audios public must be 1 or 0'
 					);
@@ -1080,11 +1060,9 @@ class MobileAJAXController {
 		} catch( MobileAJAXException $e ) {
 			$e->print_result( $this->via );
 		}
-
-		$users  = new \models\User();
-		$result = $users->update_settings( array(
-				'audios_public'		=>	$audios_public,
-				'favs_public'		=>  $favs_public
+		$result = $current_user->update_settings( array(
+				'audios_public'     => $audios_public,
+				'favs_public'       => $favs_public
 			)
 		);
 
@@ -1108,8 +1086,8 @@ class MobileAJAXController {
 				'vias'			=> 'mob'
 			)
 		);
-		$access_token 			= HTTP::post('access_token');
-		$access_token_secret	= HTTP::post('access_token_secret');
+		$access_token           = HTTP::post('access_token');
+		$access_token_secret    = HTTP::post('access_token_secret');
 
 		try {
 			if( ! ($access_token && $access_token) )
@@ -1124,7 +1102,7 @@ class MobileAJAXController {
 					'mobile'
 				);
 
-			if( ! $create_user )
+			if( empty($create_user) )
 				throw new MobileAJAXException(
 						'Error while logging you in'
 					);
@@ -1152,12 +1130,11 @@ class MobileAJAXController {
 				'require_login' => true
 			)
 		);
-		$users = new \models\User;
-		$file_limit = $users->get_limit('file_upload');
-
+		$current_user = (new \models\User)->get_current_user();
+		$file_limit   = $current_user->get_limit('file_upload');
 
 		if( 'mob' === $this->via )
-			$is_voice = true;#always gna be true cuz it doesn support uploads
+			$is_voice = true; #always gna be true cuz it doesn support uploads
 		else
 			$is_voice = isset($_POST['bin']) && 'mob' !== $this->via;
 
@@ -1173,10 +1150,11 @@ class MobileAJAXController {
 			*
 			* To date, mobile and web work different
 			* Mobile does not support files, only recorded,
-			* which are uploaded with the 'up_file' param
+			* which are uploaded with the 'up_file' param.
 			* Web sends the binary of a recorded audio with the browser
 			* as 'bin' in base64.
 			* But an uploaded file is sent with the param 'up_file'
+			* If you wonder why is it like this, read the Javascript :)
 			*
 			**/
 			if( 'mob' === $this->via || ! $is_voice ) {
@@ -1268,9 +1246,9 @@ class MobileAJAXController {
 			/** Now, $file needs a deep validation :) **/
 			$audio = new \application\Audio( $file, array(
 				'validate'         => true,
-				'max_duration'     => $users->get_limit('audio_duration'),
+				'max_duration'     => $current_user->get_limit('audio_duration'),
 				'is_voice'         => $is_voice,
-				'decrease_bitrate' => ! $users->is_paid(),
+				'decrease_bitrate' => ! $current_user->is_premium(),
 				)
 			);
 			// 3 is the error code when audio needs to be cut.
@@ -1300,7 +1278,7 @@ class MobileAJAXController {
 				)
 			);
 
-		$available_effects = $users->get_available_effects();
+		$available_effects = $current_user->get_available_effects();
 
 		$_SESSION[$id]['effects'] = \application\Audio::apply_effects(
 				$audio->audio,
@@ -1325,6 +1303,5 @@ class MobileAJAXController {
 				'effects'   => $effects,
 			)
 		);
-
 	} // end upload
 } // end class

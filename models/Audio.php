@@ -15,67 +15,89 @@ class Audio extends \application\ModelBase {
 	/**
 	* Loads the user info, how many favorites
 	* and how many replies, etc. the audio has.
-	* And adds it to the object.
+	* And adds it to the array.
+	*
+	* @param  $audio array - The array to be completed
+	* @return array - The audio completed
 	*
 	**/
-	public function complete_audio( \stdClass $audio ) {
-		
-		if( property_exists($audio, 'status') )
-			unset($audio->status);
+	public function complete_audio( array $audio ) {
 
-		if( property_exists($audio, 'user') ) {
+		$has = function( $key ) use ( $audio ) {
+			return array_key_exists( $key, $audio );
+		};
+		
+		if( $has('status') )
+			unset($audio['status']);
+
+		if( $has('user') ) {
 
 			$users = new \models\User();
-			$audio->user = $users->get_user_info(
-					$audio->user,
+			$audio['user'] = $users->get_user_info(
+					$audio['user'],
 					'id,user,name,avatar,verified,audios_public'
 				);
 		}
 
-		if( property_exists($audio, 'id') ) {
+		if( $has('id') ) {
 
 			if( null !== $this->user ) {
 				$favorited = $this->db->query(
 					'SELECT COUNT(*) AS size FROM favorites
 					 WHERE audio_id = ? AND user_id = ?',
-					$audio->id,
+					$audio['id'],
 					$this->user->id
 				);
-				$audio->favorited = (bool) (int) $favorited->size;
+				$audio['favorited'] = (bool) (int) $favorited->size;
 			}else{
-				$audio->favorited = false;
+				$audio['favorited'] = false;
 			}
 
 			$replies_count = $this->db->query(
 				'SELECT COUNT(*) AS size FROM audios
 				WHERE status = \'1\' AND reply_to = ?',
-				$audio->id
+				$audio['id']
 			);
-			$audio->replies_count = (int) $replies_count->size;
+			$audio['replies_count'] = (int) $replies_count->size;
 
 		}
 
-		if( property_exists($audio, 'favorites') )
-			$audio->favorites = (int) $audio->favorites;
+		if( $has('favorites') )
+			$audio['favorites'] = (int) $audio['favorites'];
 		
-		if( property_exists($audio, 'plays') )
-			$audio->plays = (int) $audio->plays;
+		if( $has('plays') )
+			$audio['plays']     = (int) $audio['plays'];
 
-		if( property_exists($audio, 'time') )
-			$audio->time = (int) $audio->time;
+		if( $has('time') )
+			$audio['time']      = (int) $audio['time'];
 
-		if( property_exists($audio, 'duration') )
-			$audio->duration = (int) $audio->duration;
+		if( $has('duration') )
+			$audio['duration']  = (int) $audio['duration'];
 		
 
-		if( ! empty($audio->audio) ) {
-			$audio->original_name = $audio->audio;
-			$audio->audio = url('assets/audios/' . $audio->audio);
+		if( ! empty($audio['audio']) ) {
+			$audio['original_name'] = $audio['audio'];
+			$audio['audio']         = url('assets/audios/' . $audio['audio']);
 		}
+
+		/** remove **/
+
+		if( $has('r') ) // mysqli result
+			unset($audio['r']);
+
+		if( $has('nums') ) // num rows
+			unset($audio['nums']);
 
 		return $audio;
 	}
-	/** GETS things :O **/
+	/**
+	* Returns an array with the info of the audio $id
+	*
+	* @param $id - the ID of the audio to load
+	* @param $whichinfo - The database columns
+	* @return array
+	*
+	**/
 	public function get_audio_info( $id, $whichinfo = '*' ) {
 
 		if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id ) )
@@ -90,22 +112,29 @@ class Audio extends \application\ModelBase {
 				 ->execute();
 				 
 		if( 0 == $audio->nums )
-			return false;
-		return $this->complete_audio($audio);
-	}
+			return array();
 
+		return $this->complete_audio( (array) $audio );
+	}
+	/**
+	* Returns an array with the last 3 recent audios
+	* of the logged user
+	*
+	* @return array
+	*
+	**/
 	public function get_recent_audios_by_user() {
 		$result = array();
 		$recent_audios_by_user = $this->db->query(
 					'SELECT * FROM audios
-					WHERE reply_to = \'0\'
-					AND status = \'1\'
-					AND user = ?
-					ORDER BY `time` DESC
-					LIMIT 3',
+					 WHERE reply_to = \'0\'
+					 AND status = \'1\'
+					 AND user = ?
+					 ORDER BY `time` DESC
+					 LIMIT 3',
 					$this->user->id
 				);
-		while( $audio = $recent_audios_by_user->r->fetch_object() )
+		while( $audio = $recent_audios_by_user->r->fetch_assoc() )
 			$result[] = $this->complete_audio($audio);
 
 		return $result;
@@ -128,7 +157,7 @@ class Audio extends \application\ModelBase {
 			time() - strtotime('-30 days'),
 			time()
 		);
-		while( $audio = $recents_popular->r->fetch_object() )
+		while( $audio = $recents_popular->r->fetch_assoc() )
 			$result[] = $this->complete_audio($audio);
 
 		return $result;
@@ -136,6 +165,14 @@ class Audio extends \application\ModelBase {
 
 	/************************ loaders *******************/
 
+	/**
+	* Returns an array with the last 10 audios of $user_id
+	*
+	* @param $user_id - The ID of the user
+	* @param $page    - The page number
+	* @return array
+	*
+	**/
 	public function load_audios( $user_id, $page = 1) {
 		$query = "SELECT id,user,audio,reply_to,description,
 						 time,plays,favorites,duration
@@ -147,10 +184,10 @@ class Audio extends \application\ModelBase {
 		$count = $this->db->query(
 				"SELECT COUNT(*) AS size FROM audios
 				 WHERE user = ? AND reply_to = '0'",
-				 $user_id
-				);
+				$user_id
+			);
 		$count = (int) $count->size;
-		if( 0 == $count )
+		if( 0 === $count )
 			return array(
 					'audios'	 => array(),
 					'load_more'  => false,
@@ -171,7 +208,7 @@ class Audio extends \application\ModelBase {
 		$result = array(
 				'audios'	=>	array()
 			);
-		while( $audio = $audios->r->fetch_object() )
+		while( $audio = $audios->r->fetch_assoc() )
 			$result['audios'][] = $this->complete_audio($audio);
 	
 		$result['load_more'] = $page < $total_pages;
@@ -214,7 +251,7 @@ class Audio extends \application\ModelBase {
 		$result = array(
 				'audios'	=>	array()
 			);
-		while( $audio = $audios->r->fetch_object() )
+		while( $audio = $audios->r->fetch_assoc() )
 			$result['audios'][] = $this->complete_audio($audio);
 	
 		$result['load_more'] = ($page < $total_pages);
@@ -256,7 +293,7 @@ class Audio extends \application\ModelBase {
 		$result = array(
 				'audios'	=>	array()
 			);
-		while( $audio = $audios->r->fetch_object() )
+		while( $audio = $audios->r->fetch_assoc() )
 			$result['audios'][] = $this->complete_audio($audio);
 	
 		$result['load_more'] = $page < $total_pages;
@@ -380,28 +417,28 @@ class Audio extends \application\ModelBase {
 	* It will delete the audio without any
 	* comprobation.
 	**/
-	public function delete( \stdClass $audio ) {
+	public function delete( array $audio ) {
 		$this->db->query(
 			"DELETE FROM audios WHERE id = ?",
-			$audio->id
+			$audio['id']
 		);
 		$this->db->query(
 			"DELETE FROM favorites WHERE audio_id = ?",
-			$audio->id
+			$audio['id']
 		);
 		$this->db->query(
 			"DELETE FROM plays WHERE audio_id = ?",
-			$audio->id
+			$audio['id']
 		);
 		$this->db->query(
 			"DELETE FROM audios WHERE reply_to = ?",
-			$audio->id
+			$audio['id']
 		);
 
-		if( ! empty($audio->audio) )
+		if( ! empty($audio['audio']) )
 			unlink(
 				$_SERVER['DOCUMENT_ROOT'] .
-				'/assets/audios/' . $audio->original_name
+				'/assets/audios/' . $audio['original_name']
 			);
 	}
 
@@ -435,7 +472,7 @@ class Audio extends \application\ModelBase {
 		$was_played = $this->db->query(
 				"SELECT COUNT(*) AS size FROM plays
 				 WHERE user_ip = ?
-				 AND audio_id = ?",
+				 AND  audio_id = ?",
 				$user_ip,
 				$audio_id
 			);

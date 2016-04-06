@@ -9,21 +9,21 @@ use \application\View;
 View::set_page('audio');
 
 $audio   = $template['audio'];
-$user  	 = $audio->user;
+$user  	 = $audio['user'];
 $replies = $template['replies'];
 $linked  = $template['linked'];
 
-$title = $user->user . ': ';
-$description_len = strlen( $audio->description );
+$title = $user['user'] . ': ';
+$description_len = strlen( $audio['description'] );
 if( 0 == $description_len )
-	$title = sprintf("%s's audio", $user->user);
+	$title = sprintf("%s's audio", $user['user']);
 elseif( $description_len > 10 )
-	$title .= substr($audio->description, 0, 10) . '...';
+	$title .= substr($audio['description'], 0, 10) . '...';
 elseif( $description_len < 10 )
-	$title .= $audio->description;
+	$title .= $audio['description'];
 View::load_template('header', array(
 		'title'		=> $title,
-		'robots'	=> (bool) $user->audios_public
+		'robots'	=> $user['audios_public']
 	)
 );
 ?>
@@ -43,7 +43,7 @@ View::load_template('header', array(
 echo http_build_query( array(
 			'text' => sprintf(
 					__("Listen to @%s's audio"),
-					$user->user
+					$user['user']
 					),
 			'via' => 'twit_audio',
 			'related' => 'twit_audio,zerquix18,superjd10_,chusen'
@@ -64,7 +64,7 @@ echo http_build_query( array(
 				action="<?php
 				echo url() . 'ajax/post/reply'
 				?>">
-				<input type="hidden" name="id" value="<?php echo $audio->id ?>">
+				<input type="hidden" name="id" value="<?php echo $audio['id'] ?>">
 					<div class="input-field">
    						<textarea class="materialize-textarea" name="reply" maxlength="200" id="reply_box" maxlength="200" required="required"></textarea>
 						<label id="label_reply">
@@ -120,7 +120,7 @@ echo http_build_query( array(
 	</div>
 </div>
 <script type="text/javascript">
-var audio_id = '<?php echo $audio->id ?>',
+var audio_id = '<?php echo $audio['id'] ?>',
 	linked   = "<?php if( ! empty($linked) ) echo $linked ?>";
 </script>
 <?php View::load_template('footer');

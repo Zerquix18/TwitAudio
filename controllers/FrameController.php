@@ -15,12 +15,12 @@ class FrameController {
 		$audios = new Audio;
 		$audio = $audios->get_audio_info($audio_id);
 		
-		if( ! $audio )
+		if( empty($audio) )
 			View::exit_404();
 
-		$user = $audio->user;
+		$user = $audio['user'];
 
-		if( 0 == $user->audios_public )
+		if( ! $user['audios_public'] )
 			View::exit_404();
 
 		View::load_full_template('frame', array('audio' => $audio ) );

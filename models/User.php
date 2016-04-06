@@ -13,193 +13,105 @@ class User extends \application\ModelBase {
 
 	public function __construct() {
 		parent::__construct();
-	} // do nothing just call ModelBase
-
-	/** functions exclusively for the logged user **/
+	}
 
 	/**
-	* Checks if the logged user
-	* can listen to the audios of $id
-	* @return bool
+	* Returns an array with all the data
+	* of the current user.
+	*
+	* @return array
+	* @param $user_content array (optional) - The data
+	* that the array will return
+	*
 	**/
+	public function get_current_user( $user_context = array() ) {
+		// if $user was passed, it's because it's complete
+		// so don't call complete_user again
+		// cuz complete_user calls this function
+		// and it causes a loop
 
-	public function can_listen( $id ) {
-		$is_logged = ( null !== $this->user );
+		if( ! empty($user_context) )
+			return new \models\CurrentUser( $user_context );
 
-		if( $is_logged && $this->user->id == $id ) // same user
-			return true;
-		// check if audios of $id are private.
-		$check = $this->get_user_info( $id, 'audios_public' );
+		$user = $this->user !== null ?
+			$this->complete_user( (array) $this->user )
+		:
+			array();
 
-		if( '1' == $check->audios_public )
-			return true;
-		if( ! $is_logged )
-			return false; // not logged and audios aren't public.
-		// not public. check if cached ...
-		$this->db->query( // cleans
-			"DELETE FROM following_cache WHERE time < ?",
-			time() - 1800 // (60*30) half hour
-		);
-		$is_following = $db->query(
-				'SELECT result FROM following_cache
-				 WHERE user_id = ? AND following = ?',
-				$this->user->id,
-				$id
-			);
-		if( 0 != $is_following->nums )
-			return (bool) $is_following->result;
-		// not cached, make twitter requests
-		$twitter = new \application\Twitter(
-				$this->user->access_token,
-				$this->user->access_token_secret
-			);
-		$g = $twitter->tw->get(
-			'friendships/lookup',
-			array('user_id' => $id)
-		);
-		if( array_key_exists('errors', $g ) ) {
-			// API rate limit reached :( try another
-			$t = $twitter->tw->get(
-				'users/lookup',
-				array('user_id' => $id)
-			);
-			if( array_key_exists('errors', $t )
-			|| array_key_exists('error', $t)
-				)
-				return false; // both limits reached... ):
-			$check = array_key_exists('following', $t[0]) && $t[0]->following;
-		}else
-			$check = in_array('following', $g[0]->connections);
-
-		$this->db->insert("following_cache", array(
-				$_USER->id,
-				$id,
-				time(),
-				(string) (int) $check // result
-			)
-		);
-
-		return $check;
+		return new \models\CurrentUser( $user );
 	}
 	/**
-	* Get a limit of the current user
-	**/
-	public function get_limit( $limit ) {
-		$duration = (int) $this->user->upload_seconds_limit;
-		switch( $limit ) {
-			case 'file_upload':
-				$duration = (string) ( $duration / 60 );
-				return (int) $duration . '0';
-				/**
-				* example: duration = 120 then
-				* 120/60 = 2
-				* return 20(mb)
-				* 50 for 5 minutes, 100 for 10 minutes
-				* una hermosa simetría <3
-				**/
-				break;
-			case "audio_duration":
-				return $duration;
-				break;
-		}
-	}
-	/**
+	* Fills the array $user
+	* With more info about the user,
+	* forces the types and deletes
+	* useless stuff
+	*
+	* @param  $user array - They array with the data to be threated
 	* @return array
 	**/
-	public function get_available_effects() {
-		$all_effects = array(
-				/** effects for all the users **/
-				'echo',
-				'quick',
-				'reverse',
-				/** effects for paid users */
-				'slow',
-				'reverse_quick',
-				'hilbert',
-				'flanger',
-				'delay',
-				'deep',
-				'low',
-				'fade',
-				'tremolo'
-			);
+	public function complete_user( array $user ) {
 
-		$is_paid = $this->is_paid();
+		$has = function( $key ) use ($user) {
+			return array_key_exists( $key, $user );
+		};
+		/** complete **/
 
-		if( ! $is_paid ) // normal user
-			return array_splice($all_effects, 0, 3);
-
-		return $all_effects;
-	}
-	/**
-	* Get the count of audios of $id
-	* @return integer
-	**/
-	public function get_audios_count( $id = null ) {
-		$audios = $this->db->query(
-			'SELECT COUNT(*) AS size FROM audios
-			WHERE reply_to = \'0\'
-			AND user = ?
-			AND status = \'1\'',
-			$id !== null ? $id : $this->user->id
-		);
-		return (int) $audios->size;
-	}
-	/**
-	* Get the count of favorites of $id
-	* @return integer
-	**/
-	public function get_favorites_count( $id = null ) {
-		$favorites = $this->db->query(
-			'SELECT COUNT(*) AS size FROM audios
-			AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-			AND F.user_id = ? AND A.status = 1',
-			$id !== null ? $id : $this->user->id
-		);
-		return (int) $favorites->size;
-	}
-
-	/** functions for global user actions **/
-
-	/**
-	* Loads the info of $id_or_user
-	* $which_info are the columns of the database to request.
-	* @return stdClass
-	**/
-	private function complete_user( \stdClass $user ) {
-
-		if( property_exists($user, 'avatar') ) {
-			$user->avatar_bigger = \get_avatar( $user->avatar, 'bigger');
-			$user->avatar_big    = \get_avatar( $user->avatar );
+		if( $has('avatar') ) {
+			$user['avatar_bigger'] = get_avatar( $user['avatar'], 'bigger');
+			$user['avatar_big']    = get_avatar( $user['avatar'] );
 		}
 
-		if( property_exists($user, 'id') ) {
-			$user->id = (int) $user->id;
-			$user->can_listen = $this->can_listen( $user->id );
+		if( $has('id') ) {
+			$user['id']         = (int) $user['id'];
+			$current_user       = $this->get_current_user( $user );
+			$user['can_listen'] = $current_user->can_listen( $user['id'] );
 		}
 
-		if( property_exists($user, 'favs_public') )
-			$user->favs_public   = (bool) $user->favs_public;
+		/** force types **/
 
-		if( property_exists($user, 'audios_public') )
-			$user->audios_public = (bool) $user->audios_public;
+		if( $has('favs_public') )
+			$user['favs_public']   = (bool) $user['favs_public'];
 
-		if( property_exists($user, 'verified') )
-			$user->verified      = (bool) $user->verified;
+		if( $has('audios_public') )
+			$user['audios_public'] = (bool) $user['audios_public'];
 
+		if( $has('verified') )
+			$user['verified']      = (bool) $user['verified'];
+
+		if( $has('time') )
+			$user['time']          = (int) $user['time'];
+
+		/** remove **/
+
+		if( $has('r') ) // mysqli result
+			unset($user['r']);
+
+		if( $has('nums') ) // num rows
+			unset($user['nums']);
 
 		return $user;
 	}
+	/**
+	* Gets the info about the given user
+	* From the database.
+	*
+	* @param $id_or_user - The ID or USER to extract the info
+	* @param $which_info - The columns of the database
+	* @return array
+	**/
 	public function get_user_info( $id_or_user, $which_info = '*' ) {
+
+		$id_or_user = (string) $id_or_user;
+
 		$column = ctype_digit( $id_or_user ) ? 'id' : 'user';
 		if( null !== $this->user && $id_or_user === $this->user->$column ) {
-			/** if it's the same user, don't do extra queries **/
+			// if it's the same user, don't do extra queries
 			if( '*' == $which_info )
-				return $this->user; // return everything
+				return (array) $this->get_current_user();
 			// return only the columns required
-			$result = new \stdClass;
+			$result = array();
 			foreach( explode(',', $which_info) as $column ) {
-				$result->$column = $this->user->$column;
+				$result[$column] = $this->user->$column;
 			}
 			return $this->complete_user($result);
 		}
@@ -208,21 +120,57 @@ class User extends \application\ModelBase {
 				->execute();
 
 		if( 0 == $user->nums )
-			return false;
+			return array();
 
-		return $this->complete_user($user);
+		return $this->complete_user( (array) $user );
 	}
 	/**
-	* Checks if user is premium
-	* @return bool
+	* Get the count of audios of $id
+	* @return integer
 	**/
-	function is_paid() {
-		$duration = (int) $this->user->upload_seconds_limit;
-		return $duration > 120;
+	public function get_audios_count( $id = null ) {
+		if( $id === null ) {
+			$current_user = $this->get_current_user();
+			$id = $current_user->id;
+		}
+		$audios = $this->db->query(
+			'SELECT COUNT(*) AS size FROM audios
+			WHERE reply_to = \'0\'
+			AND user = ?
+			AND status = \'1\'',
+			$id
+		);
+		return (int) $audios->size;
 	}
-
-	/** actions **/
-
+	/**
+	* Get the count of favorites of $id
+	* @return integer
+	**/
+	public function get_favorites_count( $id = null ) {
+		if( $id === null ) {
+			$current_user = $this->get_current_user();
+			$id = $current_user->id;
+		}
+		$favorites = $this->db->query(
+			'SELECT COUNT(*) AS size FROM audios
+			AS A INNER JOIN favorites AS F ON A.id = F.audio_id
+			AND F.user_id = ? AND A.status = 1',
+			$id
+		);
+		return (int) $favorites->size;
+	}
+	/**
+	* Registers an user in the database if it does not
+	* exist. If it does exist, then it re-updates its info.
+	*
+	* @param $access_token - The Twitter access token after a successful
+	* login.
+	* @param $access_token_secret - The Twitter access token secret
+	* after a successful login.
+	* @param $via - Tell the function if you're calling if from
+	* an AJAX request or the mobile app
+	* @return array - An array with the user data
+	**/
 	public function create( $access_token, $access_token_secret, $via ) {
 		$twitter = new \application\Twitter(
 						$access_token,
@@ -231,7 +179,7 @@ class User extends \application\ModelBase {
 
 		$details = $twitter->tw->get('account/verify_credentials');
 		if( ! is_object($details) || ! property_exists($details, 'id') )
-			return false;
+			return array();
 
 		$id 		= $details->id;
 		$user 		= $details->screen_name;
@@ -304,13 +252,6 @@ class User extends \application\ModelBase {
 				'sess_id'	 => $sess_id,
 				'first_time' => $first_time
 			);
-	}
-	public function update_settings( array $settings ) {
-		return $this->db->update(
-				'users',
-				$settings
-			)->where( 'id', $this->user->id )
-			 ->execute();
 	}
 	/**
 	* @todo

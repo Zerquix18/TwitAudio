@@ -18,19 +18,22 @@ use \models\User;
 class ProfileController {
 
 	public function __construct( $profile_page, $user ) {
-		$users_model = new User();
-		$user = $users_model->get_user_info( $user );
-		if( ! $user )
+		$users = new User();
+		// the user in the request to load the profile:
+		$user  = $users->get_user_info( $user );
+		// the logged user (if there is one):
+		$current_user = $users->get_current_user();
+		if( empty($user) )
 			View::exit_404();
 
-		$audios_model = new Audio;
+		$audios = new Audio();
 
 		if( 'audios' == $profile_page ) {
 
-			if( ! $users_model->can_listen( $user->id ) )
+			if( ! $current_user->can_listen( $user['id'] ) )
 				$content = false;
 			else
-				$content = $audios_model->load_audios( $user->id, 1 );
+				$content = $audios->load_audios( $user['id'], 1 );
 
 			$errors = array(
 					'empty'		=> // ↓
@@ -42,12 +45,11 @@ class ProfileController {
 		} elseif( 'favorites' == $profile_page) {
 
 				/** not public **/			 /** not logged **/
-			if( 0 == $user->favs_public && ( null == $users_model->user 
-					/* logged... but not the same user */
-				|| $users_model->user->id !== $user->id ) )
+			if( ! $user['favs_public'] || ! is_logged() 
+									   || $current_user->id !== $user['id'] )
 				$content = false;
 			else
-				$content = $audios_model->load_favorites( $user->id, 1);
+				$content = $audios->load_favorites( $user['id'], 1);
 
 			$errors = array(
 					'empty'		=> // ↓
@@ -59,8 +61,8 @@ class ProfileController {
 		} else return; // must never happen
 
 		if( false !== $content ) {
-			$total_audios    = $users_model->get_audios_count( $user->id );
-			$total_favorites = $users_model->get_favorites_count( $user->id );
+			$total_audios    = $users->get_audios_count($user['id']);
+			$total_favorites = $users->get_favorites_count($user['id']);
 		}else{
 			$total_audios = $total_favorites = false;
 		}

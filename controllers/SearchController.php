@@ -14,7 +14,7 @@ use \application\View, \application\HTTP, \models\Search;
 class SearchController {
 
 	public function __construct() {
-		$query = HTTP::get('q') ?: '';
+		$query = HTTP::get('q');
 		$type  = HTTP::get('t');
 		$order = HTTP::get('o');
 		if( empty($query) )
