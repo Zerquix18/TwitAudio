@@ -9,8 +9,21 @@
 **/
 
 /** configuration **/
-$_CONFIG = parse_ini_file('config.ini');
-$_SERVER['DOCUMENT_ROOT'] = $_CONFIG['document_root'];
+$config_file = './config.ini';
+try {
+	if( ! is_readable($config_file) )
+		throw new \Exception("Can't read $config_file or it does not exist");
+
+	$_CONFIG = parse_ini_file('config.ini');
+	$_SERVER['DOCUMENT_ROOT'] = $_CONFIG['document_root'];
+
+} catch (\Exception $e ) {
+
+	if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] )
+		exit('Something terrible happened.');
+
+	exit( $e->getMessage() );
+}
 
 if( '1' == $_CONFIG['display_errors'] )
 	error_reporting(E_ALL);
