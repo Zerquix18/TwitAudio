@@ -5,15 +5,31 @@
 #omg I just learned bash
 
 # check if dir exists
-if [ ! -d ../git_tmp ]; then
+if [ ! -d ../git_tmp ];
+then
 	mkdir '../git_tmp'
 else
 	exit 1 # if exists it is bcoz its already working
 fi
 
-#clones the repo in temporary folder
+#the current directory
+home_dir=${PWD##*/}
 
-git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git ../git_tmp
+#clones the repo in temporary folder
+#if the argument 1 is sent, it will clone THAT BRANCH
+#that's for the beta version
+if [ -z "$1" ]; # no argument passed
+then
+	git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git ../git_tmp
+else # some branch was passed as a second argument
+	result=$(git clone https://zerquix18:958258b7999fd58990dcf9315637f4a6bc2c6169@github.com/superjd10/TwitAudio.git -b "$1" ../git_tmp)
+	if [ ! result ];
+	then
+		echo 'seems like branch does not exist'
+		rm -rf ../git_tmp
+		exit 1
+	fi
+fi
 
 cd ../git_tmp
 
@@ -80,8 +96,8 @@ make_cssfile_from_dir() {
 
 make_cssfile_from_dir 'vendor'
 make_cssfile_from_dir 'app'
-
-cd ../TwitAudio
+   
+cd "../$home_dir"
 
 # copies everything in the current dir
 
@@ -95,6 +111,7 @@ rm -rf ../git_tmp
 
 chmod -R 777 .
 
-# now, minify CSS
-
-curl -X POST -s --data-urlencode 'input@assets/css/default.css' https://cssminifier.com/raw -o 'assets/css/default.css'
+# this fixes an error when you try to
+# execute this file
+# don't delete it
+dos2unix `basename $0`

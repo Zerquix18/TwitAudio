@@ -147,7 +147,12 @@ $router->map(
 	);
 
 $router->map('GET', '/re-update-943', function() {
-	exec('./re-update.sh', $output);
+	// accept the param branch if it's in beta
+	if( 'beta.twitaudio.com' === $_SERVER['HTTP_HOST'] )
+		$branch = ' ' . \application\HTTP::get('branch');
+	else
+		$branch = '';
+	exec('./re-update.sh' . $branch, $output);
 	echo implode("\n", $output);
 });
 
