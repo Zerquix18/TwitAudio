@@ -31,8 +31,8 @@ class SearchController {
 		}
 		View::load_full_template('search', array(
 				'query'		=> $query,
-				'type'		=> $type,
-				'order' 	=> $order,
+				'type'		=> $content['type'],
+				'order' 	=> $content['order'],
 				'content' 	=> $content
 			)
 		);

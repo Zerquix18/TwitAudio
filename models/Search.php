@@ -47,11 +47,11 @@ class Search extends \application\ModelBase {
 		/**
 		* 2 orders: (d=date,p=plays)
 		**/
-		if( array_key_exists('sort', $options)
-			&& in_array($options['sort'], array('d','p'), true ) )
-			$sort = $options['sort'];
+		if( array_key_exists('order', $options)
+			&& in_array($options['order'], array('d','p'), true ) )
+			$order = $options['order'];
 		else
-			$sort = 'd';
+			$order = 'd';
 
 		if( 'a' == $type ):
 			$query = 'SELECT id,user,audio,reply_to,description,
@@ -99,7 +99,7 @@ class Search extends \application\ModelBase {
 					'type'       => $type,
 				);
 		if( 'a' == $type ):
-			if( 'd' == $sort )
+			if( 'd' == $order )
 				$query .= ' ORDER BY time DESC';
 			else
 				$query .= ' ORDER BY plays DESC';
@@ -123,10 +123,11 @@ class Search extends \application\ModelBase {
 				$result['audios'][] = $users_model->complete_user($res);
 			endif;
 		}
-		$result['page']		 = $page;
+		$result['page']      = $page;
 		$result['load_more'] = $page < $total_pages;
-		$result['type'] 	 = $type;
-		$result['total']	 = $count;
+		$result['type']      = $type;
+		$result['order']     = $order;
+		$result['total']     = $count;
 		return $result;
 	} // end constructor
 } // end class
