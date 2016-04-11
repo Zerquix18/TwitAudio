@@ -85,9 +85,9 @@ View::load_template('header', array(
 				?>">
 		<?php
 			if( false == $content ) {
-				alert_error($errors['forbidden']);
+				View::alert_error($errors['forbidden']);
 			}elseif( 0 == count( $content['audios']) ) {
-				alert_error($errors['empty']);
+				View::alert_error($errors['empty']);
 			}else{
 
 				while( list(,$audio) = each($content['audios']) )
