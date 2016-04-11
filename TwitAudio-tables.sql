@@ -105,7 +105,7 @@ ALTER TABLE `audios`
 --15/2/2016 { premium implementation }
 ALTER TABLE `users`
 	ADD `upload_seconds_limit` int(3) NOT NULL DEFAULT '120'
-		COMMENT 'default 120 : 2 minutes';
+		COMMENT 'default 120 : 2 minutes',
 	ADD `premium_until` int(32) NOT NULL DEFAULT 0,
 		comment 'Unix timestamp, when will premium end?';
 CREATE TABLE IF NOT EXISTS payments (
