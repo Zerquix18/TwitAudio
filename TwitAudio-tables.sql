@@ -108,17 +108,18 @@ ALTER TABLE `users`
 		COMMENT 'default 120 : 2 minutes',
 	ADD `premium_until` int(32) NOT NULL DEFAULT 0,
 		comment 'Unix timestamp, when will premium end?';
+-- 11/4/2016 { payments }
 CREATE TABLE IF NOT EXISTS payments (
 	`id` int(6) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`user_id` int(20) NOT NULL,
 	`type` enum('paypal', 'stripe') NOT NULL,
-	`amount` int(3) NOT NULL,
+	`user_agent` varchar(50) NOT NULL,
+	`ip` varchar(45) NOT NULL,
 	`time` int(32) NOT NULL,
-	`ip` varchar(32) NOT NULL
-);
-CREATE TABLE IF NOT EXISTS paypal_payments (
-	`payment_id` int(6) NOT NULL,
-	`paypal_payment_id` varchar(40) NOT NULL,
-	`paypal_token` varchar(20) NOT NULL,
-	`paypal_payer_id` varchar(10) NOT NULL
+	`aditional_info` varchar(500)
+	 /**
+	 *   ^ JSON with the info returned by Stripe/Paypal
+	 * Just in case we need it some day in case
+	 * of a dispute.
+	 **/
 );
