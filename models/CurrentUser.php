@@ -52,7 +52,7 @@ class CurrentUser extends \application\ModelBase {
 			"DELETE FROM following_cache WHERE time < ?",
 			time() - 1800 // (60*30) half hour
 		);
-		$is_following = $db->query(
+		$is_following = $this->db->query(
 				'SELECT result FROM following_cache
 				 WHERE user_id = ? AND following = ?',
 				$this->id,

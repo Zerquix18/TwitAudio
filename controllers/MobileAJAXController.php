@@ -99,7 +99,7 @@ class MobileAJAXController {
 	* will require login, except the signin one!
 	**/
 	public function set_rules( array $options ) {
-		global $db, $_USER;
+		global $_USER;
 		$default_options = array(
 				'method'        => 'GET',
 				'vias'          =>  'mob,ajax',

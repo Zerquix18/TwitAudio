@@ -212,7 +212,7 @@ class User extends \application\ModelBase {
 			$audios_public = (int) ! $details->protected;
 			$time = time();
 			$lang = $details->lang;
-			$db->insert("users", array(
+			$this->db->insert("users", array(
 					$id,
 					$user,
 					$name,
