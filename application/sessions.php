@@ -5,8 +5,6 @@
 * @copyright Copyright (c) 2016 - Luis A. Martínez
 **/
 
-session_cache_limiter('public');
-session_cache_expire(30);
 session_name('ta_session');
 if( 'mob' != substr( $_SERVER['REQUEST_URI'], 1, 3) ) {
 	if( ! isset($_COOKIE['ta_session']) )
@@ -83,6 +81,8 @@ function check_authorization() {
 		'SELECT * FROM users WHERE id = ?',
 		$session->user_id
 	); // now the user is logged
+	session_cache_limiter('public');
+	session_cache_expire(30);
 	session_id( $authorization );
 	session_start();
 }
