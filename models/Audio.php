@@ -436,7 +436,7 @@ class Audio extends \application\ModelBase {
 		);
 
 		if( ! empty($audio['audio']) )
-			unlink(
+			@unlink(
 				$_SERVER['DOCUMENT_ROOT'] .
 				'/assets/audios/' . $audio['original_name']
 			);

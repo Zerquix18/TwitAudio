@@ -422,7 +422,7 @@ class MobileAJAXController {
 					array('error_code' => 7)
 				);
 		$audio = $audios->get_audio_info($id, 'id,user,audio');
-		if( $audio )
+		if( ! $audio )
 			throw new MobileAJAXException(
 					__('The audio you tried to delete does not exist or is no longer available.'),
 					array('show_in_web' => true)
