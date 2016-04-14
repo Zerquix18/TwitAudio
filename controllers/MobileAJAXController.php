@@ -18,7 +18,7 @@ namespace controllers;
 # without this the life would be hollow
 use \application\HTTP;
 use \application\View;
-use \application\MobileAJAXException;
+use \application\exceptions\MobileAJAXException;
 
 class MobileAJAXController {
 
