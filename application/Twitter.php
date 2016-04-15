@@ -35,7 +35,7 @@ class Twitter {
 			* change the URL in the browser bar
 			* ex: arealurl123.com
 			*/
-			$this->callback = 'http://arealurl123.com/callback';
+			#$this->callback = 'http://arealurl123.com/callback';
 		}
 	}
 	/**
