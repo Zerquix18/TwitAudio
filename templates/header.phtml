@@ -73,12 +73,12 @@ if( ! isset($template['robots']) )
 	<meta
 	name="twitter:url"
 	content="https://www.twitaudio.com/<?php echo $audio['id'] ?>">
-	<meta name="twitter:description" content="<?php echo __('Share voice notes and audio files using Twitter!') ?>">
+	<meta name="twitter:description" content="<?php echo __('Share voice notes and audios using Twitter!') ?>">
 	<?php elseif( ! View::is('404') ): ?>
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:site" content="@twit_audio" />
 	<meta name="twitter:title" content="TwitAudio" />
-	<meta name="twitter:description" content="Share voice notes and audio files with Twitter" />
+	<meta name="twitter:description" content="Share voice notes and audios with Twitter" />
 	<meta name="twitter:image" content="<?php View::load_img('logo-md.png') ?>" />
 	<?php endif ?>
 	<meta property="og:title" content="TwitAudio">
