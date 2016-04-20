@@ -271,7 +271,7 @@ $("#cut_cancel, #post_cancel").on('click', function() {
 	$("#cut_form, #post_form").hide();
 	$("#post").show();
 	$.jPlayer.pause();
-	unfinishedAudio('stop');
+	unfinished_audio('stop');
 });
 
 /************************* POST *************************/
