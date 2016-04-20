@@ -386,8 +386,14 @@ class MobileAJAXController {
 
 		$total_effects = \application\Audio::get_effects();
 		$effects = array();
-		while( list(,$effect) = each($available_effects) )
-			$effects[ $effect ] = $total_effects[ $effect ];
+		while( list($effect_name,$effect_name_public) = each($total_effects) ){
+			if( in_array($effect_name, $available_effects) ) {
+				$effects[] = array(
+						'name'        => $effect_name,
+						'name_public' => $effect_name_public
+					);
+			}
+		}
 
 		$tmp_url = url() . 'assets/tmp/' .
 							last( explode('/', $audio->audio) );
@@ -1225,8 +1231,14 @@ class MobileAJAXController {
 		**/
 		$total_effects = \application\Audio::get_effects();
 		$effects = array();
-		while( list(,$effect) = each($available_effects) )
-			$effects[ $effect ] = $total_effects[ $effect ];
+		while( list($effect_name,$effect_name_public) = each($total_effects) ){
+			if( in_array($effect_name, $available_effects) ) {
+				$effects[] = array(
+						'name'        => $effect_name,
+						'name_public' => $effect_name_public
+					);
+			}
+		}
 
 		HTTP::result( array(
 				'success'   => true,

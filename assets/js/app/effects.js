@@ -107,57 +107,58 @@ window.effects = {
 	},
 
 	show_loading: function( effects ) {
-		// effects will be { effect_name : "Effect Name"}
-		// one is to display to the user
-		// and the other is for the internal code
-		$.each( effects, function( key, value ) {
-				// key => effect_name, ex: reverse_quick
-				// value => Effect Name, ex: Reverse Quick
-				// now, use effect_none to make the others:
-				var effect_id = 'effect_' + key;
+		/**
+		* We have now an array
+		* each key is an object
+		* with name and name_public
+		**/
+		for( var i = 0; i < effects.length; i++ ) {
+			var effect_name        = effects[i].name;
+			var effect_name_public = effects[i].name_public;
+			var effect_selector    = 'effect_' + effects[i].name;
 
-				$("#effect_none").clone() // make a copy
-				.attr('id', effect_id ) // change the ID
-				// insert in the list of effects
-				.appendTo('#effects_modal > .modal-content');
+			$("#effect_none").clone() // make a copy
+			.attr('id', effect_selector ) // change the ID
+			// insert in the list of effects
+			.appendTo('#effects_modal > .modal-content');
 
-				// change the title
-				$("#" + effect_id + " h5").text( value );
+			// change the title
+			$("#" + effect_selector + " h5").text( effect_name_public );
 
-				// now the atts
-				$("#" + effect_id + ' .preview .jp-jplayer')
-					.attr('id', 'effect_preview_' + key);
+			// now the atts
+			$("#" + effect_selector + ' .preview .jp-jplayer')
+				.attr('id', 'effect_preview_' + effect_name);
 
-				$("#" + effect_id + ' .jp-audio')
-					.attr('id', 'container_' + key);
+			$("#" + effect_selector + ' .jp-audio')
+				.attr('id', 'container_' + effect_name);
 
-				// the choose button
-				$("#" + effect_id + ' .preview button')
-					.attr('data-choose', key)
-					.removeClass('effect_none').addClass( effect_id )
-					.on('click', function() {
+			// the choose button
+			$("#" + effect_selector + ' .preview button')
+				.attr('data-choose', effect_name)
+				.removeClass('effect_none').addClass( effect_selector )
+				.on('click', function() {
 
-						if( undefined === $(this).data('url') )
-							return false; // no urls loaded
+					if( undefined === $(this).data('url') )
+						return false; // no urls loaded
 
-						$.jPlayer.pause();
-						$("#player_preview").jPlayer('setMedia', {
-							'mp3' : $(this).data('url')
-						});
-						$("#effects_modal").closeModal();
-						$("#audio_effect").val( $(this).data('choose') );
-
-						if( 'original' == $(this).data('choose') )
-							display_info('OK. Got it.');
-						else
-							display_info('Effect added!');
-
+					$.jPlayer.pause();
+					$("#player_preview").jPlayer('setMedia', {
+						'mp3' : $(this).data('url')
 					});
+					$("#effects_modal").closeModal();
+					$("#audio_effect").val( $(this).data('choose') );
 
-				// now it is ready to be loaded by `this.load` :)
+					if( 'original' == $(this).data('choose') )
+						display_info('OK. Got it.');
+					else
+						display_info('Effect added!');
 
-				$("#" + effect_id).show();
-			});
+				});
+
+			// now it is ready to be loaded by `this.load` :)
+
+			$("#" + effect_selector).show();
+			}
 	},
 
 	clean: function() {
