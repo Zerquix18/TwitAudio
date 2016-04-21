@@ -232,6 +232,45 @@ class MobileAJAXController {
 		HTTP::result( array('success' => true) + $audio );
 	}
 	/**
+	* Charges a user via stripe
+	* Paypal is not supported yet
+	**/
+	private function charge() {
+		$this->set_rules( array(
+				// get will be supported to get the paypal url
+				'method'        => 'POST',
+				'via'           => 'mob,ajax',
+				'require_login' => true,
+			)
+		);
+		$via = HTTP::post('via');
+		switch($via) {
+			case "card":
+				$token = HTTP::get('token');
+				if( ! $token )
+					throw new MobileAJAXException(
+							'No token was specified'
+						);
+				$payments = new Payments('stripe');
+				$charge   = $payments->charge( $token );
+				if( ! $charge )
+					throw new MobileAJAXException( $payments->error );
+				HTTP::result( array(
+						'success' => true,
+						'result'  => 'You are now premium!'
+					)
+				);
+				break;
+			case "paypal":
+				throw new MobileAJAXException('Paypal is not supported yet');
+				break;
+			default:
+				throw new MobileAJAXException(
+						'No right method was specified'
+					);
+		}
+	}
+	/**
 	*
 	* Checks what effects were loaded already
 	* Params:
