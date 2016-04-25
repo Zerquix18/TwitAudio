@@ -1,0 +1,46 @@
+<?php
+$current_user = (new \models\User())->get_current_user();
+if( $current_user->is_premium() ): ?>
+ur premium m8!
+<?php else: ?>
+
+<div class="row">
+    <div class="col s12">
+    	<ul class="tabs">
+			<li class="tab col s3">
+        		<a href="#premium_overview">
+        			Overview
+        		</a>
+        	</li>
+        	<li class="tab col s3">
+        		<a class="active" href="#premium_get">
+        			Get premium
+        		</a>
+        	</li>
+			<li class="tab col s3 disabled">
+				<a href="#premium_confirm">Confirm</a>
+			</li>
+			<li class="tab col s3 disabled">
+				<a href="#premium_enjoy">
+					Enjoy!
+				</a>
+			</li>
+		</ul>
+	</div>
+    <div id="premium_overview" class="col s12">
+    	Test 1
+    </div>
+    <div id="premium_get" class="col s12">
+        <form method="POST" action="<?php url() . 'ajax/post/charge' ?>">
+            
+        </form>
+    </div>
+    <div id="premium_confirm" class="col s12">
+    	Test 3
+    </div>
+    <div id="premium_enjoy" class="col s12">
+    	Test 4
+    </div>
+</div>
+        
+<?php endif ?>
