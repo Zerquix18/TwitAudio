@@ -1,6 +1,6 @@
 assets/audios
 assets/tmp
-/config.ini
+/config*.ini
 .gitignore
 /vendor/
 composer.lock
