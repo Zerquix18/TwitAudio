@@ -9,11 +9,13 @@
 **/
 namespace models;
 
-class Payments {
+require $_SERVER['DOCUMENT_ROOT'] . '/application/stripe/init.php';
+
+class Payment {
 
 	public $error = '';
 
-	private $stripe_key = 'sk_test_BQokikJOvBiI2HlWgH4olfQ2';
+	private $stripe_key = 'sk_test_d4y4iNRanCY2Yj2pu0i59SMW';
 
 	private $paypal_key = '';
 
@@ -48,9 +50,15 @@ class Payments {
 			return false;
 		}
 		// successfull charge, now store some info
-		$info = array('stripe_info' => $this->charge_info);
-		$info['ip'] = get_ip();
-		$info['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+		if( 'stripe' === $this->payment_method ) {
+			$info = array('stripe_info' => $this->charge_info);
+		} elseif( 'paypal' === $this->payment_method ) {
+			/**
+			* @todo
+			**/
+		}
+		#$info['ip'] = get_ip();
+		#$info['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 		/**
 		* The info will be used just in cases of a dispute
 		* Or to be reviewed after a payment
@@ -58,17 +66,17 @@ class Payments {
 		* So it's simply stored as JSON
 		**/
 		$info = json_encode($info);
-		$this->db->insert('payments', array(
+		echo $info;
+		/*$this->db->insert('payments', array(
 				
 			)
-		);
+		);*/
 	}
-
 	public function charge_stripe( $token ) {
-		\Stripe\Stripe::setApiKey( $this->key );
+		\Stripe\Stripe::setApiKey( $this->stripe_key );
 		try {
 			$this->charge_info = \Stripe\Charge::create(array(
-					"amount"      => 1300, // <- CENTS
+					"amount"      => 130, // <- CENTS
 					"currency"    => "usd",
 					"source"      => $token,
 					"description" => "Example charge"
@@ -97,14 +105,12 @@ class Payments {
 	* Unsupported yet
 	* @todo
 	**/
-	function charge_paypal( $token ) {
-		
-	}
+	function charge_paypal( $token ) {}
 	/**
 	* Unsupported yet
 	* @todo
 	**/
-	function get_paypal_url() {
+	function get_paypal_url() {}
 
-	}
+	// what ya looking at
 }
