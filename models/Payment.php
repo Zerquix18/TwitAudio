@@ -23,11 +23,12 @@ class Payment {
 
 	private $charge_info;
 
-	public function __construct( $payment_method ) {
+	public function __construct( $payment_method, $user_id ) {
 		if( ! in_array($payment_method, array('paypal', 'stripe') ) ) {
 			trigger_error('Payment method is wrong', E_USER_ERROR);
 		}
 		$this->payment_method = $payment_method;
+		$this->user_id        = $user_id;
 	}
 
 	public function charge( $key ) {
@@ -49,16 +50,9 @@ class Payment {
 		if( ! $charge_result ) {
 			return false;
 		}
-		// successfull charge, now store some info
-		if( 'stripe' === $this->payment_method ) {
-			$info = array('stripe_info' => $this->charge_info);
-		} elseif( 'paypal' === $this->payment_method ) {
-			/**
-			* @todo
-			**/
-		}
-		#$info['ip'] = get_ip();
-		#$info['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+		$ip         = get_ip();
+		$info       = $this->charge_info;
+		$user_agent = $_SERVER['USER_AGENT'];
 		/**
 		* The info will be used just in cases of a dispute
 		* Or to be reviewed after a payment
@@ -66,11 +60,15 @@ class Payment {
 		* So it's simply stored as JSON
 		**/
 		$info = json_encode($info);
-		echo $info;
-		/*$this->db->insert('payments', array(
-				
+		$this->db->insert('payments', array(
+				$this->user_id,
+				$this->payment_method,
+				$user_agent,
+				$ip,
+				time(),
+				$info
 			)
-		);*/
+		);
 	}
 	public function charge_stripe( $token ) {
 		\Stripe\Stripe::setApiKey( $this->stripe_key );

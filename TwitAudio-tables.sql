@@ -112,11 +112,11 @@ ALTER TABLE `users`
 CREATE TABLE IF NOT EXISTS payments (
 	`id` int(6) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`user_id` int(20) NOT NULL,
-	`type` enum('paypal', 'stripe') NOT NULL,
+	`method` enum('paypal', 'stripe') NOT NULL,
 	`user_agent` varchar(50) NOT NULL,
 	`ip` varchar(45) NOT NULL,
 	`time` int(32) NOT NULL,
-	`aditional_info` varchar(500)
+	`aditional_info` text
 	 /**
 	 *   ^ JSON with the info returned by Stripe/Paypal
 	 * Just in case we need it some day in case

@@ -243,8 +243,8 @@ class MobileAJAXController {
 				'require_login' => true,
 			)
 		);
-		$via = HTTP::post('via');
-		switch($via) {
+		$method = HTTP::post('method');
+		switch($method) {
 			case "card":
 				$token = HTTP::get('token');
 				if( ! $token )

@@ -53,6 +53,10 @@ class zerdb {
 			"trends" => array(
 					'user', 'trend', 'time'
 				),
+			"payments" => array(
+					'user_id', 'method', 'user_agent', 'ip',
+					'time', 'aditional_info'
+				),
 		);
 	private $dbhost;
 
