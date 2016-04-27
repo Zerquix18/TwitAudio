@@ -9,8 +9,6 @@
 **/
 namespace models;
 
-require $_SERVER['DOCUMENT_ROOT'] . '/application/stripe/init.php';
-
 class Payment {
 
 	public $error = '';
