@@ -42,7 +42,7 @@ else
 	ob_start();
 
 /** database connection **/
-require $_SERVER['DOCUMENT_ROOT'] . '/application/class.zerdb.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/application/zerdb.php';
 try {
 	$db = new zerdb(
 		$_CONFIG['host'],
@@ -60,6 +60,11 @@ try {
 		exit( file_get_contents('assets/templates/error-500.html') );
 }
 
+/** vendor autoloader **/
+
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+/** twitaudio dependencies **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/functions.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/application/i18n.php';
@@ -80,8 +85,6 @@ spl_autoload_register( function ( $name ) use ($_CONFIG) {
 });
 
 /** Now JUST DO IT! **/
-
-use \application\AltoRouter;
 
 $router = new AltoRouter();
 $router->setBasePath( $_CONFIG['base_path'] );

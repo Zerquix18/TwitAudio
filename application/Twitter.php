@@ -7,8 +7,6 @@
 **/
 namespace application;
 
-require dirname(__FILE__) . '/twitteroauth/autoload.php';
-
 use Abraham\TwitterOAuth\TwitterOAuth as TwitterOAuth;
 
 class Twitter {

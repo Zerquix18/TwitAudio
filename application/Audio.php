@@ -9,8 +9,6 @@
 * @since {27/9/2015}
 **/
 namespace application;
-// consider that without this the entire class will fail
-require dirname(__FILE__) . '/getid3/getid3.php';
 
 class Audio {
 

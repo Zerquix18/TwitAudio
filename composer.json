@@ -1,0 +1,8 @@
+{
+	"require": {
+		"altorouter/altorouter": "1.1.0",
+		"abraham/twitteroauth": "0.6.4",
+		"james-heinrich/getid3" : "1.9.12",
+		"stripe/stripe-php": "*"
+	}
+}
