@@ -42,7 +42,7 @@ else
 	ob_start();
 
 /** database connection **/
-require $_SERVER['DOCUMENT_ROOT'] . '/application/class.zerdb.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/application/zerdb.php';
 try {
 	$db = new zerdb(
 		$_CONFIG['host'],
