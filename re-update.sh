@@ -109,7 +109,11 @@ rm -rf ../git_tmp
 
 # returns the permissions to the current dir
 
-chmod -R 777 .
+chmod -R 755 .
+
+# install new dependencies or re-update the installed ones
+
+composer update
 
 # this fixes an error when you try to
 # execute this file
