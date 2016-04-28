@@ -5,14 +5,14 @@ $minutes_limit = $current_user->get_limit('audio_duration') / 60;
 ?>
 <div class="box">
 	<div class="row" id="post">
-		<div class="col" id="record" title="<?php _e('Record audio with your microphone') ?>">
+		<div class="col" id="record" title="Record audio with your microphone">
 			<i class="fa fa-microphone blue-text lighten-3-text"></i>
 			<div class="a_text">
 				record
 			</div>
 		</div>
 		<div class="col c" id="or">or</div>
-		<div class="col" id="upload" title="<?php _e('Upload a file from your computer') ?>">
+		<div class="col" id="upload" title="Upload a file from your computer">
 			<i class="fa fa-upload blue-text lighten-3-text"></i>
 			<div class="a_text">
 				upload
@@ -163,7 +163,7 @@ $minutes_limit = $current_user->get_limit('audio_duration') / 60;
 				<h5>Effect None</h5>
 				<div class="loading">
 					<i class="fa fa-spinner fa-spin"></i>&nbsp;
-					<?php _e('Loading effect...') ?>
+					Loading effect...
 				</div>
 				<div class="preview" style="display:none">
 					<div id="effect_preview_none" class="jp-jplayer"></div>
@@ -190,8 +190,8 @@ $minutes_limit = $current_user->get_limit('audio_duration') / 60;
                 <div class="jp-duration"></div>
             </div>
             <div class="jp-no-solution">
-                <?php _e('<span>Update Required</span>
-                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>') ?>.
+                <span>Update Required</span>
+                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
             </div>
         </div>
     </div>
@@ -200,7 +200,7 @@ $minutes_limit = $current_user->get_limit('audio_duration') / 60;
     				class="btn choose choose_effect effect_none"
     				data-choose="effect_none"
     				>
-    					<?php _e('Choose') ?>
+    					Choose
     				</button>
 					</div>
 				</div>

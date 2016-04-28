@@ -37,9 +37,9 @@ class ProfileController {
 
 			$errors = array(
 					'empty'		=> // ↓
-					__('This user has not uploaded audios... yet'),
+					'This user has not uploaded audios... yet',
 					'forbidden' => // ↓
-					__('The audios of this user are private. You must be following this user on Twitter to see his / her audios.'),
+					'The audios of this user are private. You must be following this user on Twitter to see his / her audios.',
 				);
 
 		} elseif( 'favorites' == $profile_page) {
@@ -53,9 +53,9 @@ class ProfileController {
 
 			$errors = array(
 					'empty'		=> // ↓
-					__('This user has not uploaded audios... yet'),
+					'This user has not uploaded audios... yet',
 					'forbidden' => // ↓
-					__('The favorites of this user are private'),
+					'The favorites of this user are private',
 				);
 
 		} else return; // must never happen

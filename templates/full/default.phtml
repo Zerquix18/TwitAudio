@@ -14,7 +14,7 @@ View::load_template('header');
 	<div class="row">
 		<div class="col l9 m12 s12">
 			<div id="norecordsupport" class="red-text" style="display:none;">
-	<?php echo sprintf( __('Your current browser does not support audio recording. See which <a href="%s">browsers support audio recording</a>.'), url('faq#q1') )
+	<?php echo sprintf( 'Your current browser does not support audio recording. See which <a href="%s">browsers support audio recording</a>.', url('faq#q1') )
 	?>
 			</div>
 			<?php if( isset($_GET['_ta_noscript']) && ! isset($_COOKIE['noscript']) ) {
@@ -22,9 +22,7 @@ View::load_template('header');
 				// a user without js wont last too much
 				?>
 			<div class="red-text">
-		<?php
-		_e('Your current browser does not support Javascript or is disactivated for this page. Some features may not work without Javascript.');
-		?>
+				Your current browser does not support Javascript or is disactivated for this page. Some features may not work without Javascript.
 			</div>
 				<?php
 			}
@@ -34,11 +32,11 @@ View::load_template('header');
 				<div class="col l6 m12 s12">
 					<div class="box">
 						<p class="title">
-					<?php _e('Your recent audios') ?>
+							Your recent audios
 						</p>
 			<?php
 			if( count($recent_audios) == 0 ):
-				View::alert_info( __("Here we'll show you your most recent audios. Why not starting with an audio about you signing?") );
+				View::alert_info("Here we'll show you your most recent audios. Why not starting with an audio about you signing?");
 			else:
 				while( list(,$audio) = each($recent_audios) )
 					View::display_audio( $audio );
@@ -49,11 +47,11 @@ View::load_template('header');
 				<div class="col l6 m12 s12">
 					<div class="box">
 						<p class="title">
-				<?php _e('Popular audios right now') ?>
+							Popular audios right now
 						</p>
 			<?php
 	if( count($recent_popular) ):
-		View::alert_info( __("We'll show you here the most recent popular audios when available!") );
+		View::alert_info("We'll show you here the most recent popular audios when available!");
 	else:
 		while( list(,$audio) = each($recent_popular) )
 			View::display_audio($audio);

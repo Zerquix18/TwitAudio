@@ -13,7 +13,7 @@ if( ! isset($template['robots']) )
 	$template['robots'] = true;
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo getlang() ?>">
+<html lang="en">
 <head>
 	<title><?php
 		if( isset($template['title']) )
@@ -68,12 +68,12 @@ if( ! isset($template['robots']) )
 	<meta name="twitter:player:width" content="435">
 	<meta name="twitter:card" content="player">
 	<meta name="twitter:site" content="@twit_audio">
-	<meta name="twitter:title" content="<?php echo sprintf( __('%s on TwitAudio'), $audio['user']['user']) ?>">
+	<meta name="twitter:title" content="<?php echo sprintf('%s on TwitAudio', $audio['user']['user']) ?>">
 	<meta name="twitter:image" content="<?php View::load_img('image.jpg') ?>">
 	<meta
 	name="twitter:url"
 	content="https://www.twitaudio.com/<?php echo $audio['id'] ?>">
-	<meta name="twitter:description" content="<?php echo __('Share voice notes and audios using Twitter!') ?>">
+	<meta name="twitter:description" content="<?php echo 'Share voice notes and audios using Twitter!' ?>">
 	<?php elseif( ! View::is('404') ): ?>
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:site" content="@twit_audio" />
@@ -108,9 +108,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 				class="validate sidebar-search"
 				id="q"
 				name="q"
-				title="<?php
-				_e('Type something to search')
-				?>"
+				title="Type something to search"
 				>
 			<label for="q">
 				<i class="fa fa-search"></i>
@@ -121,10 +119,10 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 	<ul class="sidebar-list">
 		<li>
 			<a
-			title="<?php _e('Go to the home page') ?>"
+			title="Go to the home page"
 			href="<?php echo url() ?>">
 				<i class="fa fa-home"></i>
-				<?php _e('Home') ?>
+				Home
 			</a>
 		</li>
 	<?php if( ! is_logged() ): ?>
@@ -134,7 +132,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 			urlencode( url( substr($_SERVER['REQUEST_URI'], 1) ) )
 			?>">
 				<i class="fa fa-twitter"></i>
-				<?php _e('Sign in with Twitter') ?>
+				Sign in with Twitter
 			</a>
 		</li>
 	<?php else:
@@ -147,7 +145,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 	?>
 		<li>
 			<a
-			title="<?php _e('Go to your profile') ?>"
+			title="Go to your profile"
 			href="<?php echo url('audios/' . $current_user->user ) ?>">
 				<img
 				class="circle sidebar-profile_picture" width="25" height="25"
@@ -159,7 +157,7 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		</li>
 		<li>
 			<a
-			title="<?php _e('See your audios') ?>"
+			title="See your audios"
 			href="<?php echo url('audios/' . $current_user->user) ?>">
 				<i class="fa fa-headphones"></i>
 				Audios
@@ -172,12 +170,12 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		</li>
 		<li>
 			<a
-			title="<?php _e('See your favorites') ?>"
+			title="See your favorites"
 			href="<?php
 				echo url('favorites/' . $current_user->user)
 			?>">
 				<i class="fa fa-star"></i>
-				<?php _e('Favorites') ?>
+				Favorites
 				<?php if( $favorites ): ?>
 				<span class="right _badge yellow darken-2">
 				<?php echo format_number($favorites) ?>
@@ -188,13 +186,13 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		<li>
 			<a href="#settings" class="modal-trigger waves-effect waves-light">
 				<i class="fa fa-cog"></i>
-				<?php _e('Settings') ?>
+				Settings
 			</a>
 		</li>
 		<li>
 			<a href="<?php echo url('?logout=1') ?>">
 				<i class="fa fa-sign-out"></i>
-				<?php _e('Log out') ?>
+				Log out
 			</a>
 		</li>
 		<?php endif ?>

@@ -8,7 +8,7 @@ $type  = $template['type'];
 $sort  = $template['order'];
 $content = $template['content'];
 
-$title =  HTTP::xss_protect( $query ) . ' ' . __('Search');
+$title =  HTTP::xss_protect( $query ) . ' Search';
 
 View::load_template('header', array(
 		'title'	=> $title
@@ -25,7 +25,7 @@ View::load_template('header', array(
 					<input type="text" class="validate" name="q" id="s">
 					<label for="s">
 						<i class="fa fa-search"></i>
-						&nbsp;<?php _e('Search...') ?>
+						&nbsp;Search...
 					</label>
 				</div>
 				<div class="search_options">
@@ -34,13 +34,13 @@ View::load_template('header', array(
 					<option value="a"
 					<?php if( 'a' == $type )
 					echo 'selected="selected"'
-					?>><?php _e('Audios') ?></option>
+					?>>Audios</option>
 					<option value="u"
 					<?php if( 'u' == $type )
 					echo 'selected="selected"'
-					?>><?php _e('Users') ?></option>
+					?>>Users</option>
 				</select>
-				<label><?php _e('Type') ?></label>
+				<label>Type</label>
 				</div>
 				<div class="input-field col s3 right">
 				<select id="search_sort" name="s"
@@ -51,24 +51,24 @@ View::load_template('header', array(
 					<option value="d"
 					<?php if( 'd' == $sort )
 					echo 'selected="selected"'
-					?>><?php _e('Date') ?></option>
+					?>>Date</option>
 					<option value="p"
 					<?php if( 'p' == $sort )
 					echo 'selected="selected"'
-					?>><?php _e('Plays') ?></option>
+					?>>Plays</option>
 				</select>
-				<label><?php _e('Sort') ?></label>
+				<label>Sort</label>
 				</div>
   				</div>
   				<button
   				type="submit"
   				class="search-btn waves-effect waves-light btn blue lighten-1"
   				>
-  					<?php _e('Search') ?>
+  					Search
   				</button>
   				</form>
   				<div class="divider search"></div>
-  				<p class="title"><?php _e('Results') ?></p>
+  				<p class="title">Results</p>
   				<div id="search">
   				<?php
   				if( ! empty($query) ):
@@ -76,8 +76,8 @@ View::load_template('header', array(
   					if( empty( $content['audios'] ) ):
   						?>
   					<p class="center grey-text">
-  						<?php _e("We could not find anything.
-  							Please try with a different criteria.") ?>
+  						We could not find anything.
+  							Please try with a different criteria.
   					</p>
   					<?php else:
   						$function_to_call =
@@ -93,8 +93,8 @@ View::load_template('header', array(
 
   				else: ?>
   				<p class="center grey-text">
-  					<?php _e('Type something in the search box.
-  							The results will appear here.') ?>
+  					Type something in the search box.
+  							The results will appear here.
   				</p>
   				<?php endif;
   				?>

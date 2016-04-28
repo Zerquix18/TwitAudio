@@ -55,14 +55,14 @@ function check_authorization() {
 	if( empty($headers['Authorization']) )
 		\application\HTTP::result( array(
 				'success'  => false,
-				'response' => __('Authorization required'),
+				'response' => 'Authorization required',
 			)
 		);
 	$authorization = $TACrypt->decrypt64( $headers['Authorization'] );
 	if( ! $authorization )
 		\application\HTTP::result( array(
 				'success'  => false,
-				'response' => __('Invalid authorization'),
+				'response' => 'Invalid authorization',
 			)
 		);
 	$session = $db->query(
@@ -73,7 +73,7 @@ function check_authorization() {
 	if( $session->nums === 0 )
 		\application\HTTP::result( array(
 				'success'  => false,
-				'response' => __('Invalid authorization')
+				'response' => 'Invalid authorization'
 			)
 		);
 	// for global use

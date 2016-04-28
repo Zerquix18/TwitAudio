@@ -67,7 +67,13 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 /** twitaudio dependencies **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/functions.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/application/i18n.php';
+
+spl_autoload_register( function ( $name ) use ($_CONFIG) {
+	$file = str_replace('\\', '/', $name);
+	$file = $_SERVER['DOCUMENT_ROOT'] . '/' . $file . '.php';
+	if( file_exists( $file ) )
+		require $file;
+});
 
 $_USER = ( $id = is_logged() ) ?
 		$db->query(
@@ -76,13 +82,6 @@ $_USER = ( $id = is_logged() ) ?
 			)
 	:
 		NULL;
-
-spl_autoload_register( function ( $name ) use ($_CONFIG) {
-	$file = str_replace('\\', '/', $name);
-	$file = $_SERVER['DOCUMENT_ROOT'] . '/' . $file . '.php';
-	if( file_exists( $file ) )
-		require $file;
-});
 
 /** Now JUST DO IT! **/
 

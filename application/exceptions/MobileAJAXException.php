@@ -61,7 +61,7 @@ class MobileAJAXException extends \Exception {
 			HTTP::result( array(
 					'success'  => false,
 					'response' => //↓
-					__('There was a problem while processing your request'),
+					'There was a problem while processing your request',
 				)
 			);
 			
