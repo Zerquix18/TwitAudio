@@ -59,7 +59,7 @@ class Audio {
 				$this->allowed_formats
 				)
 			) {
-			$this->error = __("The format of the audio is not allowed...");
+			$this->error = "The format of the audio is not allowed...";
 			return false;
 		}
 		if( $this->format == 'mp4' )
@@ -96,7 +96,7 @@ class Audio {
 			$l = $this->exec("sox $this->audio $decrease_bitrate $new_name");
 			if( trim($l) !== '' ) { // <-- EOF BABE
 				unlink($this->audio);
-				$this->error = __("There was a problem while proccessing the audio");
+				$this->error = "There was a problem while proccessing the audio";
 				$this->error_code = 2;
 				return false;
 			}
@@ -124,7 +124,7 @@ class Audio {
 		// when successful...
 
 		if( trim($r) !== '' ) {
-			$this->error = __("There was a problem while proccessing the audio...");
+			$this->error = "There was a problem while proccessing the audio...");
 			$this->error_code = 2;
 			return false;
 		}else{
@@ -137,7 +137,7 @@ class Audio {
 		endif;
 		$duration = floor($this->info['playtime_seconds']);
 		if( 0 == $duration ) {
-			$this->error = __('The audio must be longer than 1 second');
+			$this->error = 'The audio must be longer than 1 second';
 			return false;
 		}
 		## -- should we cut?
@@ -182,7 +182,7 @@ class Audio {
 		$duration = floor($this->info['playtime_seconds']);
 		if( $start < 0 || $end > $duration ) {
 			// cannot be cut m8
-			$this->error = __("There was an error while cutting your audio...");
+			$this->error = "There was an error while cutting your audio...";
 			$this->error_code = 8;
 			return '';
 		}
@@ -195,7 +195,8 @@ class Audio {
 		$result = trim($result);
 		if( ! in_array($result, 
 			array("", "sox WARN mp3: MAD lost sync" ) ) ) {
-			$this->error = __("Oh snap! There was an error while cutting your audio...");
+			$this->error = 
+					"Oh snap! There was an error while cutting your audio...";
 			$this->error_code = 6;
 			return '';
 		}

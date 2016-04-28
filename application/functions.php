@@ -68,35 +68,35 @@ function date_differences( $oldtime ) {
 		return date('d/m/Y', $oldtime);
 	if( $diff->w >= 1)
 		return sprintf( $diff->w == 1 ?
-			__('%d week')
+			'%d week'
 		:
-			__('%d weeks')
+			'%d weeks'
 		, $diff->w);
 	if( $diff->d >= 1 )
 		return sprintf( $diff->d == 1 ?
-				__('%d day')
+				'%d day'
 			:
-				__('%d days')
+				'%d days'
 			, $diff->d);
 	if( $diff->h >= 1 )
 		return sprintf( $diff->h == 1 ?
-				__('%d hour')
+				'%d hour'
 			:
-				__('%d hours')
+				'%d hours'
 			, $diff->h);
 	if( $diff->i >= 1 )
 		return sprintf( $diff->i == 1 ?
-				__('%d min')
+				'%d min'
 			:
-				__('%d mins')
+				'%d mins'
 			, $diff->i);
 	if( $diff->s >= 1 )
 		return sprintf( $diff->s == 1 ?
-				__('%d second')
+				'%d second'
 			:
-				__('%d seconds')
+				'%d seconds'
 			, $diff->s);
-	return __('now');
+	return 'now';
 }
 function get_ip() {
 	if( ! empty($_SERVER['HTTP_CLIENT_IP']) )

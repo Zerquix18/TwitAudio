@@ -11,36 +11,36 @@ View::load_template('header', array(
 <div class="container">
 	<img src="<?php View::load_img('p404.png') ?>">
 	<h3 class="not-found-text">
-		<?php _e('We could not find that!') ?>
+		We could not find that!
 	</h3>
 	<form method="GET" action="<?php echo url() . 'search/' ?>">
 		<div class="input-field">
 			<input
 				type="text"
 				name="q"
-				title="<?php _e('Type something to search') ?>"
+				title="Type something to search"
 				>
 			 <label class="active">
 			 	<i class="fa fa-search"></i>
-			 	&nbsp;<?php _e('Search') ?>
+			 	&nbsp;Search
 			 </label>
 		</div>
 	</form>
 	<ul>
 		<li>
 			<a href="javascript:history.back();">
-				<?php _e('Back') ?>
+				Back
 			</a>
 		</li>
 		<li>
 			<a href="<?php echo url() ?>">
-				<?php _e('Home') ?>
+				Home
 			</a>
 		</li>
 		<?php if( ! is_logged() ): ?>
 		<li>
 			<a href="<?php echo url() . 'signin' ?>">
-				<?php _e('Sign In') ?>
+				Sign In
 			</a>
 		</li>
 		<?php endif ?>

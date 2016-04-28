@@ -104,7 +104,7 @@ class View {
 	public static function show_verified_badge( $numb ) {
 		if( 0 == $numb )
 			return;
-		echo '<i class="fa fa-check verified" title="'. __('Verified account') .'"></i>';
+		echo '<i class="fa fa-check verified" title="Verified account"></i>';
 	}
 
 	public static function display_audio( array $audio,
@@ -168,7 +168,7 @@ class View {
 		?>
 		<div class="chip linked_reply">
 			<i class="fa fa-link"></i>&nbsp;
-			<?php _e('Linked reply') ?>
+			Linked reply
 		</div>
 		<?php endif ?>
 	</div>
@@ -226,8 +226,8 @@ class View {
                 <div class="jp-duration"></div>
             </div>
             <div class="jp-no-solution">
-                <?php _e('<span>Update Required</span>
-                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>') ?>.
+                <span>Update Required</span>
+                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
             </div>
         </div>
     </div>
@@ -239,9 +239,10 @@ class View {
 		class="audio-btn"
 		id="plays_<?php echo $audio['id'] ?>"
 		title="<?php
-		echo _n(
-				__('%d person played this'),
-				__('%d people have played this'),
+		$singular = '%d person played this';
+		$plurar   = '%d people played this';
+		echo sprintf(
+				!! $audio['plays'] ? $singular : $plural,
 				$audio['plays']
 			);
 		?>"
@@ -259,7 +260,7 @@ class View {
 				echo ' favorited';
 			endif ?>"
 		data-id="<?php echo $audio['id'] ?>"
-		title="<?php _e('Mark as favorite') ?>">
+		title="Mark as favorite">
 			<i class="fa fa-star"></i>&nbsp;
 			<span>
 				<?php echo format_number($audio['favorites']) ?>
@@ -268,7 +269,7 @@ class View {
 	<?php if( ! empty($audio['audio']) ): # if not a reply ?>
 		<a class="audio-btn"
 		      href="<?php echo url() . $audio['id'] ?>#replies"
-		      title="<?php _e('Leave a reply') ?>"
+		      title="Leave a reply"
 		      >
 			<i class="fa fa-reply"></i>&nbsp;
 			<span>
@@ -281,9 +282,9 @@ class View {
 		href="javascript:void(0);"
 		class="audio-btn delit"
 		data-id="<?php echo $audio['id'] ?>"
-		title="<?php _e('Delete this audio') ?>"
+		title="'Delete this audio'"
 		>
-			<i class="fa fa-times"></i> <?php _e('Delete') ?>
+			<i class="fa fa-times"></i> Delete
 		</a>
 		<?php endif ?>
 	</div>

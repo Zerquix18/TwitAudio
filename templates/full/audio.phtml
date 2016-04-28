@@ -42,7 +42,7 @@ View::load_template('header', array(
 					href="https://twitter.com/intent/tweet?<?php
 echo http_build_query( array(
 			'text' => sprintf(
-					__("Listen to @%s's audio"),
+					"Listen to @%s's audio",
 					$user['user']
 					),
 			'via' => 'twit_audio',
@@ -56,7 +56,7 @@ echo http_build_query( array(
 				</div>
 				<hr>
 				<p class="title">
-					<?php _e('Replies') ?>
+					Replies
 				</p>
 		<?php if( is_logged() ): ?>
 				<form method="POST"
@@ -69,24 +69,24 @@ echo http_build_query( array(
    						<textarea class="materialize-textarea" name="reply" maxlength="200" id="reply_box" maxlength="200" required="required"></textarea>
 						<label id="label_reply">
 						<i class="fa fa-pencil"></i>
-					&nbsp;<?php _e('Write a reply') ?>
+						&nbsp;Write a reply
 						</label>
 					</div>
 					<div class="reply-options">
 						<input type="hidden" name="s_twitter" value="0">
 						<input checked="checked" type="checkbox" id="twsent" name="s_twitter" value="1">
 						<label for="twsent">
-					<?php _e('Send to Twitter') ?>
+							Send to Twitter
 						</label>
 						<button type="submit" class="btn right waves-effect waves-light">
-					<?php _e('Reply') ?>&nbsp;
+							Reply
 						<i class="fa fa-send"></i>
 						</button>
 					</div>
 				</form>
 		<?php else: ?>
 			<a
-			title="<?php _e('You must be logged in to leave a reply') ?>"
+			title="You must be logged in to leave a reply"
 			href="<?php
 			echo url() . 'signin?back_to=' .
 			urlencode( url() . substr($_SERVER['REQUEST_URI'], 1) )
@@ -102,7 +102,7 @@ echo http_build_query( array(
 			<?php
 				if( empty($replies) )
 					View::alert_info(
-						__("There are not replies yet... Be the first!")
+						"There are not replies yet... Be the first!"
 					);
 				else {
 					while( list(,$reply) = each($replies['audios']) )

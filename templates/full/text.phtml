@@ -11,12 +11,12 @@ use \application\View;
 View::set_page('txt');
 
 $replace = array(
-		'about' 	=> __('About'),
-		'terms' 	=> __('Terms of Service'),
-		'privacy' 	=> __('Privacy Policy'),
+		'about' 	=> 'About',
+		'terms' 	=> 'Terms of Service',
+		'privacy' 	=> 'Privacy Policy',
 		'faq' 		=> 'FAQ',
-		'contact' 	=> __('Contact'),
-		'licensing' => __('Licensing'),
+		'contact' 	=> 'Contact',
+		'licensing' => 'Licensing',
 	);
 View::load_template('header', array(
 		'title' 	=> str_replace(

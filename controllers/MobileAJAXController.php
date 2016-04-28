@@ -128,7 +128,7 @@ class MobileAJAXController {
 			if( ! is_logged() ) {
 				HTTP::result( array(
 						'success'  => false,
-						'response' => __('Authorization required'),
+						'response' => 'Authorization required',
 					)
 				);
 			}
@@ -221,12 +221,12 @@ class MobileAJAXController {
 			);
 		if( empty($audio) )
 			throw new MobileAJAXException(
-					__('This audio does not exist or is no longer available.')
+					'This audio does not exist or is no longer available.'
 				);
 
 		if( ! $current_user->can_listen( $audio['user']['id'] ) )
 			throw new MobileAJAXException(
-					__('You cannot listen to the audios of this user.')
+					'You cannot listen to the audios of this user.'
 				);
 
 		HTTP::result( array('success' => true) + $audio );
@@ -469,7 +469,7 @@ class MobileAJAXController {
 		$audio = $audios->get_audio_info($id, 'id,user,audio');
 		if( ! $audio )
 			throw new MobileAJAXException(
-					__('The audio you tried to delete does not exist or is no longer available.'),
+					'The audio you tried to delete does not exist or is no longer available.',
 					array('show_in_web' => true)
 				);
 
@@ -512,7 +512,7 @@ class MobileAJAXController {
 		$audio = $audios->get_audio_info($id, 'id,user,favorites');
 		if( ! $audio )
 			throw new MobileAJAXException(
-					__('The audio you tried to favorite does not exist or is no longer available.'),
+					'The audio you tried to favorite does not exist or is no longer available.',
 					array('show_in_web' => true)
 				);
 
@@ -520,7 +520,7 @@ class MobileAJAXController {
 
 		if( ! $current_user->can_listen( $audio['user']['id'] ) )
 			throw new MobileAJAXException(
-					__('The audios of this users are private'),
+					'The audios of this users are private',
 					array('show_in_web' => true)
 				);
 
@@ -756,7 +756,7 @@ class MobileAJAXController {
 
 		HTTP::result( array(
 				'success'   => true,
-				'response'  => __('Audio posted successfully!')
+				'response'  => 'Audio posted successfully!'
 			)
 		);
 	}
@@ -826,7 +826,7 @@ class MobileAJAXController {
 			);
 		if( empty($audio) )
 			throw new MobileAJAXException(
-					__('The audio you request does not exist or is no longer available'),
+					'The audio you request does not exist or is no longer available',
 					array('show_in_web' => true)
 				);
 
@@ -837,7 +837,7 @@ class MobileAJAXController {
 
 		if( ! $current_user->can_listen( $audio['user']['id'] ) )
 			throw new MobileAJAXException(
-					__("You cannot listen to the audios of this user"),
+					"You cannot listen to the audios of this user",
 					array('show_in_web')
 				);
 
@@ -915,7 +915,7 @@ class MobileAJAXController {
 			);
 		if( ! $audio )
 			throw new MobileAJAXException(
-					__('The audio you try to reply does not exist or is no longer available'),
+					'The audio you try to reply does not exist or is no longer available',
 					array('show_in_web' => true)
 				);
 
@@ -932,7 +932,7 @@ class MobileAJAXController {
 		$reply_length = mb_strlen($reply, 'utf-8');
 		if( 0 === $reply_length )
 			throw new MobileAJAXException(
-					__('The reply cannot be empty'),
+					'The reply cannot be empty',
 					array('show_in_web' => true)
 				);
 		if( $reply_length > 200 )
@@ -1055,7 +1055,7 @@ class MobileAJAXController {
 
 		HTTP::result( array(
 				'success'   => true,
-				'response'  => __('Settings updated successfully!'),
+				'response'  => 'Settings updated successfully!',
 			)
 		);
 	}
@@ -1167,7 +1167,7 @@ class MobileAJAXController {
 				* is by checking the content inside
 				*/
 				throw new MobileAJAXException(
-						__('The format of the uploaded audio is not allowed'),
+						'The format of the uploaded audio is not allowed',
 						array('show_in_web' => true)
 					);
 			}
@@ -1177,7 +1177,7 @@ class MobileAJAXController {
 			if( $file_size > $file_limit ) {
 	 			throw new MobileAJAXException(
 	 					sprintf(
-	 						__("The file size is greater than your current limit's, %d mb"),
+	 						"The file size is greater than your current limit's, %d mb",
 	 						$file_limit
 	 					),
 	 					array('show_in_web' => true)
@@ -1213,7 +1213,7 @@ class MobileAJAXController {
 				/** someone could upload a b64 with a very high filesize */
 	 			throw new MobileAJAXException(
 	 					sprintf(
-	 						__("The file size is greater than your current limit's, %d mb"),
+	 						"The file size is greater than your current limit's, %d mb",
 	 						$file_limit
 	 					)
 	 				);

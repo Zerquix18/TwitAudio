@@ -12,9 +12,9 @@ $total_audios	 = $template['total_audios'];
 $total_favorites = $template['total_favorites'];
 
 if( 'favorites' == $page )
-	$title = sprintf( __('%s favorites'), $user['user'] );
+	$title = sprintf('%s favorites', $user['user']);
 else
-	$title = sprintf( __('%s audios'), $user['user']);
+	$title = sprintf('%s audios', $user['user']);
 View::load_template('header', array(
 		'title'	=> $title
 	)
@@ -29,7 +29,7 @@ View::load_template('header', array(
 				class="circle z-depth-3 materialboxed profile-picture"
 				data-caption="<?php
 				echo sprintf(
-					__("%s's profile picture"),
+					"%s's profile picture",
 					$user['user']
 				)
 				?>"
@@ -54,7 +54,7 @@ View::load_template('header', array(
 						href="<?php
 			echo url() . 'audios/' . $user['user']
 						?>">
-						<?php _e('Audios') ?>&nbsp;
+						Audios&nbsp;
 		<?php if( false !== $content && $total_audios > 0 ): ?>
 							<span class="_badge blue lighten-2">
 				<?php echo format_number($total_audios) ?>
@@ -68,7 +68,7 @@ View::load_template('header', array(
 						href="<?php
 			echo url() . 'favorites/' . $user['user']
 						?>">
-						<?php _e('Favorites') ?>&nbsp;
+						Favorites&nbsp;
 			<?php if( false !== $content && $total_favorites > 0 ): ?>
 							<span class="_badge yellow darken-2">
 				<?php echo format_number($total_favorites) ?>

@@ -15,7 +15,7 @@ View::load_template('login');
 // todo: stop selling user info
 if( ! View::is('index', 'txt', '404') ): ?>
 <div class="box ads-footer">
-	<p class="title"><?php _e('Advertising') ?></p>
+	<p class="title">Advertising</p>
 	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- Responsive -->
 	<ins class="adsbygoogle"
@@ -52,35 +52,35 @@ var max_duration      = "<?php echo $current_user->get_limit('audio_duration') ?
 		<div class="row">
 			<div class="col l6 s12">
 				<h5 class="white-text">
-					<?php _e("We've reached the end") ?>
+					We've reached the end
 				</h5>
 				<p class="grey-text text-lighten-4">
-					<?php _e('Haven\'t we?') ?>
+					Haven't we?
 				</p>
 			</div>
 			<div class="col l4 offset-l2 s12">
 				<h5 class="white-text">
-					<?php _e("More info") ?>
+					More info
 				</h5>
 				<ul>
 					<li>
 						<a class="grey-text text-lighten-4" href="<?php echo url('about') ?>">
-							<?php _e("About") ?>
+							About
 						</a>
 					</li>
 					<li>
 						<a class="grey-text text-lighten-4" href="<?php echo url('terms') ?>">
-							<?php _e("Terms and conditions") ?>
+							Terms and conditions
 						</a>
 					</li>
 					<li>
 						<a class="grey-text text-lighten-4" href="<?php echo url('privacy') ?>">
-							<?php _e("Privacy Policy") ?>
+							Privacy Policy
 						</a>
 					</li>
 					<li>
 						<a class="grey-text text-lighten-4" href="<?php echo url('faq') ?>">
-							<?php _e("FAQ") ?>
+							FAQ
 						</a>
 					</li>
 				</ul>
@@ -92,7 +92,7 @@ var max_duration      = "<?php echo $current_user->get_limit('audio_duration') ?
 			TwitAudio © <?php echo date('Y') ?>
 				<div class="right">
 					<a
-					title="<?php _e('Follow us on Twitter') ?>"
+					title="Follow us on Twitter"
 					class="grey-text text-lighten-4" href="//twitter.com/twit_audio">
 						<i class="fa fa-twitter"></i>
 					</a>&nbsp;
@@ -107,22 +107,34 @@ var max_duration      = "<?php echo $current_user->get_limit('audio_duration') ?
 <?php if( is_logged() ): ?>
 <div id="settings" class="modal">
 	<div class="modal-content">
-		<h4><?php _e('Settings') ?></h4>
+		<h4>Settings</h4>
 		<?php View::load_full_template('settings') ?>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat"><?php _e('Close') ?></a>
+		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
 	</div>
 </div>
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> master
 <div id="payments" class="modal">
 	<div class="modal-content">
 		<h4>Premium</h4>
 		<?php View::load_full_template('payments') ?>
 	</div>
 	<div class="modal-footer">
+<<<<<<< HEAD
 		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat"><?php _e('Close') ?></a>
 	</div>
 </div>
+=======
+		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+	</div>
+</div>
+>>>>>>> Stashed changes
+>>>>>>> master
 <?php endif;
 	$all_scripts = file_get_contents(
 			$_SERVER['DOCUMENT_ROOT'] . '/assets/js/scripts.json'
