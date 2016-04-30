@@ -124,7 +124,7 @@ class Audio {
 		// when successful...
 
 		if( trim($r) !== '' ) {
-			$this->error = "There was a problem while proccessing the audio...");
+			$this->error = "There was a problem while proccessing the audio...";
 			$this->error_code = 2;
 			return false;
 		}else{
