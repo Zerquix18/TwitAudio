@@ -11,20 +11,30 @@
 namespace controllers;
 
 use \application\Twitter,
-	\application\HTTP,
-	\application\exceptions\LoginException;
+	\application\HTTP;
 
 
 class LoginController {
 
+	// the place to redirect after a success or error
+	private $redirect_to = '';
+
 	public function __construct( $action ) {
+		global $_CONFIG;
 		try {
 			if( ! isset($_COOKIE['ta_session']) ) {
-				throw new LoginException('Cookies are needed to sign in');
+				throw new \Exception('Cookies are needed to sign in');
 			}
 			$this->$action();
-		} catch ( LoginException $e ) {
-			HTTP::redirect( $e->redirect_to );
+		} catch (\Exception $e) {
+			if( $_CONFIG['display_errors'] ) {
+				// are we in production? no.
+				$_SESSION['login_error'] = $e->getMessage();
+			} else {
+				$_SESSION['login_error'] =
+				'There was a problem while login you in. Please, try again.';
+			}
+			HTTP::redirect( $this->redirect_to ?: url() );
 		}
 	}
 
@@ -46,7 +56,7 @@ class LoginController {
 		endif;
 		$login_url = $twitter->get_login_url();
 		if( ! $login_url )
-			throw new LoginException('Could not get login URL');
+			throw new \Exception('Could not get login URL');
 
 		HTTP::redirect( $login_url );
 	}
@@ -56,30 +66,30 @@ class LoginController {
 	**/
 	private function callback() {
 		if( isset($_SESSION['back_to']) ) { 
-			$back_to = $_SESSION['back_to'];
+			$this->redirect_to = $_SESSION['back_to'];
 			unset($_SESSION['back_to']);
 		} else {
-			$back_to = url();
+			$this->redirect_to = url();
 		}
 
 		if( ! isset(
 			$_SESSION['oauth_token'],
 			$_SESSION['oauth_token_secret'])
 			) {
-			throw new LoginException('No tokens were stored', $back_to);
+			throw new \Exception('No tokens were stored');
 		}
 
 		$denied = HTTP::get('denied');
 
 		if( false === empty($denied) && $denied == $_SESSION['oauth_token'] )
-			throw new LoginException('Request was denied', $back_to);
+			throw new \Exception('Request was denied');
 
 		$oauth_token 	= HTTP::get('oauth_token');
 		$oauth_verifier = HTTP::get('oauth_verifier');
 
 		if( ! ( $oauth_token && $oauth_verifier)
 			|| $_SESSION['oauth_token'] != $oauth_token ) {
-			throw new LoginException('Oauth tokens does not match', $back_to);
+			throw new \Exception('Oauth tokens does not match');
 		}
 
 		$twitter = new Twitter(
@@ -101,14 +111,11 @@ class LoginController {
 			);
 
 		if( false === $create_user )
-			throw new LoginException(
-				'Internal error while registering user',
-				$back_to
-			);
+			throw new \Exception('Internal error while registering user');
 
 		if( $create_user['first_time'] )
 			$_SESSION['first_time'] = true;
 
-		HTTP::redirect( $back_to );
+		HTTP::redirect( $this->redirect_to );
 	}
 }
