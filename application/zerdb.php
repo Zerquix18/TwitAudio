@@ -8,52 +8,17 @@
 * @link http://github.com/zerquix18/zerdb
 * @copyright Copyright (c) 2014-2016, Zerquix18
 *
-* I ask for forgiveness to ayone reading this code
+* I ask for forgiveness to anyone reading this code
 * I made it when I was 14-15 years old
 * And it's the greatest and usefull bullshit
 * that I've done.
 **/
 
 if( ! class_exists('mysqli') )
-	exit("Class MySQLi doesn't exist");
+	return trigger_error('Class MySQLi does not exist.', E_USER_ERROR);
 
 class zerdb {
-
-/**
-*
-* Database tables, for insert queries
-*
-* @since 1.0
-* @access public
-* @var array
-*
-**/
-	public $tablas = array(
-			"users" => array(
-					'id', 'user', 'name', 'avatar', 'bio', 'verified', 'access_token', 'access_token_secret', 'favs_public', 'audios_public', 'time', 'lang'
-				),
-			"audios" => array(
-					'id', 'user', 'audio', 'reply_to', 'description', 'tw_id', 'time', 'plays', 'favorites', 'duration', 'is_voice'
-				),
-			"favorites" => array(
-					'user_id', 'audio_id', 'time'
-				),
-			"plays" => array(
-					'user_ip', 'audio_id', 'time'
-				),
-			"blocks" => array(
-					'user_id', 'blocked_id', 'time'
-				),
-			"sessions" => array(
-					'user_id', 'sess_id', 'time', 'ip', 'is_mobile'
-				),
-			"following_cache" => array(
-					'user_id', 'following', 'time', 'result'
-				),
-			"trends" => array(
-					'user', 'trend', 'time'
-				),
-		);
+	
 	private $dbhost;
 
 	private $dbuser;
@@ -157,7 +122,8 @@ class zerdb {
 		$this->dbname = $dbname;
 		$this->dbcharset = ! is_null($dbcharset) ? $dbcharset : 'utf8';
 		$this->dbport = is_null($dbport) ? ini_get('mysqli.default_port') : (int) $dbport;
-		return $this->connect();
+		
+		$this->connect();
 	}
 
 /**
@@ -169,8 +135,14 @@ class zerdb {
 *
 **/
 	private function connect() {
-		$this->mysqli = @new mysqli( $this->dbhost, $this->dbuser, $this->dbpass, $this->dbname, $this->dbport);
-    		if( $this->mysqli->connect_error ) {
+		$this->mysqli = @new mysqli(
+			$this->dbhost,
+			$this->dbuser,
+			$this->dbpass,
+			$this->dbname,
+			$this->dbport
+		);
+    	if( $this->mysqli->connect_error ) {
 			$this->error = $this->mysqli->connect_error;
 			$this->errno = $this->mysqli->connect_errno;
 			return false;
@@ -194,16 +166,16 @@ class zerdb {
 
 /**
 *
-* It cleans some vars to use it again
+* It cleans some vars to use them again
 *
 * @return bool
 *
 **/
 	public function flush() {
 		$this->query =
-		$this->error  =
+		$this->error =
 		$this->errno =
-		$this->nums = null;
+		$this->nums  = null;
 	}
 /**
 *
@@ -216,8 +188,13 @@ class zerdb {
 **/
 	public function real_escape( $string ) {
 		if( ! is_string( $string ) )
-			return $string;
-		return $this->ready ? $this->mysqli->real_escape_string( $string ) : addslashes( $string );
+			return $string; // duh!
+
+		if( $this->ready )
+			return $this->mysqli->real_escape_string( $string );
+		else
+			return addslashes( $string );
+
 	}
 /**
 *
@@ -228,9 +205,7 @@ class zerdb {
 * @return bool|object
 *
 **/
-	public function query( $query = null, $args = '' ) {
-		if( is_null($query) )
-			return false;
+	public function query( $query, $args = '' ) {
 		$args = func_get_args();
 		array_shift($args);
 		if( ! empty($args) && ! preg_match("/(\%)(s|d|f)|[\?]/", $query ) )
@@ -242,16 +217,22 @@ class zerdb {
 			$args = array_map(
 					array($this, 'real_escape'),
 					$args
-				);
-			$rplc = array("%s", "%d", "%f", "'?'", "'%s'", "'%d'", "'%f'"); // deletes mistakes
-			$query = str_replace($rplc, "?", $query); // replace all that by: ? :)
+				); // <- protects everything!
+			$rplc = array("%s", "%d", "%f", "'?'", "'%s'", "'%d'", "'%f'");
+			// ^ deletes mistakes
+			$query = str_replace($rplc, "?", $query);
+			// ^ replaces everything that by: ? :)
 			if( preg_match_all("!\?!", $query) !== count($args) )
 				return false;
 			foreach($args as $a) {
-				$a = is_string($a) ? "'$a'" : $a; // if it's string it will pass it like an string eh... be careful.
-				$query = preg_replace("/\?/", $a, $query, 1); // Replaces all ? by args in order... that's why the count have to be the same
+				$a = is_string($a) ? "'$a'" : $a;
+				// if it's string it will pass it like an string eh...
+				// be careful.
+				$query = preg_replace("/\?/", $a, $query, 1);
+				// Replaces all the ? by args in order...
+				// that's why the count have to be the same
 			}
-		}			
+		}
 		$this->query = $query;
 		return $this->execute();
 	}
@@ -266,7 +247,7 @@ class zerdb {
 		if( empty($this->query ) )
 			return false;
 		$query = $this->mysqli->query( $this->query );
-		if( !$query ) {
+		if( ! $query ) {
 			$this->error = $this->mysqli->error;
 			$this->errno = $this->mysqli->errno;
 			return false;
@@ -274,15 +255,15 @@ class zerdb {
 		$this->id = $this->mysqli->insert_id; // dw if it's null...
 		$this->nums = (int) $this->mysqli->affected_rows;
 		if( preg_match('/^(select)/i', $this->query) ) {
-			$lol = new stdClass();
-			$this->nums = $lol->nums = $query->num_rows;
-			$lol->r = $query;
-			if( $this->nums == 1):
+			$result = new stdClass();
+			$this->nums = $result->nums = $query->num_rows;
+			$result->r = $query;
+			if( $this->nums == 1) {
 				foreach($query->fetch_assoc() as $a => $b)
-					$lol->$a = stripslashes($b);
+					$result->$a = stripslashes($b);
 				$query->data_seek(0);
-			endif;
-			return $lol;
+			}
+			return $result;
 		}
 		return $query;
 	}
@@ -307,40 +288,50 @@ class zerdb {
 	public function select( $table, $data = "*", $where = null ) {
 		if( ! $this->ready )
 			return false;
+
 		$this->flush();
-		$this->query = "SELECT $data FROM $table";
-		if( null != $where )
+		$this->query = "SELECT {$data} FROM {$table}";
+		if( null !== $where )
 			$this->where( $where );
+
 		return $this;
 	}
 /**
 *
 * It updates something in the database
 *
+* Ex: ->update('users', 'password', '123')
+* Becomes: UPDATE users SET password = '123'
+* Ex 2: ->update('users', array('password' => '123', 'user' => 123) )
+* Becomes: UPDATE users SET password = '123', 'user' = 123
 * @param string $table
 * @param string|array $arg1
 * @param string $arg2
 * @return bool|object
 *
 **/
-	function update( $table, $arg1, $arg2 = '') {
+	function update( $table, $sets, $set2 = '') {
 		if( ! $this->ready )
 			return false;
-		if( ! is_array($arg1) && count( func_get_args() ) !== 3 )
+		if( ! is_array($sets) && count( func_get_args() ) !== 3 )
 			return false;
 		$this->flush();
 		$this->query = "UPDATE {$table}";
 		$set = array();
-		if( empty($arg2) )
-			foreach($arg1 as $a => $b) {
-				if( is_string($b) )
-					$b = $this->real_escape($b);
-				$set[] = "{$a} = '{$b}'";
+		if( empty($set2) ) {
+			foreach($sets as $column => $value) {
+				$value = $this->real_escape($value);
+				/**
+				* @todo make this more friendly with
+				* other types
+				**/
+				$set[] = "{$column} = '{$value}'";
 			}
-		else {
-			if( is_string($arg2) )
-				$arg2 = $this->real_escape($arg2);
-			$set = array("{$arg1} = '{$arg2}'");
+		} else {
+			if( is_string($set2) ) {
+				$set2 = $this->real_escape($set2);
+			}
+			$set = array("{$sets} = '{$set2}'");
 		}
 		$this->query .= " SET " . implode(', ', $set);
 		return $this;
@@ -363,54 +354,27 @@ class zerdb {
 			$this->where( $where );
 		return $this;
 	}
-
 /**
 *
-* It inserts something in the database
-*
-* @param string $table
-* @param array $t_data
-* @param array $data
-* @return bool
+* Insert query
 *
 **/
-	public function insert( $table, $data) {
-		return $this->insert_replace("INSERT", $table, array_slice( func_get_args(), 1 ) );
-	}
-/**
-*
-* It replaces something in the database
-*
-* @param string $table
-* @param array $t_data
-* @param array $data
-* @return bool
-*
-**/
-	public function replace( $table, $data ) {
-		return $this->insert_replace("REPLACE", $table, array_slice( func_get_args(), 1 ) );
-	}
-/**
-*
-* Helper for insert and replace
-*
-**/
-	private function insert_replace($action, $table, $data) {
+	public function insert($table, $data) {
 		if( ! $this->ready )
 			return false;
 		if( empty($data) )
 			return false;
-		if( ! in_array( strtoupper($action), array("INSERT", "REPLACE") ) ) 
-			return false;
-		//then
-		$t_data = $this->tablas[$table];
-		$this->query = "{$action} INTO {$table} (`" . implode('`,`', $t_data) . "`) VALUES ";
-		$v = array();
-		foreach($data as $a) {
-			$a = array_map( array($this, 'real_escape'), $a);
-			$v[] = "('" . implode("','", $a ) . "')";
+		$this->query  = "INSERT INTO {$table} SET ";
+		$end = end($data);
+		reset($data);
+		while( list($column, $value) = each($data) ) {
+			/**
+			* @todo make this friendly with other types
+			**/
+			$this->query .= "{$column} = '$value'";
+			if( $end !== $value )
+				$this->query .= ', ';
 		}
-		$this->query .= implode(', ', $v);
 		return $this->execute();
 	}
 /**
@@ -424,6 +388,7 @@ class zerdb {
 *
 **/
 	public function where( $column, $value = '', $operator = "AND") {
+		/** here be dragons... **/
 		$args = func_get_args();
 		if( ! is_array($column) && empty($value) )
 			return false;
@@ -481,74 +446,6 @@ class zerdb {
 	public function wherelt( $where ) {
 		return $this->where($where, "<");
 	}
-/** 
-*
-* LIKE statement
-*
-* @param string|array $arg1
-* @param string|bool $arg2
-* @param string $and
-* @param bool $not
-* @return bool|object
-*
-**/
-	public function like($arg1, $arg2 = false, $and = "AND", $not = false) {
-		if( ! is_array($arg1) && empty($arg2) )
-			return false;
-		$args = func_get_args();
-		$like = array();
-		$not = (!$not) ? '' : 'NOT ';
-		if( is_array($arg1) ) {
-			foreach($arg1 as $a => $b)
-				$like[] = "$a {$not} LIKE %" . $b . "%";
-		}else{
-			$like[] = "{$args[0]} {$not}LIKE '%{$args[1]}%'";
-		}
-		$this->query .= " WHERE " . implode(' {$and} ', $like );
-		return $this;
-	}
-/**
-*
-* LIKE statement, but just starting ("WHERE something LIKE test%")
-*
-* @param string|array $arg1
-* @param string|bool $arg2
-* @param string $and
-* @param bool $not
-* @return bool|object
-*
-**/
-	public function slike( $arg1, $arg2 = false, $and = "AND", $not = false) {
-		if( ! is_array($arg1) && empty($arg2) )
-			return false;
-		$args = func_get_args();
-		$like = array();
-		$not = (!$not) ? '' : 'NOT ';
-		if( is_array($arg1) ) {
-			foreach($arg1 as $a => $b)
-				$like[] = "$a $not LIKE %" . $b;
-		}else{
-			$like[] = "{$args[0]} {$not}LIKE '%{$args[1]}'";
-		}
-		$this->query .= " WHERE " . implode(' {$and} ', $like );
-		return $this;
-	}
-/**
-*
-* NOT like statement, it has the same use that $this->like()
-*
-**/
-	public function notlike( $arg1, $arg2 = false, $and = "AND" ) {
-		return $this->like($arg1, $arg2, $and, true );
-	}
-/**
-*
-* NOT LIKE statement, it has the same use that $this->slike()
-*
-*/
-	public function notslike($arg1, $arg2 = false, $and = "AND") {
-		return $this->slike($arg1, $arg2, $and, true);
-	}
 /**
 *
 * LIMIT statement
@@ -566,23 +463,5 @@ class zerdb {
 			$this->query .= ",{$l2}";
 		return $this->execute();
 	}
-/**
-*
-* It returns the Query
-*
-**/
-	public function getQuery() {
-		return $this->query;
-	}
-/**
-*
-* It adds something to the current query
-*
-**/
-	public function add( $add ) {
-		$this->query .= " " . $add;
-		return $this;
-	}
-  
 /** End class! **/
 }

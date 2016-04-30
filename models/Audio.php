@@ -312,18 +312,20 @@ class Audio extends \application\ModelBase {
 		if( 0 !== count( array_diff( $required_options, array_keys($options) ) ) )
 			return false;
 
+		$audio_id = generate_id_for('audio');
+
 		$this->db->insert("audios", array(
-				$audio_id = generate_id_for('audio'),
-				$this->user->id,
-				$options['audio_url'], // nameofthefile.mp3
-				0, // reply_to 
-				$options['description'],
-				0, // twitter id
-				time(),
-				0, // plays
-				0, // favorites
-				(string) $options['duration'],
-				(string) (int) $options['is_voice']
+				'id'          => $audio_id,
+				'user'        => $this->user->id,
+				'audio'       => $options['audio_url'], // nameofthefile.mp3
+				'reply_to'    => 0,
+				'description' => $options['description'],
+				'tw_id'       => 0,
+				'time'        => time(),
+				'plays'       => 0,
+				'favorites'   => 0,
+				'duration'    => (string) $options['duration'],
+				'is_voice'    => (string) (int) $options['is_voice']
 			)
 		);
 
@@ -359,19 +361,19 @@ class Audio extends \application\ModelBase {
 			);
 		if( 0 !== count( array_diff( $required_options, array_keys($options) ) ) )
 			return false;
-
+		$audio_id = generate_id_for('audio');
 		$this->db->insert("audios", array(
-				$audio_id = generate_id_for('audio'),
-				$this->user->id,
-				'', // audio.mp3 (not used here)
-				$options['audio_id'], // reply_to
-				$options['reply'],
-				0,
-				time(),
-				0,
-				0,
-				0,
-				'0' // is_voice (the answer is no)
+				'id'          => $audio_id,
+				'user'        => $this->user->id,
+				'audio'       => '', // audio.mp3 (not used here)
+				'reply_to'    => $options['audio_id'],
+				'description' => $options['reply'],
+				'tw_id'       => 0,
+				'time'        => time(),
+				'plays'       => 0,
+				'favorites'   => 0,
+				'duration'    => 0,
+				'is_voice'    => '0' // surely its not
 			)
 		);
 
@@ -418,28 +420,18 @@ class Audio extends \application\ModelBase {
 	* comprobation.
 	**/
 	public function delete( array $audio ) {
-		$this->db->query(
-			"DELETE FROM audios WHERE id = ?",
-			$audio['id']
-		);
-		$this->db->query(
-			"DELETE FROM favorites WHERE audio_id = ?",
-			$audio['id']
-		);
-		$this->db->query(
-			"DELETE FROM plays WHERE audio_id = ?",
-			$audio['id']
-		);
-		$this->db->query(
-			"DELETE FROM audios WHERE reply_to = ?",
-			$audio['id']
-		);
+		$id = $audio['id'];
+		$this->db->delete('audios',    array('id' => $id) )->_();
+		$this->db->delete('audios',    array('reply_to' => $id) )->_();
+		$this->db->delete('plays',     array('audio_id' => $id) )->_();
+		$this->db->delete('favorites', array('audio_id' => $id) )->_();
 
-		if( ! empty($audio['audio']) )
+		if( ! empty($audio['audio']) ) {
 			@unlink(
 				$_SERVER['DOCUMENT_ROOT'] .
 				'/assets/audios/' . $audio['original_name']
 			);
+		}
 	}
 
 	public function favorite( $audio_id ) {
@@ -448,9 +440,9 @@ class Audio extends \application\ModelBase {
 			$audio_id
 		);
 		$this->db->insert("favorites", array(
-				$this->user->id,
-				$audio_id,
-				time()
+				'user_id'  => $this->user->id,
+				'audio_id' => $audio_id,
+				'time'     => time()
 			)
 		);
 	}
@@ -485,9 +477,9 @@ class Audio extends \application\ModelBase {
 			$audio_id
 		);
 		$this->db->insert("plays", array(
-				$user_ip,
-				$audio_id,
-				time()
+				'user_ip'  => $user_ip,
+				'audio_id' => $audio_id,
+				'time'     => time()
 			)
 		);
 		return true;
