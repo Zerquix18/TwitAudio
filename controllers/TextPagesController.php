@@ -20,7 +20,7 @@ use \application\View;
 class TextPagesController {
 	public function __construct( $page ) {
 		$file = $_SERVER['DOCUMENT_ROOT'] .
-			'/application/html/' .$page . '.html';
+			'/templates/html/' .$page . '.html';
 			
 		if( ! is_readable($file) )
 			View::exit_404();

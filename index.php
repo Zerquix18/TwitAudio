@@ -14,7 +14,7 @@ try {
 	if( ! is_readable($config_file) )
 		throw new \Exception("Can't read $config_file or it does not exist");
 
-	$_CONFIG = parse_ini_file('config.ini');
+	$_CONFIG = parse_ini_file($config_file);
 	$_SERVER['DOCUMENT_ROOT'] = $_CONFIG['document_root'];
 
 } catch (\Exception $e ) {
@@ -129,7 +129,7 @@ $router->map('GET', '/search', function() {
 *because if it's not the guy below will catch it
 **/
 
-$router->map('GET', '/[valid_audio_id:audio_id]', function( $audio_id) {
+$router->map('GET', '/[valid_audio_id:audio_id]', function( $audio_id ) {
 	return new \controllers\AudioController( $audio_id );
 });
 

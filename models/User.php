@@ -46,7 +46,7 @@ class User extends \application\ModelBase {
 	* forces the types and deletes
 	* useless stuff
 	*
-	* @param  $user array - They array with the data to be threated
+	* @param  $user array - They array with the data to work with
 	* @return array
 	**/
 	public function complete_user( array $user ) {
@@ -212,36 +212,41 @@ class User extends \application\ModelBase {
 			$audios_public = (int) ! $details->protected;
 			$time = time();
 			$lang = $details->lang;
-			$this->db->insert("users", array(
-					$id,
-					$user,
-					$name,
-					$avatar,
-					$bio,
-					$verified,
-					$access_token,
-					$access_token_secret,
-					$favs_public,
-					$audios_public,
-					$time,
-					$lang
+			$register_user = $this->db->insert("users", array(
+					'id'                  => $id,
+					'user'                => $user,
+					'name'                => $name,
+					'avatar'              => $avatar,
+					'bio'                 => $bio,
+					'verified'            => $verified,
+					'access_token'        => $access_token,
+					'access_token_secret' => $access_token_secret,
+					'favs_public'         => $favs_public,
+					'audios_public'       => $audios_public,
+					'time'                => $time,
+					'lang'                => $lang
 				)
 			);
+			if( ! $register_user )
+				throw new \Exception('Database error: ' . $this->db->error);
 		}
 
 		///////////// this is a well comented line
 		$sess_id = 'mobile' == $via ?
 				\generate_id_for('session'):
 				session_id();
+		$sess_time = time();
 
-		$this->db->insert("sessions", array(
-				$id,
-				$sess_id,
-				$sess_time = time(),
-				\get_ip(),
-				'mobile' == $via ? '1' : '0'
+		$register_session = $this->db->insert("sessions", array(
+				'user_id'    => $id,
+				'sess_id'    => $sess_id,
+				'time'       => $sess_time,
+				'ip'         => get_ip(),
+				'is_mobile'  => ('mobile' == $via ? '1' : '0')
 			)
 		);
+		if( ! $register_session )
+			throw new \Exception('Database error: ' . $this->db->query);
 
 		return array(
 				'id'		 => (bool) $id,

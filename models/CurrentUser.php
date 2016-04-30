@@ -86,10 +86,10 @@ class CurrentUser extends \application\ModelBase {
 			$check = in_array('following', $g[0]->connections);
 
 		$this->db->insert("following_cache", array(
-				$_USER->id,
-				$id,
-				time(),
-				(string) (int) $check // result
+				'user_id'   => $_USER->id,
+				'following' => $id,
+				'time'      => time(),
+				'result'    => (string) (int) $check
 			)
 		);
 
