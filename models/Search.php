@@ -27,33 +27,39 @@ class Search extends \application\ModelBase {
 		* but then array_key_exists( $needle, $haystack )
 		* wtf they smooking
 		*/
-		if( ! array_key_exists('query', $options)
-			|| ! array_key_exists('page', $options) )
+		if(    ! array_key_exists('query', $options)
+			|| ! array_key_exists('page',  $options)
+		) {
 			return false;
+		}
 
 		$criteria = $options['query'];
 		$criteria = trim( $criteria, "\x20\x2A\t\n\r\0\x0B" );
 		$criteria = '*' . $criteria . '*'; // wildcards.
-		$page  = $options['page'];
+		$page     = $options['page'];
 
 		/**
 		* 2 types (a=audios, u=users)
 		**/
-		if( array_key_exists('type', $options)
-			&& in_array($options['type'], array('a','u'), true ) )
+		if(    array_key_exists('type', $options)
+			&& in_array($options['type'], array('a','u') )
+		) {
 			$type = $options['type'];
-		else
+		} else {
 			$type = 'a';
+		}
 		/**
 		* 2 orders: (d=date,p=plays)
 		**/
-		if( array_key_exists('order', $options)
-			&& in_array($options['order'], array('d','p'), true ) )
+		if(    array_key_exists('order', $options)
+			&& in_array($options['order'], array('d','p') )
+		) {
 			$order = $options['order'];
-		else
+		}else{
 			$order = 'd';
+		}
 
-		if( 'a' == $type ):
+		if( 'a' == $type ) {
 			$query = 'SELECT id,user,audio,reply_to,description,
 							 time,plays,favorites,duration
 								FROM audios
@@ -69,7 +75,7 @@ class Search extends \application\ModelBase {
 					 AGAINST (? IN BOOLEAN MODE)',
 					$criteria
 				);
-			else: // if the type is user
+			} else {
 				$query = 'SELECT user,name,avatar,bio,verified FROM users
 						  WHERE MATCH(`user`, `name`, `bio`)
 						  AGAINST (? IN BOOLEAN MODE)';
@@ -79,9 +85,9 @@ class Search extends \application\ModelBase {
 					     AGAINST (? IN BOOLEAN MODE)',
 						$criteria
 				);
-		endif;
+		}
 		$count = (int) $count->size;
-		if( 0 == $count )
+		if( 0 == $count ) {
 			return array(
 					'audios'	 => array(),
 					'load_more'  => false,
@@ -89,6 +95,7 @@ class Search extends \application\ModelBase {
 					'total'		 => $count,
 					'type'       => $type,
 				);
+		}
 		$total_pages = ceil( $count / 10 );
 		if( $page > $total_pages )
 			return array(
@@ -98,30 +105,34 @@ class Search extends \application\ModelBase {
 					'total'		 => $count,
 					'type'       => $type,
 				);
-		if( 'a' == $type ):
-			if( 'd' == $order )
+		if( 'a' == $type ) {
+			// if the type is audios then we can sort
+			if( 'd' == $order ) {
 				$query .= ' ORDER BY time DESC';
-			else
+			} else {
 				$query .= ' ORDER BY plays DESC';
-		endif;
+			}
+			// ..
+		}
 
 		$result = array(
 				'audios'	=> array()
 			);
-		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$search = $this->db->query($query, $criteria);
-		$users_model  = new User;
-		$current_user = $users_model->get_current_user();
+		$query       .= ' LIMIT '. ($page-1) * 10 . ',10';
+		$search       = $this->db->query($query, $criteria);
+		$users        = new User;
+		$current_user = $users->get_current_user();
 		$audios_model = new Audio;
 		while( $res = $search->r->fetch_assoc() ) {
-			if( 'a' === $type ):
-				if( $current_user->can_listen($res['user']) ):
-					$result['audios'][] =
-							$audios_model->complete_audio( $res );
-				endif;
-			else: // if looking for users
-				$result['audios'][] = $users_model->complete_user($res);
-			endif;
+			// now we have the result
+			// we got to know which function to call
+			if( 'a' === $type ) {
+				if( $current_user->can_listen($res['user']) ) {
+					$result['audios'][] = $audios_model->complete_audio($res);
+				}
+			}else{ // if looking for users
+				$result['audios'][] = $users->complete_user($res);
+			}
 		}
 		$result['page']      = $page;
 		$result['load_more'] = $page < $total_pages;

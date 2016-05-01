@@ -18,8 +18,9 @@ class HTTP {
 	* @return string
 	**/
 	public static function get( $param ) {
-		if( ! isset( $_GET[ $param ] ) || ! is_string( $_GET[ $param ] ) )
+		if( ! isset( $_GET[ $param ] ) || ! is_string( $_GET[ $param ] ) ) {
 			return '';
+		}
 		return trim( $_GET[ $param ] );
 	}
 	/**
@@ -27,8 +28,9 @@ class HTTP {
 	* @return string
 	**/
 	public static function post( $param ) {
-		if( ! isset( $_POST[ $param ] ) || ! is_string( $_POST[ $param ] ) )
+		if( ! isset( $_POST[ $param ] ) || ! is_string( $_POST[ $param ] ) ) {
 			return '';
+		}
 		return trim( $_POST[ $param ] );
 	}
 	/**
@@ -38,10 +40,12 @@ class HTTP {
 	* @return integer
 	**/
 	public static function sanitize_page_number( $page_number ) {
-		if( ! ctype_digit($page_number) )
+		if( ! ctype_digit($page_number) ) {
 			return 0;
-		if( (int) $page_number <= 0 )
+		}
+		if( (int) $page_number <= 0 ) {
 			return 0;
+		}
 		return (int) $page_number;
 	}
 	/**
@@ -57,8 +61,9 @@ class HTTP {
 	* @return string
 	**/
 	public static function sanitize( $str ) {
-		if( mb_strlen( $str, 'utf8' ) < 1 )
+		if( mb_strlen( $str, 'utf8' ) < 1 ) {
 			return '';
+		}
 		$str = self::xss_protect( $str );
 		$str = str_replace( array( chr( 10 ), chr( 13 ) ), '' , $str );
 		$str = preg_replace(
@@ -83,10 +88,11 @@ class HTTP {
 	* @return void
 	**/
 	public static function result( array $options ) {
-		if( ! array_key_exists('success', $options)
-			|| ! is_bool($options['success']) )
+		if(    ! array_key_exists('success', $options)
+			|| ! is_bool($options['success'])
+			) {
 			return;
-
+		}
 		exit( json_encode( $options ) );
 	}
 	/**

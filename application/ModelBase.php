@@ -17,7 +17,7 @@ abstract class ModelBase {
 	
 	protected function __construct() {
 		global $db, $_USER;
-		$this->db = $db;
+		$this->db   = $db;
 		$this->user = $_USER;
 	}
 }

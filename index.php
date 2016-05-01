@@ -11,26 +11,29 @@
 /** configuration **/
 $config_file = './config.ini';
 try {
-	if( ! is_readable($config_file) )
+	if( ! is_readable($config_file) ) {
 		throw new \Exception("Can't read $config_file or it does not exist");
+	}
 
 	$_CONFIG = parse_ini_file($config_file);
 	$_SERVER['DOCUMENT_ROOT'] = $_CONFIG['document_root'];
 
 } catch (\Exception $e ) {
 
-	if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] )
+	if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {
 		exit('Something terrible happened.');
+	}
 
 	exit( $e->getMessage() );
 }
 
-if( '1' == $_CONFIG['display_errors'] )
+if( '1' == $_CONFIG['display_errors'] ) {
 	error_reporting(E_ALL);
-else
+} else {
 	error_reporting(0);
+}
 
-if( '1' == $_CONFIG['minify_html'] )
+if( '1' == $_CONFIG['minify_html'] ) {
 	ob_start( function($output) {
 		return preg_replace(
 			['/\>[^\S ]+/s','/[^\S ]+\</s','/(\s)+/s'],
@@ -38,8 +41,9 @@ if( '1' == $_CONFIG['minify_html'] )
 			$output
 		);
 	});
-else
+} else {
 	ob_start();
+}
 
 /** database connection **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/zerdb.php';
@@ -50,14 +54,16 @@ try {
 		$_CONFIG['password'],
 		$_CONFIG['database']
 	);
-	if( ! $db->ready )
+	if( ! $db->ready ) {
 		throw new \Exception( $db->error );
+	}
 
 } catch( \Exception $e ) {
-	if( $_CONFIG['display_errors'] )
+	if( $_CONFIG['display_errors'] ) {
 		echo $e->getMessage();
-	else
+	} else {
 		exit( file_get_contents('assets/templates/error-500.html') );
+	}
 }
 
 /** vendor autoloader **/
@@ -71,8 +77,9 @@ require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
 spl_autoload_register( function ( $name ) use ($_CONFIG) {
 	$file = str_replace('\\', '/', $name);
 	$file = $_SERVER['DOCUMENT_ROOT'] . '/' . $file . '.php';
-	if( file_exists( $file ) )
+	if( file_exists( $file ) ) {
 		require $file;
+	}
 });
 
 $_USER = ( $id = is_logged() ) ?
@@ -150,10 +157,11 @@ $router->map(
 
 $router->map('GET', '/re-update-943', function() {
 	// accept the param branch if it's in beta
-	if( 'beta.twitaudio.com' === $_SERVER['HTTP_HOST'] )
+	if( 'beta.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {
 		$branch = ' ' . \application\HTTP::get('branch');
-	else
+	} else {
 		$branch = '';
+	}
 	exec('./re-update.sh' . $branch, $output);
 	echo implode("\n", $output);
 });
@@ -162,7 +170,8 @@ $router->map('GET', '/re-update-943', function() {
 
 $match = $router->match();
 
-if( $match && is_callable( $match['target'] ) )
+if( $match && is_callable( $match['target'] ) ) {
 	call_user_func_array( $match['target'], $match['params'] );
-else
+} else {
 	\application\View::load_full_template('404');
+}

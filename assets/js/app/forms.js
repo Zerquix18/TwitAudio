@@ -40,7 +40,7 @@ window.upload_audio = function( options ) {
 				$("#player_cut").jPlayer("destroy");
 				window.effects.clean();
 			},
-			error: function(xhr) {
+			error: function( xhr ) {
 				display_error(
 					'There was an error while uploading your audio. ' + 
 					'Please check your Internet connection');
@@ -50,12 +50,12 @@ window.upload_audio = function( options ) {
 				window.progressive_text.stop('#whatsloading');
 				$("#up_form").trigger('reset');
 			},
-			uploadProgress: function(event, position, total, percent) {
+			uploadProgress: function( event, position, total, percent ) {
 				$("#up_progress").animate({
 					width: percent + '%'
 				});
 			},
-			complete: function(xhr) {
+			complete: function( xhr ) {
 				window.progressive_text.stop('#whatsloading');
 				$("#up_form").trigger('reset');
 				$("#up_progress").width("100%");
@@ -104,13 +104,17 @@ window.upload_audio = function( options ) {
 			}
 		};
 		if( is_voice && window.record.recorder ) {
+			/**
+			* If it's voice then we'll upload the
+			* base64 as 'bin'
+			**/
 			window.record.recorder.exportMP3( function(blob) {
 				var reader = new FileReader();
 				reader.onload = function(event) {
-					var fileReader = {};
-					fileReader.is_voice = '1';
-					fileReader.bin =  event.target.result;
-					_ajax_form.data = fileReader;
+					var file_reader      = {};
+					file_reader.is_voice = '1';
+					file_reader.bin      =  event.target.result;
+					_ajax_form.data      = file_reader;
 					$("#up_form").ajaxSubmit(_ajax_form);
 				};
 				reader.readAsDataURL(blob);
@@ -136,22 +140,24 @@ $("#upload").on('click', function() {
 
 $("#up_file").on('change', function() {
 
-	var format    = $(this).val().split('.'),
-		file_size = this.files[0].size / 1024/ 1024;
+	var format    = $(this).val().split('.');
+	var file_size = this.files[0].size / 1024 / 1024;
 
 	format = format[ format.length - 1 ];
 	format = format.toLowerCase();
 
-	if( ! in_array(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) )
+	if( ! in_array(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) ) {
 		return display_error('Format not allowed');
+	}
 
 	/*
 	* upload_file_limit is defined in templates/footer.phtml
 	*/ 
-	if( file_size > upload_file_limit )
+	if( file_size > upload_file_limit ) {
 		return display_error(
 			'The file size is greater than your current ' +
 			'limit \'s, ' + upload_file_limit + ' mb');
+	}
 
 	window.upload_audio( {is_voice: false } );
 });
@@ -259,15 +265,17 @@ $("#end, #start").on('keyup', function() {
 
 	diff = end-start;
 	/* max_duration is declared in templates/footer.phtml */
-	if( (start >= end) || diff > max_duration || diff < 1 )
+	if( (start >= end) || diff > max_duration || diff < 1 ) {
 		return btn.attr('disabled', 'disabled');
+	}
 
 	return btn.removeAttr('disabled');
 });
 
 $("#cut_cancel, #post_cancel").on('click', function() {
-	if( true !== confirm('Are you sure?') )
+	if( true !== confirm('Are you sure?') ) {
 		return false;
+	}
 	$("#cut_form, #post_form").hide();
 	$("#post").show();
 	$.jPlayer.pause();
@@ -317,8 +325,9 @@ $("#post_form").ajaxForm({
 	complete: function(xhr) {
 		$("#up_progress").width(0);
 		var result = JSON.parse(xhr.responseText);
-		if( ! result.success )
+		if( ! result.success ) {
 			return display_error( result.response );
+		}
 
 		$("#desc").val("");
 		$("#audio_effect").val('original');
@@ -352,10 +361,11 @@ $("#form_reply").ajaxForm({
 		$("#label_reply").removeClass('active');
 		$("#noreplies").remove();
 
-		if( null === document.getElementById("load_more") )
+		if( null === document.getElementById("load_more") ) {
 			$("#replies").prepend(result);
-		else
+		} else {
 			$("#load_more").before(result);
+		}
 
 	}
 });
@@ -363,10 +373,11 @@ $("#form_reply").ajaxForm({
 $("#replies_box").on('keyup keydown', function(e) {
 	var value = $(this).val();
 
-	if( $.trim(value).length > 0 )
+	if( $.trim(value).length > 0 ) {
 		$("#c_submit").removeAttr('disabled');
-	else
+	} else {
 		$("#c_submit").attr('disabled', 'disabled');
+	}
 
 });
 
@@ -387,8 +398,9 @@ $("#settings_form").ajaxForm({
 		$("#settings_form button").removeAttr('disabled');
 
 		var result = JSON.parse(xhr.responseText);
-		if( result.success )
+		if( result.success ) {
 			return display_info( result.response );
+		}
 
 		display_error( result.response );
 	}

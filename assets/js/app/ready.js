@@ -25,8 +25,9 @@ $(document).ready( function() {
 		$("#or, #record").hide();
 		$("#upload").css('float', 'none');
 		var value = read_cookie('no_record_support');
-		if( null !== value && '' !== value )
+		if( null !== value && '' !== value ) {
 			return;
+		}
 		$("#norecordsupport").show();
 		document.cookie = 'no_record_support=1';
 	}

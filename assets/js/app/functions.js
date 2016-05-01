@@ -13,14 +13,14 @@ function in_array( needle, haystack ) {
 }
 // displays a toast
 function display_error( error, dissapear ) {
-	var text = '<i class="fa fa-close"></i>&nbsp;';
-	text += error;
+	var text  = '<i class="fa fa-close"></i>&nbsp;';
+	text     += error;
 	dissapear = dissapear || 5000;
 	Materialize.toast(text, dissapear, 'rounded');
 }
 function display_info( info, dissapear ) {
-	var text = '<i class="fa fa-check"></i>&nbsp;';
-	text += info;
+	var text  = '<i class="fa fa-check"></i>&nbsp;';
+	text     += info;
 	dissapear = dissapear || 5000;
 	Materialize.toast(text, dissapear, 'rounded');
 }

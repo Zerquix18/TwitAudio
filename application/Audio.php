@@ -28,12 +28,15 @@ class Audio {
 
 	private $format;
 
-	public function __construct($audio_path, array $options) {
-		$id3 = new \getID3();
-		$this->info   = $id3->analyze( $audio_path );
-		$this->audio  = $this->original_name = $audio_path;
-		$this->format = last( explode(".", $audio_path) );
-		$this->load_options( $options );
+	public function __construct( $audio_path, array $options ) {
+		$id3                 = new \getID3();
+		$this->info          = $id3->analyze($audio_path);
+		$this->audio         =
+		$this->original_name = $audio_path;
+		$this->format        = last( explode(".", $audio_path) );
+
+		$this->load_options($options);
+
 		if( $this->options['validate'] )
 			$this->validate();
 	}
@@ -44,7 +47,7 @@ class Audio {
 				'decrease_bitrate'  => false,
 				'max_duration'      => '120',
 			);
-		$this->options = array_merge( $default_options, $options );
+		$this->options   = array_merge($default_options, $options);
 	}
 	private function last( array $array ) {
 	#PHP Strict Standards:
@@ -53,25 +56,25 @@ class Audio {
 	}
 	private function validate() {
 		// if getid3 couldn't get the format or it's not allowed
-		if( ! array_key_exists('fileformat', $this->info)
-			|| ! in_array(
-				$this->format = $this->info['fileformat'],
-				$this->allowed_formats
+		if(		! array_key_exists('fileformat', $this->info)
+			||  ! in_array(
+					$this->format = $this->info['fileformat'],
+					$this->allowed_formats
 				)
 			) {
-			$this->error = "The format of the audio is not allowed...";
+			$this->error = 'The format of the audio is not allowed...';
 			return false;
 		}
-		if( $this->format == 'mp4' )
-			$this->format = 'm4a'; // same shit
+
+		if( $this->format == 'mp4' ) {
+			$this->format = 'm4a';
+		}
 
 		/** create a new name **/
-		$new_name = $this->generate_name(
-				$this->info['filenamepath']
-			);
+		$new_name = $this->generate_name($this->info['filenamepath']);
 		rename($this->audio, $new_name);
 		$this->audio = $new_name;
-		/** ... **/
+
 		$decrease_bitrate = '';
 		if( $this->options['decrease_bitrate'] ) {
 			if( in_array($this->format, array(
@@ -81,9 +84,8 @@ class Audio {
 					)
 				)
 			) {
-				$decrease_bitrate = ' -C ';
-				$decrease_bitrate .=
-				$this->options['is_voice'] ? '64' : '128';
+				$decrease_bitrate  = ' -C ';
+				$decrease_bitrate .= $this->options['is_voice'] ? '64' : '128';
 			}
 		}
 		// correct format done.
@@ -96,7 +98,8 @@ class Audio {
 			$l = $this->exec("sox $this->audio $decrease_bitrate $new_name");
 			if( trim($l) !== '' ) { // <-- EOF BABE
 				unlink($this->audio);
-				$this->error = "There was a problem while proccessing the audio";
+				$this->error      = 
+							"There was a problem while proccessing the audio";
 				$this->error_code = 2;
 				return false;
 			}
@@ -107,53 +110,54 @@ class Audio {
 		// and check for an EOF at the same time.
 		$name = self::get_name($this->audio);
 		if( in_array($this->format,
-				array("ogg", "wav", "aac", "m4a") ) ):
+				array("ogg", "wav", "aac", "m4a") ) ) {		
 
 			// if the format is ogg or wav, sox can handle it
 			if( in_array($this->format, array("ogg", "wav") ) ) {
 				$r = $this->exec(
 					"sox $this->audio $decrease_bitrate $name.mp3"
 				);
-			// else, ffmpeg then save us all
 			}elseif( in_array($this->format, 
 					array("aac", "m4a") ) ) {
+				// else, ffmpeg then save us all
 				$r = $this->exec("ffmpeg -v 5 -y -i $this->audio -acodec libmp3lame -ac 2 $name.mp3");
-		}else // this should never occur ;-;
-			return false;
-		// they both return an empty response
-		// when successful...
+			}else // this should never occur ;-;
+				return false;
+			// they both return an empty response
+			// when successful...
 
-		if( trim($r) !== '' ) {
-			$this->error = "There was a problem while proccessing the audio...";
-			$this->error_code = 2;
-			return false;
-		}else{
-			unlink($this->audio);
-			$this->format = 'mp3';
-			$this->audio = $name . '.mp3';
-			$id3 = new \getID3();
-			$this->info = $id3->analyze($this->audio);
+			if( trim($r) !== '' ) {
+				$this->error      =
+				"There was a problem while proccessing the audio...";
+				$this->error_code = 2;
+				return false;
+			}else{
+				unlink($this->audio);
+				$this->format = 'mp3';
+				$this->audio  = $name . '.mp3';
+				$id3          = new \getID3();
+				$this->info   = $id3->analyze($this->audio);
+			}
 		}
-		endif;
 		$duration = floor($this->info['playtime_seconds']);
-		if( 0 == $duration ) {
+		if( 0 === $duration ) {
 			$this->error = 'The audio must be longer than 1 second';
 			return false;
 		}
 		## -- should we cut?
 		if( $duration > $this->options['max_duration'] ) {
-			$this->error = true;
+			$this->error      = true;
 			$this->error_code = 3;
 			return false;
 		}
 		return true;
 	}
 	
-	public static function get_name($name) {
+	public static function get_name( $name ) {
 		// get the path without the format
 		$name = explode(".", $name);
 		array_pop($name);
-		$name = implode($name); // get the name
+		$name = implode($name);
 		return $name;
 	}
 	
@@ -168,7 +172,7 @@ class Audio {
 		return $path;
 	}
 	
-	private function exec( $command ) {
+	private function exec($ command ) {
 		exec($command . " 2>&1", $output);
 		return implode("\n", $output);
 	}
@@ -176,34 +180,37 @@ class Audio {
 	* @return string
 	**/
 	public function cut( $start, $end ) {
-		if( $this->error )
+		if( $this->error ) {
 			return '';
+		}
 		// full time
 		$duration = floor($this->info['playtime_seconds']);
 		if( $start < 0 || $end > $duration ) {
 			// cannot be cut m8
-			$this->error = "There was an error while cutting your audio...";
+			$this->error      =
+			"There was an error while cutting your audio...";
 			$this->error_code = 8;
 			return '';
 		}
 		$difference = $end-$start;
 		// trims...
-		$new_name = $this->generate_name( $this->audio );
-		$result   =
-			$this->exec("sox $this->audio $new_name trim $start $difference");
+		$new_name = $this->generate_name($this->audio);
+		$result   = $this->exec(
+						"sox $this->audio $new_name trim $start $difference"
+					);
 			
 		$result = trim($result);
-		if( ! in_array($result, 
+		if( ! in_array($result,
 			array("", "sox WARN mp3: MAD lost sync" ) ) ) {
-			$this->error = 
-					"Oh snap! There was an error while cutting your audio...";
+			$this->error      = 
+			"Oh snap! There was an error while cutting your audio...";
 			$this->error_code = 6;
 			return '';
 		}
 		unlink($this->audio);
 		$this->audio = $new_name;
-		$id3 = new \getID3();
-		$this->info = $id3->analyze($this->audio);
+		$id3         = new \getID3();
+		$this->info  = $id3->analyze($this->audio);
 		return $this->audio;
 	}
 	/** static functions **/
@@ -212,8 +219,9 @@ class Audio {
 	**/
 	public static function apply_effects( $filename, array $effects ) {
 
-		if( ! file_exists($filename) )
+		if( ! file_exists($filename) ) {
 			return array();
+		}
 
 		$commands = array(
 			/* effect => its command */
@@ -233,7 +241,7 @@ class Audio {
 		$result = array();
 		//         ↓ don't delete that comma
 		while( list(,$effect) = each($effects) ) {
-			$new_name = self::get_name( $filename ) .
+			$new_name = self::get_name($filename) .
 						'-' . $effect . '.mp3';
 			$execute = sprintf(
 				$commands[ $effect ],
@@ -271,10 +279,12 @@ class Audio {
 	* @return void
 	**/
 	public static function clean_tmp( array $session_id ) {
+		
 		@unlink( $session_id['tmp_url'] );
 		
-		foreach($session_id['effects'] as $effect => $effectinfo)
+		foreach($session_id['effects'] as $effect => $effectinfo) {
 			@unlink( $effectinfo['filename'] );
+		}
 
 	}
 	/**

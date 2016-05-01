@@ -14,8 +14,8 @@ window.progressive_text = {
 		
 		interval = interval || 5;
 		this.total_progressives[ selector ] = [];
-		var mili_seconds,
-			change_text = function( selector, text ) {
+		var mili_seconds;
+		var change_text = function( selector, text ) {
 				$(selector).text(text);
 			};
 
@@ -33,11 +33,13 @@ window.progressive_text = {
 
 	stop: function( selector ) {
 
-		if( ! in_array( selector, this.total_progressives ) )
+		if( ! in_array( selector, this.total_progressives ) ) {
 			return false;
+		}
 
-		for( var i = 0; i < this.total_progressives[ selector ].length; i++)
+		for( var i = 0; i < this.total_progressives[ selector ].length; i++) {
 			window.clearTimeout( this.total_progressives[ selector ][i] );
+		}
 
 	}
 

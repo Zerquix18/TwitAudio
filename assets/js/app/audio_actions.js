@@ -11,9 +11,9 @@
 // called 'laic' (like) cause in the start they were likes
 
 $(document).on('click', '.laic', function(e) {
-	var id = $(this).data('id'),
-		last_favorite_id = $(this),
-		params = {
+	var id = $(this).data('id');
+	var last_favorite_id = $(this);
+	var params = {
 			id: id,
 			action: $(this).hasClass('favorited') ? // faved already?
 				'unfav' : 'fav'
@@ -39,8 +39,8 @@ $(document).on('click', '.laic', function(e) {
 		},
 		error: function() {
 			// get everything back
-			var attribute = last_favorite_id.find('span'),
-				count     = parseInt( attribute.text() );
+			var attribute = last_favorite_id.find('span');
+			var count     = parseInt( attribute.text() );
 
 			if( last_favorite_id.hasClass('favorited') ) {
 				last_favorite_id.removeClass('favorited');
@@ -50,7 +50,7 @@ $(document).on('click', '.laic', function(e) {
 				);
 			}else{
 				last_favorite_id.addClass('favorited');
-				attribute.text( String(count + 1) ); // increase 1
+				attribute.text( String(count + 1) );
 				display_error(
 					'There was a problem while unfavoriting the audio...'
 				);
@@ -61,8 +61,8 @@ $(document).on('click', '.laic', function(e) {
 
 			if( ! result.success ) {
 
-				var attribute = last_favorite_id.find('span'),
-					count     = parseInt( attribute.text() );
+				var attribute = last_favorite_id.find('span');
+				var count     = parseInt( attribute.text() );
 
 				if( last_favorite_id.hasClass('favorited') ) {
 					last_favorite_id.removeClass('favorited');
@@ -86,8 +86,10 @@ window.played_audios = [];
 
 $(document).on('click', '.plei', function(e) {
 	var id = $(this).data('id');
-	if( in_array( id, window.played_audios ) )
-		return; // don't register it again
+	if( in_array( id, window.played_audios ) ) {
+		// don't register it again
+		return;
+	}
 
 	window.played_audios.push(id);
 
@@ -98,8 +100,11 @@ $(document).on('click', '.plei', function(e) {
 		data: {id: id},
 		success: function( result ) {
 			result = JSON.parse(result);
-			if( ! result.success )
-				return; // no error must be given
+			if( ! result.success ) {
+				// we should not throw an error
+				// because we could not count a play
+				return;
+			}
 			// add the play
 			$( '#plays_' + // the last one registered ↓
 				window.played_audios[ window.played_audios.length - 1 ]

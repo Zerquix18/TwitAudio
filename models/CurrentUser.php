@@ -16,10 +16,11 @@ class CurrentUser extends \application\ModelBase {
 	public function __construct( array $user_info = array() ) {
 		parent::__construct(); // call to modelbase
 
-		if( empty($user_info) )
+		if( empty($user_info) ) {
 			return;
+		}
 
-		foreach($user_info as $key => $value ) {
+		foreach( $user_info as $key => $value ) {
 			$this->$key = $value;
 		}
 	}
@@ -35,23 +36,28 @@ class CurrentUser extends \application\ModelBase {
 
 		$is_logged = property_exists($this, 'id');
 
-		if( $is_logged && $this->id == $id ) // same user
+		if( $is_logged && $this->id == $id ) {
+			// same user.
 			return true;
+		}
 
 		$users = new \models\User();
-		$check = $users->get_user_info( $id, 'audios_public' );
+		$check = $users->get_user_info($id, 'audios_public');
 
-		if( $check['audios_public'] )
+		if( $check['audios_public'] ) {
 			return true;
+		}
 
-		if( ! $is_logged )
+		if( ! $is_logged ) {
 			return false; // not logged and audios aren't public.
+		}
 
 		// not public. check if cached ...
 		$this->db->query( // cleans
-			"DELETE FROM following_cache WHERE time < ?",
+			"DELETE FROM following_cache WHERE `time` < ?",
 			time() - 1800 // (60*30) half hour
 		);
+
 		$is_following = $this->db->query(
 				'SELECT result FROM following_cache
 				 WHERE user_id = ? AND following = ?',
@@ -59,8 +65,9 @@ class CurrentUser extends \application\ModelBase {
 				$id
 			);
 
-		if( 0 != $is_following->nums )
-			return (bool) $is_following->result;
+		if( 0 !== $is_following->nums ) {
+			return !! $is_following->result;
+		}
 
 		// not cached, make twitter requests
 		$twitter = new \application\Twitter(
@@ -71,19 +78,23 @@ class CurrentUser extends \application\ModelBase {
 			'friendships/lookup',
 			array('user_id' => $id)
 		);
-		if( array_key_exists('errors', $g ) ) {
+		if( array_key_exists('errors', $g) ) {
 			// API rate limit reached :( try another
 			$t = $twitter->tw->get(
 				'users/lookup',
 				array('user_id' => $id)
 			);
-			if( array_key_exists('errors', $t )
-			|| array_key_exists('error', $t)
-				)
-				return false; // both limits reached... ):
+			if(    array_key_exists('error', $t)
+				|| array_key_exists('errors', $t)
+				) {
+				// both limits reached... ):
+				return false;
+			}
+
 			$check = array_key_exists('following', $t[0]) && $t[0]->following;
-		}else
+		} else {
 			$check = in_array('following', $g[0]->connections);
+		}
 
 		$this->db->insert("following_cache", array(
 				'user_id'   => $_USER->id,
@@ -138,9 +149,9 @@ class CurrentUser extends \application\ModelBase {
 				'tremolo'
 			);
 
-		if( ! $this->is_premium() ) // normal user
+		if( ! $this->is_premium() ) {
 			return array_splice($all_effects, 0, 3);
-
+		}
 		return $all_effects;
 	}
 	/**
@@ -155,7 +166,7 @@ class CurrentUser extends \application\ModelBase {
 		return $this->db->update(
 				'users',
 				$settings
-			)->where( 'id', $this->id )
+			)->where('id', $this->id)
 			 ->execute();
 	}
 }

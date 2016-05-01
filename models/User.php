@@ -30,8 +30,9 @@ class User extends \application\ModelBase {
 		// cuz complete_user calls this function
 		// and it causes a loop
 
-		if( ! empty($user_context) )
-			return new \models\CurrentUser( $user_context );
+		if( ! empty($user_context) ) {
+			return new \models\CurrentUser($user_context);
+		}
 
 		$user = $this->user !== null ?
 			$this->complete_user( (array) $this->user )
@@ -69,26 +70,33 @@ class User extends \application\ModelBase {
 
 		/** force types **/
 
-		if( $has('favs_public') )
-			$user['favs_public']   = (bool) $user['favs_public'];
+		if( $has('favs_public') ) {
+			$user['favs_public']   = !! $user['favs_public'];
+		}
 
-		if( $has('audios_public') )
-			$user['audios_public'] = (bool) $user['audios_public'];
+		if( $has('audios_public') ) {
+			$user['audios_public'] = !! $user['audios_public'];
+		}
 
-		if( $has('verified') )
-			$user['verified']      = (bool) $user['verified'];
+		if( $has('verified') ) {
+			$user['verified']      = !! $user['verified'];
+		}
 
-		if( $has('time') )
+		if( $has('time') ) {
 			$user['time']          = (int) $user['time'];
+		}
 
 		/** remove **/
 
-		if( $has('r') ) // mysqli result
+		if( $has('r') ) {
+			// mysqli result
 			unset($user['r']);
+		}
 
-		if( $has('nums') ) // num rows
+		if( $has('nums') ) {
+			// num rows
 			unset($user['nums']);
-
+		}
 		return $user;
 	}
 	/**
@@ -100,14 +108,13 @@ class User extends \application\ModelBase {
 	* @return array
 	**/
 	public function get_user_info( $id_or_user, $which_info = '*' ) {
-
 		$id_or_user = (string) $id_or_user;
-
-		$column = ctype_digit( $id_or_user ) ? 'id' : 'user';
+		$column     = ctype_digit( $id_or_user ) ? 'id' : 'user';
 		if( null !== $this->user && $id_or_user === $this->user->$column ) {
 			// if it's the same user, don't do extra queries
-			if( '*' == $which_info )
+			if( '*' == $which_info ) {
 				return (array) $this->get_current_user();
+			}
 			// return only the columns required
 			$result = array();
 			foreach( explode(',', $which_info) as $column ) {
@@ -119,8 +126,9 @@ class User extends \application\ModelBase {
 				->where($column, $id_or_user)
 				->execute();
 
-		if( 0 == $user->nums )
+		if( 0 === $user->nums ) {
 			return array();
+		}
 
 		return $this->complete_user( (array) $user );
 	}
@@ -153,8 +161,8 @@ class User extends \application\ModelBase {
 		}
 		$favorites = $this->db->query(
 			'SELECT COUNT(*) AS size FROM audios
-			AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-			AND F.user_id = ? AND A.status = 1',
+			 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
+			 AND F.user_id = ? AND A.status = 1',
 			$id
 		);
 		return (int) $favorites->size;
@@ -176,26 +184,29 @@ class User extends \application\ModelBase {
 						$access_token,
 						$access_token_secret
 					);
-
 		$details = $twitter->tw->get('account/verify_credentials');
-		if( ! is_object($details) || ! property_exists($details, 'id') )
+
+		if( ! is_object($details) || ! property_exists($details, 'id') ) {
+			// twitter error
 			return array();
+		}
 
-		$id 		= $details->id;
-		$user 		= $details->screen_name;
-		$name 		= $details->name;
-		$bio 		= $details->description;
-		$avatar 	= $details->profile_image_url_https;
-		$verified 	= (int) $details->verified;
+		$id         = $details->id;
+		$user       = $details->screen_name;
+		$name       = $details->name;
+		$bio        = $details->description;
+		$avatar     = $details->profile_image_url_https;
+		$verified   = (int) $details->verified;
 
-		$user_exists = $this->db->query(
+		$first_time = $this->db->query(
 				'SELECT COUNT(*) AS size FROM users
 				WHERE id = ?',
 				$id
 			);
-		if( (int) $user_exists->size > 0 ) {
+		$first_time = !! $first_time->size;
+
+		if( ! $first_time ) {
 			// re-update
-			$first_time = false;
 			$r = $this->db->update("users", array(
 				"user"			=> $user,
 				"name"			=> $name,
@@ -207,7 +218,6 @@ class User extends \application\ModelBase {
 			) )->where('id', $id)->_();
 		}else{
 			// welcome, new user!
-			$first_time = true;
 			$favs_public =
 			$audios_public = (int) ! $details->protected;
 			$time = time();
@@ -249,11 +259,11 @@ class User extends \application\ModelBase {
 			throw new \Exception('Database error: ' . $this->db->query);
 
 		return array(
-				'id'		 => (bool) $id,
+				'id'		 => !! $id,
 				'user'		 => $user,
 				'name'		 => $name,
 				'avatar'	 => $avatar,
-				'verified'	 => (bool) $verified,
+				'verified'	 => !! $verified,
 				'sess_id'	 => $sess_id,
 				'first_time' => $first_time
 			);

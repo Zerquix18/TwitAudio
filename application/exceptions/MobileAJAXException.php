@@ -38,26 +38,26 @@ class MobileAJAXException extends \Exception {
 	* @return void
 	**/
 	public function print_result( $via ) {
-		if( 'mob' == $via )
+		if( 'mob' == $via ) {
 			HTTP::result( array(
-					'success'  => false,
-					'response' => $this->message,
+					'success'    => false,
+					'response'   => $this->message,
 					'error_code' => $this->code
 				)
 			);
-		elseif( 'ajax' == $via && $this->options['show_in_web'] )
+		} elseif( 'ajax' == $via && $this->options['show_in_web'] ) {
 			HTTP::result( array(
 					'success'  => false,
 					'response' => $this->message,
 				)
 			);
-		elseif( 'ajax' == $via && $GLOBALS['_CONFIG']['display_errors'])
+		} elseif( 'ajax' == $via && $GLOBALS['_CONFIG']['display_errors']) {
 			HTTP::result( array(
 					'success'  => false,
 					'response' => $this->message,
 				)
 			);
-		else
+		} else {
 			HTTP::result( array(
 					'success'  => false,
 					'response' => //↓

@@ -17,8 +17,9 @@ window.effects = {
 	loaded_urls: [],
 
 	load: function( audio_id ) {
-		if( ! this.all_effects_loaded )
+		if( ! this.all_effects_loaded ) {
 			return;
+		}
 		if( null === this.load_interval ) {
 			this.load_interval = setInterval(
 					this.load,
@@ -27,10 +28,8 @@ window.effects = {
 				);
 			return; // wait the 3 seconds...
 		}
-		// proceed
-		var params = {
-			'id': audio_id
-		};
+
+		var params = {'id': audio_id};
 		$.ajax({
 			type:  "GET",
 			cache: false,
@@ -42,7 +41,7 @@ window.effects = {
 				
 				if( ! result.success ) {
 					clearInterval( window.effects.load_interval );
-					return display_error( result.response );
+					return display_error(result.response);
 				}
 
 				/* fun starts here */
@@ -52,15 +51,16 @@ window.effects = {
 				for( var i = 0; i < loaded_effects.length; i++ ) {
 					// 2 keys: file for the path,
 					// and name for the effect name
-					var name = loaded_effects[i].name,
-						file = loaded_effects[i].file;
+					var name = loaded_effects[i].name;
+					var file = loaded_effects[i].file;
 
-					if( in_array(name, window.effects.loaded_effects) )
+					if( in_array(name, window.effects.loaded_effects) ) {
 						continue;
-					else
+					} else {
 						window.effects.loaded_effects.push(name);
+					}
 
-					window.effects.loaded_urls.push( file );
+					window.effects.loaded_urls.push(file);
 
 					$(".choose_effect.effect_" + name)
 						.attr('data-url', file);
@@ -117,13 +117,14 @@ window.effects = {
 			var effect_name_public = effects[i].name_public;
 			var effect_selector    = 'effect_' + effects[i].name;
 
-			$("#effect_none").clone() // make a copy
-			.attr('id', effect_selector ) // change the ID
-			// insert in the list of effects
-			.appendTo('#effects_modal > .modal-content');
+			$("#effect_none")
+				.clone()
+				.attr('id', effect_selector)
+				.appendTo('#effects_modal > .modal-content');
 
 			// change the title
-			$("#" + effect_selector + " h5").text( effect_name_public );
+			$("#" + effect_selector + " h5")
+				.text(effect_name_public);
 
 			// now the atts
 			$("#" + effect_selector + ' .preview .jp-jplayer')
@@ -138,8 +139,10 @@ window.effects = {
 				.removeClass('effect_none').addClass( effect_selector )
 				.on('click', function() {
 
-					if( undefined === $(this).data('url') )
-						return false; // no urls loaded
+					if( undefined === $(this).data('url') ) {
+						// no urls loaded
+						return false;
+					}
 
 					$.jPlayer.pause();
 					$("#player_preview").jPlayer('setMedia', {
@@ -148,21 +151,23 @@ window.effects = {
 					$("#effects_modal").closeModal();
 					$("#audio_effect").val( $(this).data('choose') );
 
-					if( 'original' == $(this).data('choose') )
+					if( 'original' == $(this).data('choose') ) {
 						display_info('OK. Got it.');
-					else
+					} else {
 						display_info('Effect added!');
+					}
 
 				});
 
-			// now it is ready to be loaded by `this.load` :)
+				// now it is ready to be loaded by `this.load` :)
 
-			$("#" + effect_selector).show();
+				$("#" + effect_selector).show();
 			}
 	},
 
 	clean: function() {
-		$(".effect_preview").not('#effect_none').remove(); // bye!
+		// arrivederchi!
+		$(".effect_preview").not('#effect_none').remove();
 	}
 	
 };
