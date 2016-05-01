@@ -64,6 +64,6 @@ class MobileAJAXException extends \Exception {
 					'There was a problem while processing your request',
 				)
 			);
-			
+		}
 	}
 }
