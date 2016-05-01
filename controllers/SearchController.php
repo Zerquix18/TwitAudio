@@ -17,9 +17,10 @@ class SearchController {
 		$query = HTTP::get('q');
 		$type  = HTTP::get('t');
 		$order = HTTP::get('o');
-		if( empty($query) )
+		
+		if( empty($query) ) {
 			$content = array();
-		else {
+		} else {
 			$search = new Search;
 			$content = $search->do_search( array(
 					'query'		=> $query,

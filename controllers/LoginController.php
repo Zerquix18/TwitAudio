@@ -40,7 +40,7 @@ class LoginController {
 
 	private function signin() {
 		$twitter = new Twitter();
-		if( isset($_GET['back_to']) && is_string($_GET['back_to']) ):
+		if( isset($_GET['back_to']) && is_string($_GET['back_to']) ) {
 			// this will replace every non alphabetic character
 			// into :{character}
 			// so ':' will be '\:'
@@ -51,14 +51,18 @@ class LoginController {
 					'/^(' . $url . ')/',
 					$back_to = urldecode($_GET['back_to'])
 					)
-				)
+				) {
 				$_SESSION['back_to'] = $back_to;
-		endif;
-		$login_url = $twitter->get_login_url();
-		if( ! $login_url )
-			throw new \Exception('Could not get login URL');
+			}
+		}
 
-		HTTP::redirect( $login_url );
+		$login_url = $twitter->get_login_url();
+
+		if( ! $login_url ) {
+			throw new \Exception('Could not get login URL');
+		}
+
+		HTTP::redirect($login_url);
 	}
 	/**
 	* Back from Twitter
@@ -73,22 +77,24 @@ class LoginController {
 		}
 
 		if( ! isset(
-			$_SESSION['oauth_token'],
-			$_SESSION['oauth_token_secret'])
+				$_SESSION['oauth_token'],
+				$_SESSION['oauth_token_secret'])
 			) {
 			throw new \Exception('No tokens were stored');
 		}
 
 		$denied = HTTP::get('denied');
 
-		if( false === empty($denied) && $denied == $_SESSION['oauth_token'] )
+		if( false === empty($denied) && $denied == $_SESSION['oauth_token'] ) {
 			throw new \Exception('Request was denied');
+		}
 
 		$oauth_token 	= HTTP::get('oauth_token');
 		$oauth_verifier = HTTP::get('oauth_verifier');
 
-		if( ! ( $oauth_token && $oauth_verifier)
-			|| $_SESSION['oauth_token'] != $oauth_token ) {
+		if(    ! ( $oauth_token && $oauth_verifier )
+			|| $_SESSION['oauth_token'] != $oauth_token
+		) {
 			throw new \Exception('Oauth tokens does not match');
 		}
 
@@ -96,6 +102,7 @@ class LoginController {
 				$_SESSION['oauth_token'],
 				$_SESSION['oauth_token_secret']
 			);
+
 		unset($_SESSION['oauth_token']);
 		unset($_SESSION['oauth_token_secret']);
 
@@ -103,19 +110,21 @@ class LoginController {
 					"oauth/access_token",
 					array("oauth_verifier" => $oauth_verifier)
 				);
-		$users = new \models\User();
+		$users  = new \models\User();
 		$create_user = $users->create(
 				$tokens['oauth_token'],
 				$tokens['oauth_token_secret'],
 				'web'
 			);
 
-		if( false === $create_user )
+		if( false === $create_user ) {
 			throw new \Exception('Internal error while registering user');
+		}
 
-		if( $create_user['first_time'] )
+		if( $create_user['first_time'] ) {
 			$_SESSION['first_time'] = true;
+		}
 
-		HTTP::redirect( $this->redirect_to );
+		HTTP::redirect($this->redirect_to);
 	}
 }

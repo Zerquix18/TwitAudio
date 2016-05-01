@@ -7,11 +7,12 @@
 
 session_name('ta_session');
 if( 'mob' != substr( $_SERVER['REQUEST_URI'], 1, 3) ) {
-	if( ! isset($_COOKIE['ta_session']) )
+	if( ! isset($_COOKIE['ta_session']) ) {
 		session_id( generate_id_for('session') );
+	}
 
-	if( ! isset($_COOKIE['ta_session']) ||  
-			preg_match(
+	if(		! isset($_COOKIE['ta_session'])
+		||  preg_match(
 				"/^(ta-)[\w]{29}+$/",
 				$_COOKIE['ta_session']
 			)
@@ -27,14 +28,15 @@ if( 'mob' != substr( $_SERVER['REQUEST_URI'], 1, 3) ) {
 
 function _is_logged() {
 	global $db;
-	if( ! isset($_COOKIE['ta_session']) )
+	if( ! isset($_COOKIE['ta_session']) ) {
 		return 0;
+	}
 	$session = $db->query(
 		"SELECT user_id FROM sessions
 		 WHERE sess_id = ? AND is_mobile = '0'",
 		session_id()
 	);
-	return $session->nums > 0 ?(int) $session->user_id : 0;
+	return $session->nums > 0 ? (int) $session->user_id : 0;
 }
 
 $just_1_query = _is_logged();
@@ -52,30 +54,33 @@ function check_authorization() {
 	global $_USER, $db;
 	$TACrypt = new \application\TACrypt();
 	$headers = apache_request_headers();
-	if( empty($headers['Authorization']) )
+	if( empty($headers['Authorization']) ) {
 		\application\HTTP::result( array(
 				'success'  => false,
 				'response' => 'Authorization required',
 			)
 		);
-	$authorization = $TACrypt->decrypt64( $headers['Authorization'] );
-	if( ! $authorization )
+	}
+	$authorization = $TACrypt->decrypt64($headers['Authorization']);
+	if( ! $authorization ) {
 		\application\HTTP::result( array(
 				'success'  => false,
 				'response' => 'Invalid authorization',
 			)
 		);
+	}
 	$session = $db->query(
 			'SELECT user_id FROM sessions
 			 WHERE sess_id = ? AND is_mobile = \'1\'',
 			$authorization
 	);
-	if( $session->nums === 0 )
+	if( $session->nums === 0 ) {
 		\application\HTTP::result( array(
 				'success'  => false,
 				'response' => 'Invalid authorization'
 			)
 		);
+	}
 	// for global use
 	$_USER = $db->query(
 		'SELECT * FROM users WHERE id = ?',
@@ -83,7 +88,7 @@ function check_authorization() {
 	); // now the user is logged
 	session_cache_limiter('public');
 	session_cache_expire(30);
-	session_id( $authorization );
+	session_id($authorization);
 	session_start();
 }
 

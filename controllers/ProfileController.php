@@ -18,22 +18,24 @@ use \models\User;
 class ProfileController {
 
 	public function __construct( $profile_page, $user ) {
-		$users = new User();
+		$users        = new User();
 		// the user in the request to load the profile:
-		$user  = $users->get_user_info( $user );
+		$user         = $users->get_user_info($user);
 		// the logged user (if there is one):
 		$current_user = $users->get_current_user();
-		if( empty($user) )
+		if( empty($user) ) {
 			View::exit_404();
+		}
 
 		$audios = new Audio();
 
 		if( 'audios' == $profile_page ) {
 
-			if( ! $current_user->can_listen( $user['id'] ) )
+			if( ! $current_user->can_listen($user['id']) ) {
 				$content = false;
-			else
-				$content = $audios->load_audios( $user['id'], 1 );
+			} else {
+				$content = $audios->load_audios($user['id'], 1);
+			}
 
 			$errors = array(
 					'empty'		=> // ↓
@@ -45,11 +47,14 @@ class ProfileController {
 		} elseif( 'favorites' == $profile_page) {
 
 				/** not public **/			 /** not logged **/
-			if( ! $user['favs_public'] || ! is_logged() 
-									   || $current_user->id !== $user['id'] )
+			if(    ! $user['favs_public']
+				|| ! is_logged() 
+				|| $current_user->id !== $user['id']
+			) {
 				$content = false;
-			else
-				$content = $audios->load_favorites( $user['id'], 1);
+			} else {
+				$content = $audios->load_favorites($user['id'], 1);
+			}
 
 			$errors = array(
 					'empty'		=> // ↓

@@ -12,25 +12,27 @@ $(window).scroll( function() {
 		( $(window).scrollTop() + $(window).height() ) >
 		( $(document).height() - 50 ) 
 		) === false
-	)
-	return;
-
-	if( null === document.getElementById("load_more") )
-			return;
-
-	if( ! window.can_scroll )
+	) {
 		return;
+	}
+
+	if( null === document.getElementById("load_more") ) {
+		return;
+	}
+
+	if( ! window.can_scroll ) {
+		return;
+	}
 
 	// set to false to avoid duplicates if the user
 	// scrolls again and the request is not finished yet
+	var to_load;
+	var data          = {};
 	window.can_scroll = false;
-
-	var _load_more = $("#load_more"),
-		load       = _load_more.data('load'),
-		page       = _load_more.data('page'),
-		extra      = _load_more.data('extra'),
-		data       = {},
-		to_load;
+	var _load_more    = $("#load_more");
+	var load          = _load_more.data('load');
+	var page          = _load_more.data('page');
+	var extra         = _load_more.data('extra');
 
 	// the first is the element to load
 	// the second is a clone, so in case of file
@@ -44,15 +46,14 @@ $(window).scroll( function() {
 		to_load = search;
 		data.s  = sort;
 		data.t  = type;
-	} else if('audios' == load || 'favorites' == load )
+	} else if('audios' == load || 'favorites' == load ) {
 		/** defined in templates/profile.phtml **/
 		to_load = profile;
-	else if('replies' == load ) {
+	} else if('replies' == load ) {
 		/** defined in templates/audio.phtml **/
 		to_load = audio_id;
 		data.reply_to = linked;
-	}else
-		return; // this must not happen
+	}else  return; // this must not happen
 
 	data.p = page;
 	data.q = to_load;

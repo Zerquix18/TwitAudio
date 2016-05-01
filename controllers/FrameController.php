@@ -13,16 +13,18 @@ class FrameController {
 
 	public function __construct( $audio_id ) {
 		$audios = new Audio;
-		$audio = $audios->get_audio_info($audio_id);
+		$audio  = $audios->get_audio_info($audio_id);
 		
-		if( empty($audio) )
+		if( empty($audio) ) {
 			View::exit_404();
+		}
 
 		$user = $audio['user'];
 
-		if( ! $user['audios_public'] )
+		if( ! $user['audios_public'] ) {
 			View::exit_404();
+		}
 
-		View::load_full_template('frame', array('audio' => $audio ) );
+		View::load_full_template('frame', array('audio' => $audio) );
 	}
 }

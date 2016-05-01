@@ -22,15 +22,17 @@ window.record = {
 				navigator.msGetUserMedia
 			);
 
-		if( ! navigator.get_media )
+		if( ! navigator.get_media ) {
 			return false;
+		}
 
 		window.AudioContext = window.AudioContext ||
 							  window.webkitAudioContext;
 
 		this.context = new AudioContext();
-		if( ! this.context )
+		if( ! this.context ) {
 			return false;
+		}
 
 		return true;
 	},
@@ -38,10 +40,12 @@ window.record = {
 	* @return void
 	**/
 	init: function() {
-		if( ! this.can_record() )
+		if( ! this.can_record() ) {
 			return;
-		if( this.initialized )
+		}
+		if( this.initialized ) {
 			return;
+		}
 
 		navigator.get_media({
 				audio: true
@@ -95,20 +99,22 @@ window.record = {
 	},
 
 	stop: function() {
-		if( ! this.is_recording )
+		if( ! this.is_recording ) {
 			return;
+		}
 		
 		this.is_recording = false;
 		this.recorder.stop();
-		if( 'undefined' !== typeof this.seconds_left_interval )
+		if( 'undefined' !== typeof this.seconds_left_interval ) {
 			clearInterval( this.seconds_left_interval);
-		if( 'undefined' !== typeof this.recording_seconds_interval );
+		}
+		if( 'undefined' !== typeof this.recording_seconds_interval ) {
 			clearInterval( this.recording_seconds_interval );
-
+		}
+		delete this.seconds_left;
+		delete this.recording_seconds;
 		delete this.seconds_left_interval;
 		delete this.recording_seconds_interval;
-		delete this.recording_seconds;
-		delete this.seconds_left;
 
 		window.upload_audio( { 'is_voice' : true } );
 		this.recorder.clear();
@@ -118,15 +124,17 @@ window.record = {
 	cancel: function() {
 		this.recorder.clear();
 
-		if( 'undefined' !== typeof this.seconds_left_interval )
+		if( 'undefined' !== typeof this.seconds_left_interval ) {
 			clearInterval( this.seconds_left_interval );
-		if( 'undefined' !== typeof this.recording_seconds_interval );
+		}
+		if( 'undefined' !== typeof this.recording_seconds_interval ) {
 			clearInterval( this.recording_seconds_interval );
+		}
 
+		delete this.seconds_left;
+		delete this.recording_seconds;
 		delete this.seconds_left_interval;
 		delete this.recording_seconds_interval;
-		delete this.recording_seconds;
-		delete this.seconds_left;
 
 		$("#cleftn").html("3");
 		$("#count").html("0:00");
@@ -141,8 +149,9 @@ window.record = {
 	**/
 	counter_left: function() {
 		// static variable
-		if( 'undefined' == typeof this.seconds_left )
+		if( 'undefined' == typeof this.seconds_left ) {
 			this.seconds_left = 3;
+		}
 
 		if( 'undefined' == typeof this.seconds_left_interval ) {
 			this.seconds_left_interval = setInterval(

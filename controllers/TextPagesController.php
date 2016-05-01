@@ -20,13 +20,14 @@ use \application\View;
 class TextPagesController {
 	public function __construct( $page ) {
 		$file = $_SERVER['DOCUMENT_ROOT'] .
-			'/templates/html/' .$page . '.html';
+			'/templates/html/' . $page . '.html';
 			
-		if( ! is_readable($file) )
+		if( ! is_readable($file) ) {
 			View::exit_404();
+		}
 
-		$text = file_get_contents( $file );
-		$text = nl2br( $text );
+		$text = file_get_contents($file);
+		$text = nl2br($text);
 
 		$template = array(
 				'text' => $text,

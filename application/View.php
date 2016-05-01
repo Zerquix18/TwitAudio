@@ -13,8 +13,9 @@ class View {
 
 	public static function is() {
 		global $_PAGE;
-		if( isset($_PAGE) )
+		if( isset($_PAGE) ) {
 			return in_array( $_PAGE, func_get_args() );
+		}
 		return false;
 	}
 	public static function set_page( $page ) {
@@ -33,13 +34,15 @@ class View {
 		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/'
 											. $templatename . '.phtml';
 		try {
-			if( ! file_exists( $path ) )
+			if( ! file_exists($path) ) {
 				throw new \Exception('Cannot open template: ' . $path);
+			}
 			require $path;
 		} catch ( \Exception $e ) {
 			global $_CONFIG;
-			if( $_CONFIG['display_errors'] )
+			if( $_CONFIG['display_errors'] ) {
 				echo $e->getMessage();
+			}
 		}
 	}
 
@@ -48,13 +51,15 @@ class View {
 		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/full/'
 											. $templatename . '.phtml';
 		try {
-			if( ! file_exists( $path ) )
+			if( ! file_exists($path) ) {
 				throw new \Exception('Cannot open template: ' . $path );
+			}
 			require $path;
 		} catch ( \Exception $e ) {
 			global $_CONFIG;
-			if( $_CONFIG['display_errors'] )
+			if( $_CONFIG['display_errors'] ) {
 				echo $e->getMessage();
+			}
 		}
 	}
 
@@ -83,18 +88,19 @@ class View {
 	* @return string
 	**/
 	public static function get_twitter_image( $link, array $options ) {
-		$hola = explode(".", $link);
+		$hola   = explode(".", $link);
 		$format = end($hola);
-		$hola = explode("_", $link);
+		$hola   = explode("_", $link);
 		array_pop($hola);
-		$link = implode("_", $hola);
-		$size = isset($options['size']) ? $options['size'] : '';
-		if( 'bigger' == $size )
+		$link   = implode("_", $hola);
+		$size   = isset($options['size']) ? $options['size'] : '';
+		if( 'bigger' == $size ) {
 			return $link . '_bigger.'. $format;
-		elseif( '' == $size )
+		} elseif( '' === $size ) {
 			return $link . '.' . $format;
-		else
+		} else {
 			return $link . '_normal.' . $format;
+		}
 	}
 	/**
 	* Shows the verified badge
@@ -102,13 +108,15 @@ class View {
 	* @param $numb
 	**/
 	public static function show_verified_badge( $numb ) {
-		if( 0 == $numb )
+		if( 0 == $numb ) {
 			return;
+		}
 		echo '<i class="fa fa-check verified" title="Verified account"></i>';
 	}
 
 	public static function display_audio( array $audio,
 										  array $options = array() ) {
+		/** THERE ARE DRAGONS HERE **/
 		//big is only for audio pages
 		$big = @$options['size'] == 'big';
 		$user = $audio['user'];
