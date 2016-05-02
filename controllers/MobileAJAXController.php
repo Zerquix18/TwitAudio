@@ -56,9 +56,69 @@ class MobileAJAXController {
 		try {
 			$this->$action();
 		} catch ( MobileAJAXException $e ) {
-			$e->print_result( $this->via );
+			$message     = $e->getMessage();
+			$code        = $e->getCode();
+			$options     = $e->options;
+			$show_in_web = $options['show_in_web'];
+
+			/**
+			* This was thrown due a request error
+			*
+			**/
+			if( 'mob' == $this->via ) {
+				// always send them to mobile
+				HTTP::result( array(
+						'success'    => false,
+						'response'   => $message,
+						'error_code' => $code
+					)
+				);
+			} elseif( 'ajax' == $this->via && $show_in_web ) {
+				// if it's an error that the user can see
+				HTTP::result( array(
+						'success'  => false,
+						'response' => $message,
+					)
+				);
+			} elseif(  'ajax' == $this->via
+					&& $GLOBALS['_CONFIG']['display_errors']
+				) {
+				// if we're not in production
+				// it will be useful for testing purposes
+				HTTP::result( array(
+						'success'  => false,
+						'response' => $message,
+					)
+				);
+			}
+			// nothing else?
+			// then this:
+			HTTP::result( array(
+					'success'  => false,
+					'response' => //↓
+					'There was a problem while processing your request',
+				)
+			);
 		} catch ( \Exception $e ) {
-			exit('Something terrible happened');
+			/**
+			* Something else like TwitterOAuth
+			* or a DB query
+			**/
+			if( $GLOBALS['_CONFIG']['display_errors'] ) {
+				// if we're not in production
+				HTTP::result( array(
+						'success'  => false,
+						'response' => $e->getMessage()
+					)
+				);
+			}else{
+				HTTP::result( array(
+						'success'  => false,
+						'response' => //↓
+						'There was a problem while processing your request',
+					)
+				);
+			}
 		}
 	}
 	/**
