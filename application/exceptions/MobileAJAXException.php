@@ -10,9 +10,9 @@
 
 namespace application\exceptions;
 
-use \application\HTTP;
-
 class MobileAJAXException extends \Exception {
+
+	public $options;
 
 	public function __construct($message, array $options = array() ) {
 		/**
@@ -29,41 +29,5 @@ class MobileAJAXException extends \Exception {
 			);
 		$this->options = array_merge($default_options, $options);
 		parent::__construct($message, $this->options['error_code'], null);
-	}
-
-	/**
-	*
-	* Will exit the result, send the param via
-	* In the MobileAJAXController just send $this->via
-	* @return void
-	**/
-	public function print_result( $via ) {
-		if( 'mob' == $via ) {
-			HTTP::result( array(
-					'success'    => false,
-					'response'   => $this->message,
-					'error_code' => $this->code
-				)
-			);
-		} elseif( 'ajax' == $via && $this->options['show_in_web'] ) {
-			HTTP::result( array(
-					'success'  => false,
-					'response' => $this->message,
-				)
-			);
-		} elseif( 'ajax' == $via && $GLOBALS['_CONFIG']['display_errors']) {
-			HTTP::result( array(
-					'success'  => false,
-					'response' => $this->message,
-				)
-			);
-		} else {
-			HTTP::result( array(
-					'success'  => false,
-					'response' => //↓
-					'There was a problem while processing your request',
-				)
-			);
-		}
 	}
 }
