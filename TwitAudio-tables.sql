@@ -115,11 +115,5 @@ CREATE TABLE IF NOT EXISTS payments (
 	`method` enum('paypal', 'stripe') NOT NULL,
 	`user_agent` varchar(50) NOT NULL,
 	`ip` varchar(45) NOT NULL,
-	`time` int(32) NOT NULL,
-	`aditional_info` text
-	 /**
-	 *   ^ JSON with the info returned by Stripe/Paypal
-	 * Just in case we need it some day in case
-	 * of a dispute.
-	 **/
+	`time` int(32) NOT NULL
 );

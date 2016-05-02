@@ -317,21 +317,26 @@ class MobileAJAXController {
 				'require_login' => true,
 			)
 		);
-		$method = HTTP::post('method');
-		switch($method) {
+		$method       = HTTP::post('method');
+		$current_user = ( new \models\User )->get_current_user();
+		if( $current_user->is_premium() ) {
+			throw new MobileAJAXException('You are already premium.');
+		}
+		switch( $method ) {
 			case "card":
-				$token = HTTP::get('token');
+				$token = HTTP::post('token');
 				if( ! $token )
 					throw new MobileAJAXException(
 							'No token was specified'
 						);
-				$payments = new Payments('stripe');
-				$charge   = $payments->charge( $token );
-				if( ! $charge )
-					throw new MobileAJAXException( $payments->error );
+				$payment = new \models\Payment('stripe', $current_user->id);
+				$charge  = $payment->charge($token);
+				if( ! $charge ) {
+					throw new MobileAJAXException( $payment->error );
+				}
 				HTTP::result( array(
 						'success' => true,
-						'result'  => 'You are now premium!'
+						'result'  => 'Thanks, you are now premium! Enjoy!'
 					)
 				);
 				break;

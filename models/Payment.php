@@ -11,7 +11,7 @@ namespace models;
 
 class Payment {
 
-	public $error = '';
+	public $error       = '';
 
 	private $stripe_key = 'sk_test_d4y4iNRanCY2Yj2pu0i59SMW';
 
@@ -29,18 +29,18 @@ class Payment {
 		$this->user_id        = $user_id;
 	}
 
-	public function charge( $key ) {
+	public function charge( $token ) {
 		ignore_user_abort(true);
 		switch( $this->payment_method ) {
 			/**
 			* Unsupported yet
 			* @todo
 			* case "paypal":
-			*	$charge_result = $this->charge_paypal( $key );
+			*	$charge_result = $this->charge_paypal($token);
 			*	break;
 			**/
 			case "stripe":
-				$charge_result = $this->charge_stripe( $key );
+				$charge_result = $this->charge_stripe($token);
 				break;
 			default:
 			return false;
@@ -49,33 +49,32 @@ class Payment {
 			return false;
 		}
 		$ip         = get_ip();
-		$info       = $this->charge_info;
-		$user_agent = $_SERVER['USER_AGENT'];
-		/**
-		* The info will be used just in cases of a dispute
-		* Or to be reviewed after a payment
-		* Will not be indexed or searched
-		* So it's simply stored as JSON
-		**/
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
 		$info = json_encode($info);
 		$this->db->insert('payments', array(
-				$this->user_id,
-				$this->payment_method,
-				$user_agent,
-				$ip,
-				time(),
-				$info
+				'id'         => $this->user_id,
+				'user_id'    => $this->payment_method,
+				'user_agent' => $user_agent,
+				'ip'         => $ip,
+				'time'       => time()
 			)
 		);
+		$this->db->update('users', array(
+				'upload_seconds_limit' => '300',
+				'premium_until'        => strtotime('+30 days')
+			)
+		)->where('id', $this->user_id)
+		 ->_();
+		return true;
 	}
 	public function charge_stripe( $token ) {
-		\Stripe\Stripe::setApiKey( $this->stripe_key );
+		\Stripe\Stripe::setApiKey($this->stripe_key);
 		try {
 			$this->charge_info = \Stripe\Charge::create(array(
 					"amount"      => 130, // <- CENTS
 					"currency"    => "usd",
 					"source"      => $token,
-					"description" => "Example charge"
+					"description" => 'Payment for user ID: ' . $this->user_id
 		    ));
 		} catch(\Stripe\Error\Card $e) {
 			// Since it's a decline, \Stripe\Error\Card will be caught
@@ -95,7 +94,9 @@ class Payment {
 		} catch (Exception $e) {
 			$this->error = 'Internal error';
 		}
-		return ! empty($this->error);
+		// if it's empty, then there was no error, and it will return true
+		// if it has something, there was an error, then return false.
+		return empty($this->error);
 	}
 	/**
 	* Unsupported yet
