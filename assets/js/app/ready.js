@@ -20,11 +20,14 @@ $(document).ready( function() {
 		in_duration: 300,
 		out_duration: 200,
 	});
+	
+	// materialize tabs
+	$('ul.tabs').tabs();
 
-	if( ! window.record.can_record() ) {
+	if( ! window.record.canRecord() ) {
 		$("#or, #record").hide();
 		$("#upload").css('float', 'none');
-		var value = read_cookie('no_record_support');
+		var value = readCookie('no_record_support');
 		if( null !== value && '' !== value ) {
 			return;
 		}
@@ -32,7 +35,7 @@ $(document).ready( function() {
 		document.cookie = 'no_record_support=1';
 	}
 
-	$.each( window.onload_functions, function( key, value ) {
+	$.each( window.onLoadFunctions, function( key, value ) {
 		value.call(null);
 	});
 	

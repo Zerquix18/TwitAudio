@@ -5,7 +5,7 @@
 *
 **/
 
-window.can_scroll = true;
+window.canScroll = true;
 
 $(window).scroll( function() {
 	if( (
@@ -20,71 +20,76 @@ $(window).scroll( function() {
 		return;
 	}
 
-	if( ! window.can_scroll ) {
+	if( ! window.canScroll ) {
 		return;
 	}
-
+	window.canScroll = false;
 	// set to false to avoid duplicates if the user
 	// scrolls again and the request is not finished yet
-	var to_load;
-	var data          = {};
-	window.can_scroll = false;
-	var _load_more    = $("#load_more");
-	var load          = _load_more.data('load');
-	var page          = _load_more.data('page');
-	var extra         = _load_more.data('extra');
+
+	var toLoad;
+	var params    = {};
+	var _loadMore = $("#load_more");
+	var load      = _loadMore.data('load');
+	var page      = _loadMore.data('page');
+	var extra     = _loadMore.data('extra');
 
 	// the first is the element to load
 	// the second is a clone, so in case of file
 	// we can put it again
-	window.load_more = [ load, _load_more.clone() ];
+	window.loadMore = [ load, _loadMore.clone() ];
 
 	// The variables used here
 	// are defined in the templates
 	if( 'search' == load ) {
 		/** defined in templates/search.phtml **/
-		to_load = search;
-		data.s  = sort;
-		data.t  = type;
+		toLoad   = search;
+		params.s = sort;
+		params.t = type;
 	} else if('audios' == load || 'favorites' == load ) {
 		/** defined in templates/profile.phtml **/
-		to_load = profile;
+		toLoad = profile;
 	} else if('replies' == load ) {
 		/** defined in templates/audio.phtml **/
-		to_load = audio_id;
-		data.reply_to = linked;
-	}else  return; // this must not happen
+		toLoad = audioId;
+		params.reply_to = linked;
+	}else {
+		return; // this must not happen
+	}
 
-	data.p = page;
-	data.q = to_load;
+	params.p = page;
+	params.q = toLoad;
 
 	$.ajax({
 		type: "GET",
 		cache: false,
-		url: ajaxurl + 'get/' + load,
-		data: data,
+		url: ajaxUrl + 'get/' + load,
+		data: params,
 		beforeSend: function() {
 			// a new one will be placed
 			$("#load_more").remove();
 		},
 		error: function() {
 			// place it again:
-			$( '#' + window.load_more[0] ).append( window.load_more[1] );
-			display_error('There was an error while loading the content... Please check your Internet connection.');
+			$( '#' + window.loadMore[0] ).append( window.loadMore[1] );
+			displayError(
+						'There was an error while loading the content...' +
+						'Please check your Internet connection.'
+					);
 		},
 		success: function( result ) {
 			// if its JSON is because there was an error
-			if( is_JSON(result) ) {
+			if( isJson(result) ) {
 				result = JSON.parse(result);
-				return display_error(result.response);
+				return displayError(result.response);
 			}
 			// if it's not a JSON is the HTML with the content
 			// to place
-			$( '#' + window.load_more[0] ).append( result );
+			$( '#' + window.loadMore[0] ).append( result );
 		},
 		complete: function() {
-			delete window.load_more;
-			window.can_scroll = true;
+			delete window.loadMore;
+			window.canScroll = true;
 		}
 	}); // end ajax
 }); // end scroll function; don't delete the below line

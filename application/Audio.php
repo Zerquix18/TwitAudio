@@ -172,7 +172,7 @@ class Audio {
 		return $path;
 	}
 	
-	private function exec($ command ) {
+	private function exec( $command ) {
 		exec($command . " 2>&1", $output);
 		return implode("\n", $output);
 	}

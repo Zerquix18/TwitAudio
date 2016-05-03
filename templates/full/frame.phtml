@@ -52,13 +52,13 @@ $audio = $template['audio']
 	body{background:none;height:auto;}
 	</style>
     <script type="text/javascript">
-        window.onload_functions = [];
+        window.onLoadFunctions = [];
     </script>
 </head>
 <body>
 <script>
 //<![CDATA[
-window.onload_functions.push( function() {
+window.onLoadFunctions.push( function() {
 
     $("#player_<?php echo $audio->id ?>").jPlayer({
         ready: function(event) {
@@ -110,7 +110,7 @@ window.onload_functions.push( function() {
         </div>
     </div>
     <script>
-    ajaxurl = '<?php echo url() . "ajax/" ?>';
+    ajaxUrl = '<?php echo url() . "ajax/" ?>';
     </script>
     <?php
     $all_scripts = file_get_contents(

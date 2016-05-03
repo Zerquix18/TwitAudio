@@ -12,7 +12,7 @@
 
 $(document).on('click', '.laic', function(e) {
 	var id = $(this).data('id');
-	var last_favorite_id = $(this);
+	var lastFavoriteId = $(this);
 	var params = {
 			id: id,
 			action: $(this).hasClass('favorited') ? // faved already?
@@ -22,36 +22,36 @@ $(document).on('click', '.laic', function(e) {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'post/favorite',
+		url: ajaxUrl + 'post/favorite',
 		data: params,
 		beforeSend: function() {
 			// FAKE AJAX
-			var attribute = last_favorite_id.find('span'),
+			var attribute = lastFavoriteId.find('span'),
 				count     = parseInt( attribute.text() );
 
-			if( last_favorite_id.hasClass('favorited') ) { // already faved?
-				last_favorite_id.removeClass('favorited');
+			if( lastFavoriteId.hasClass('favorited') ) { // already faved?
+				lastFavoriteId.removeClass('favorited');
 				attribute.text( String(count - 1) );
 			}else{
-				last_favorite_id.addClass('favorited');
+				lastFavoriteId.addClass('favorited');
 				attribute.text( String(count + 1) );
 			}
 		},
 		error: function() {
 			// get everything back
-			var attribute = last_favorite_id.find('span');
+			var attribute = lastFavoriteId.find('span');
 			var count     = parseInt( attribute.text() );
 
-			if( last_favorite_id.hasClass('favorited') ) {
-				last_favorite_id.removeClass('favorited');
+			if( lastFavoriteId.hasClass('favorited') ) {
+				lastFavoriteId.removeClass('favorited');
 				attribute.text( String(count - 1) );
-				display_error(
+				displayError(
 					'There was a problem while favoriting the audio...'
 				);
 			}else{
-				last_favorite_id.addClass('favorited');
+				lastFavoriteId.addClass('favorited');
 				attribute.text( String(count + 1) );
-				display_error(
+				displayError(
 					'There was a problem while unfavoriting the audio...'
 				);
 			}
@@ -61,42 +61,42 @@ $(document).on('click', '.laic', function(e) {
 
 			if( ! result.success ) {
 
-				var attribute = last_favorite_id.find('span');
+				var attribute = lastFavoriteId.find('span');
 				var count     = parseInt( attribute.text() );
 
-				if( last_favorite_id.hasClass('favorited') ) {
-					last_favorite_id.removeClass('favorited');
+				if( lastFavoriteId.hasClass('favorited') ) {
+					lastFavoriteId.removeClass('favorited');
 					attribute.text( String(c - 1) );
 				}else{
 					attribute.text( String(c + 1) );
-					last_favorite_id.addClass('favorited');
+					lastFavoriteId.addClass('favorited');
 				}
 
-				return display_error(result.response);
+				return displayError(result.response);
 			}
 
-			last_favorite_id.find('span').html(result.count);
+			lastFavoriteId.find('span').html(result.count);
 		}
 	});
 });
 
 /** play **/
 
-window.played_audios = [];
+window.playedAudios = [];
 
 $(document).on('click', '.plei', function(e) {
 	var id = $(this).data('id');
-	if( in_array( id, window.played_audios ) ) {
+	if( inArray( id, window.playedAudios ) ) {
 		// don't register it again
 		return;
 	}
 
-	window.played_audios.push(id);
+	window.playedAudios.push(id);
 
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'post/play',
+		url: ajaxUrl + 'post/play',
 		data: {id: id},
 		success: function( result ) {
 			result = JSON.parse(result);
@@ -107,7 +107,7 @@ $(document).on('click', '.plei', function(e) {
 			}
 			// add the play
 			$( '#plays_' + // the last one registered ↓
-				window.played_audios[ window.played_audios.length - 1 ]
+				window.playedAudios[ window.playedAudios.length - 1 ]
 			).find('span').html( result.count );
 		}
 	});
@@ -125,22 +125,26 @@ $(document).on('click', '.delit', function(e) {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: ajaxurl + 'post/delete',
+		url: ajaxUrl + 'post/delete',
 		data: {id: id},
 		error: function() {
-			display_error('There was an error while deleting your audio');
+			displayError('There was an error while deleting your audio');
 		},
 		success: function(result) {
 			result = JSON.parse(result);
-			if( ! result.success )
-				return display_error(result.response);
+			if( ! result.success ) {
+				return displayError(result.response);
+			}
 
 			// redirect to home if the deleted audio
 			// was in the audio page AND
 			// was not a reply
-			// audio_id is defined in templates/audio.phtml
-			if( typeof audio_id !== 'undefined' && result.response == audio_id )
+			// audioId is defined in templates/audio.phtml
+			if( typeof audioId !== 'undefined' &&
+				result.response == audioId
+				) {
 				return window.location.replace('/');
+			}
 
 			$(".audio_" + result.id ).fadeOut(1000, function() {
 				$(this).remove();

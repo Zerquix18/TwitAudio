@@ -9,16 +9,16 @@
 
 /**
 * Uploads an audio
-* If options.is_voice = true then
+* If options.isVoice = true then
 * it will upload the binary of the recorder
 * if not, it will upload the 'up_file' input
 *
 **/
-window.upload_audio = function( options ) {
-		var is_voice = options.is_voice || false;
+window.uploadAudio = function( options ) {
+		var isVoice = options.isVoice || false;
 		$("#record_form").hide();
 		$("#post").hide();
-		window.progressive_text.start(
+		window.progressiveText.start(
 			'#whatsloading',
 			[
 				'Uploading...',
@@ -35,19 +35,19 @@ window.upload_audio = function( options ) {
 			3
 		);
 		$("#loading").show();
-		var _ajax_form = {
+		var uploadForm = {
 			beforeSend: function() {
 				$("#player_cut").jPlayer("destroy");
 				window.effects.clean();
 			},
 			error: function( xhr ) {
-				display_error(
+				displayError(
 					'There was an error while uploading your audio. ' + 
 					'Please check your Internet connection');
 				$("#loading").hide();
 				$("#up_progress").width(0);
 				$("#post").show();
-				window.progressive_text.stop('#whatsloading');
+				window.progressiveText.stop('#whatsloading');
 				$("#up_form").trigger('reset');
 			},
 			uploadProgress: function( event, position, total, percent ) {
@@ -56,25 +56,34 @@ window.upload_audio = function( options ) {
 				});
 			},
 			complete: function( xhr ) {
-				window.progressive_text.stop('#whatsloading');
+				window.progressiveText.stop('#whatsloading');
 				$("#up_form").trigger('reset');
 				$("#up_progress").width("100%");
+
 				var result = JSON.parse(xhr.responseText);
+				var tmpUrl = result.tmp_url || '';
+				var id     = result.id || '';
+
 				if( false === result.success ) {
-					if( typeof result.tmp_url == 'undefined' ) {
+					if( ! tmpUrl ) {
+						// there was an error
+						// and it's not because it's too long
 						$("#loading").hide();
 						$("#up_progress").width(0);
 						$("#post").show();
-						display_error( result.response );
+						displayError( result.response );
 						return;
 					}
-					unfinished_audio('start');
-					window.tmp_url = result.tmp_url;
+					// needs cut
+					unfinishedAudio('start');
+					window.tmpUrl = tmpUrl;
+					// make it global
 					$("#player_cut").jPlayer({
 						ready: function(event) {
 							$(this).jPlayer("setMedia", {
-							mp3: window.tmp_url,
-						});
+								// so this guy catches it
+								mp3: window.tmpUrl,
+							});
 						},
 						cssSelectorAncestor: '#cut_container',
 						swfPath: "http://jplayer.org/latest/dist/jplayer",
@@ -93,17 +102,16 @@ window.upload_audio = function( options ) {
 					$("#audio_id").val( result.id );
 					return;
 				}
-				$(".original").data('url', result.tmp_url);
+				$(".original").data('url', tmpUrl);
 
-				unfinished_audio('start');
+				unfinishedAudio('start');
 
-				window.effects.load( result.id );
-				window.effects.show_loading( result.effects );
-
-				window.prepare_post_form(result.id, result.tmp_url);
+				window.effects.load(result.id);
+				window.effects.showLoading(result.effects);
+				window.preparePostForm(result.id, result.tmp_url);
 			}
 		};
-		if( is_voice && window.record.recorder ) {
+		if( isVoice && window.record.recorder ) {
 			/**
 			* If it's voice then we'll upload the
 			* base64 as 'bin'
@@ -111,18 +119,18 @@ window.upload_audio = function( options ) {
 			window.record.recorder.exportMP3( function(blob) {
 				var reader = new FileReader();
 				reader.onload = function(event) {
-					var file_reader      = {};
-					file_reader.is_voice = '1';
-					file_reader.bin      =  event.target.result;
-					_ajax_form.data      = file_reader;
-					$("#up_form").ajaxSubmit(_ajax_form);
+					var _fileReader      = {};
+					_fileReader.is_voice = '1';
+					_fileReader.bin      =  event.target.result;
+					uploadForm.data      = _fileReader;
+					$("#up_form").ajaxSubmit(uploadForm);
 				};
 				reader.readAsDataURL(blob);
 			});
 			return;
 		}
-		_ajax_form.data = {is_voice: '0'};
-		$("#up_form").ajaxSubmit(_ajax_form);
+		uploadForm.data = {is_voice: '0'};
+		$("#up_form").ajaxSubmit(uploadForm);
 };
 
 /*
@@ -140,26 +148,26 @@ $("#upload").on('click', function() {
 
 $("#up_file").on('change', function() {
 
-	var format    = $(this).val().split('.');
-	var file_size = this.files[0].size / 1024 / 1024;
+	var format   = $(this).val().split('.');
+	var fileSize = this.files[0].size / 1024 / 1024;
 
 	format = format[ format.length - 1 ];
 	format = format.toLowerCase();
 
-	if( ! in_array(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) ) {
-		return display_error('Format not allowed');
+	if( ! inArray(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) ) {
+		return displayError('Format not allowed');
 	}
 
 	/*
-	* upload_file_limit is defined in templates/footer.phtml
+	* uploadFileLimit is defined in templates/footer.phtml
 	*/ 
-	if( file_size > upload_file_limit ) {
-		return display_error(
+	if( filesize > uploadFileLimit ) {
+		return displayError(
 			'The file size is greater than your current ' +
-			'limit \'s, ' + upload_file_limit + ' mb');
+			'limit \'s, ' + uploadFileLimit + ' mb');
 	}
 
-	window.upload_audio( {is_voice: false } );
+	window.uploadAudio( {isVoice: false } );
 });
 
 /************************* CUT *************************/
@@ -173,9 +181,11 @@ $("#cut_form").ajaxForm({
 	beforeSend: function() {
 		$("#player_preview").jPlayer('destroy');
 		$("#cut_form").hide();
-		$("#up_progress").removeClass('determinate')
-				     .addClass('indeterminate');
-		window.progressive_text.start(
+		$("#up_progress")
+			.removeClass('determinate')
+			.addClass('indeterminate');
+
+		window.progressiveText.start(
 			'#whatsloading',
 			[
 				'Cutting...',
@@ -194,35 +204,42 @@ $("#cut_form").ajaxForm({
 		window.effects.clean();
 	},
 	error: function() {
-		progressive_text.stop('#whatsloading');
-		display_error(
+		progressiveText.stop('#whatsloading');
+		displayError(
 			'There was a problem while cutting your audio. Please check your Internet connection',
 			10000
 		);
 		// get everything back
 		$("#loading").hide();
-		$("#up_progress").removeClass('indeterminate')
-				.addClass('determinate');
+		$("#up_progress")
+			.removeClass('indeterminate')
+			.addClass('determinate');
 		$("#cut_form").show();
 	},
 	complete: function(xhr) {
-		progressive_text.stop('#whatsloading');
-		$("#up_progress").removeClass('indeterminate')
-				.addClass('determinate');
 		var result = JSON.parse(xhr.responseText);
+		var tmpUrl = result.tmp_url;
+		var id     = result.id;
+
+		progressiveText.stop('#whatsloading');
+		$("#up_progress")
+			.removeClass('indeterminate')
+			.addClass('determinate');
+
 		if( ! result.success ) {
-			display_error(result.response);
+			displayError(result.response);
 			$("#loading").hide();
 			$("#cut_form").show();
 			return;
 		}
+
 		$("#cut_form").trigger('reset');
-		$(".original").data('url', result.tmp_url);
+		$(".original").data('url', tmpUrl);
 
-		effects.load( result.id );
-		effects.show_loading( result.effects );
+		effects.load(id);
+		effects.showLoading(result.effects);
 
-		window.prepare_post_form( result.id, result.tmp_url );
+		window.preparePostForm(id, tmpUrl);
 	}
 });
 
@@ -232,40 +249,42 @@ $("#cut_form").ajaxForm({
 
 $("#end, #start").on('keyup', function() {
 
-	var numbers,
-		diff,
-		btn   = $("#cut_button"),
-		start = $("#start").val(),
-		end   = $("#end").val(),
-		is_numeric = function( value ) {
+	var numbers;
+	var diff;
+	var btn   = $("#cut_button");
+	var start = $("#start").val();
+	var end   = $("#end")  .val();
+	var isNumeric = function( value ) {
 			return /^[0-9]{0,3}$/.test(value);
 		};
 
-	if( ! is_numeric( start ) ) {
+	if( ! isNumeric(start) ) {
 
-		if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test( start ) )
+		if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test(start) ) {
 			return btn.attr('disabled', 'disabled');
+		}
 
 		numbers = start.split(':');
-		start = ( parseInt(numbers[0]) * 60 ) + parseInt(numbers[1]);
+		start   = ( parseInt(numbers[0]) * 60 ) + parseInt(numbers[1]);
 	}else {
-		start = parseInt( start );
+		start   = parseInt( start );
 	}
 
-	if( ! is_numeric( end ) ) {
+	if( ! isNumeric(end) ) {
 
-		if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test( end ) )
+		if( ! /^([0-9]{1,2}):([0-9]{1,2})$/.test(end) ) {
 			return btn.attr('disabled', 'disabled');
+		}
 
 		numbers = end.split(':');
-		end = ( parseInt(numbers[0]) * 60 ) + parseInt(numbers[1]);
+		end     = ( parseInt(numbers[0]) * 60 ) + parseInt(numbers[1]);
 	}else {
-		end = parseInt( end );
+		end     = parseInt( end );
 	}
 
 	diff = end-start;
-	/* max_duration is declared in templates/footer.phtml */
-	if( (start >= end) || diff > max_duration || diff < 1 ) {
+	/* maxDuration is declared in templates/footer.phtml */
+	if( (start >= end) || diff > maxDuration || diff < 1 ) {
 		return btn.attr('disabled', 'disabled');
 	}
 
@@ -279,21 +298,23 @@ $("#cut_cancel, #post_cancel").on('click', function() {
 	$("#cut_form, #post_form").hide();
 	$("#post").show();
 	$.jPlayer.pause();
-	unfinished_audio('stop');
+	unfinishedAudio('stop');
 });
 
 /************************* POST *************************/
 
-window.prepare_post_form = function( id, tmp_url ) {
+window.preparePostForm = function( id, tmpUrl ) {
 
 	$("#a_id").val(id);
 
-	window.tmp_post_preview = tmp_url;
+	window.tmpPostPreview = tmpUrl;
+	// made it global
 
 	$("#player_preview").jPlayer({
 		ready: function(event) {
-				$(this).jPlayer("setMedia", {
-				mp3: window.tmp_post_preview,
+			$(this).jPlayer("setMedia", {
+				mp3: window.tmpPostPreview,
+				// so this guys catches it
 			});
 		},
 		cssSelectorAncestor: '#preview_container',
@@ -318,7 +339,7 @@ $("#post_form").ajaxForm({
 		$.jPlayer.pause();
 	},
 	error: function() {
-		display_error(
+		displayError(
 			'Unable to post. Please check your Internet connection.'
 		);
 	},
@@ -326,15 +347,15 @@ $("#post_form").ajaxForm({
 		$("#up_progress").width(0);
 		var result = JSON.parse(xhr.responseText);
 		if( ! result.success ) {
-			return display_error( result.response );
+			return displayerror( result.response );
 		}
 
 		$("#desc").val("");
 		$("#audio_effect").val('original');
 		$("#loading, #post_form").hide();
 		$("#post").show();
-		unfinished_audio('stop');
-		return display_info(result.response);
+		unfinishedAudio('stop');
+		return displayInfo(result.response);
 	},
 });
 
@@ -346,18 +367,18 @@ $("#form_reply").ajaxForm({
 			.attr('disabled', 'disabled');
 	},
 	error: function() {
-		display_error('There was an error while adding your reply.');
+		displayError('There was an error while adding your reply.');
 		$("#reply_box, #reply_options button").removeAttr('disabled');
 	},
 	complete: function( xhr ) {
 		$("#reply_box, #reply_options button").removeAttr('disabled');
 		var result = xhr.responseText;
-		if( is_JSON(result) ) {
+		if( isJson(result) ) {
 			result = JSON.parse(result);
-			return display_error( result.response );
+			return displayError(result.response);
 		}
 
-		$("#reply_box").val("");
+		$("#reply_box").val('');
 		$("#label_reply").removeClass('active');
 		$("#noreplies").remove();
 
@@ -389,7 +410,7 @@ $("#settings_form").ajaxForm({
 	},
 	error: function() {
 		$("#settings_form button").removeAttr('disabled');
-		display_error(
+		displayError(
 			'Could not update your settings.' + 
 			'Please check your Internet connection.'
 		);
@@ -399,10 +420,10 @@ $("#settings_form").ajaxForm({
 
 		var result = JSON.parse(xhr.responseText);
 		if( result.success ) {
-			return display_info( result.response );
+			return displayInfo(result.response);
 		}
 
-		display_error( result.response );
+		displayError(result.response);
 	}
 });
 

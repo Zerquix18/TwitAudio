@@ -187,7 +187,7 @@ class View {
 	<?php endif; if( ! empty( $audio['audio'] ) ):  // if its not a reply ?>
 	<div class="audio-play">
 	<script>
-	window.onload_functions.push( function() {
+	window.onLoadFunctions.push( function() {
 		$("#player_<?php echo $audio['id'] ?>").jPlayer({
 			ready: function(event) {
 				$(this).jPlayer("setMedia", {
@@ -198,7 +198,7 @@ class View {
 				$(".jp-jplayer").not(this).jPlayer("pause");
 			},
 			cssSelectorAncestor : '#container_<?php echo $audio['id'] ?>',
-			swfPath: swfpath,
+			swfPath: swfPath,
 			supplied: "mp3",
 			wmode: "window",
 			useStateClassSkin: true,

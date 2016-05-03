@@ -108,7 +108,7 @@ View::load_template('header', array(
 </div>
 <?php if( ! empty($query) ): ?>
 <script type="text/javascript">
-window.onload_functions.push( function() {
+window.onLoadFunctions.push( function() {
 	$("#q, #s").val( decodeURIComponent("<?php echo urlencode($query) ?>") );
 	$("#q, #s").addClass('valid');
 	$("label[for='s'], label[for='q']").addClass('active');

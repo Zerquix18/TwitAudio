@@ -5,31 +5,31 @@
 
 /**
 * Checks if needle is in haystack
-* in_array('lol', ['asd', 'lol']) = true
+* inArray('lol', ['asd', 'lol']) = true
 *
 **/
-function in_array( needle, haystack ) {
+function inArray( needle, haystack ) {
 	return $.inArray( needle, haystack ) !== -1;
 }
-// displays a toast
-function display_error( error, dissapear ) {
+// displays a Materialize toast
+function displayError( error, dissapear ) {
 	var text  = '<i class="fa fa-close"></i>&nbsp;';
 	text     += error;
 	dissapear = dissapear || 5000;
 	Materialize.toast(text, dissapear, 'rounded');
 }
-function display_info( info, dissapear ) {
+function displayInfo( info, dissapear ) {
 	var text  = '<i class="fa fa-check"></i>&nbsp;';
 	text     += info;
 	dissapear = dissapear || 5000;
 	Materialize.toast(text, dissapear, 'rounded');
 }
 // checks if str is JSON
-function is_JSON( str ) {
+function isJson( str ) {
 	return (/^[\],:{}\s]*$/.test(str.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')));
 }
 
-function read_cookie( name ) {
+function readCookie( name ) {
     var value = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
     return value ? value.pop() : '';
 }
@@ -37,12 +37,13 @@ function read_cookie( name ) {
 /** prompts the user if
 *** it tries to leave without finishing **/
 
-function unfinished_audio_helper( e ) {
-	var confirmation_message = "You haven't finished uploading your audio. Are you sure you want to leave?";
-	(e || window.event).returnValue = confirmation_message;
-	return confirmation_message;
+function unfinishedAudioHelper( e ) {
+	var confirmationMessage = 'You haven\'t finished uploading your audio. ' +
+							'Are you sure you want to leave?';
+	(e || window.event).returnValue = confirmationMessage;
+	return confirmationMessage;
 }
-function unfinished_audio( action ) {
+function unfinishedAudio( action ) {
 
 	this.unloaded = this.unloaded || false;
 
@@ -50,13 +51,13 @@ function unfinished_audio( action ) {
 		this.unloaded = true;
 		return window.addEventListener(
 				'beforeunload',
-				unfinished_audio_helper
+				unfinishedAudioHelper
 			);
 	} else if( 'stop' === action && this.unloaded ) {
 		this.unloaded = false;
 		return window.removeEventListener(
 				'beforeunload',
-				unfinished_audio_helper
+				unfinishedAudioHelper
 			);
 	}
 	
