@@ -42,7 +42,7 @@ if( ! View::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
 	</div>
 </div>
 <script>
-window.onload_functions.push( function() {
+window.onLoadFunctions.push( function() {
 	$("#welcome").openModal();
 });
 </script>
@@ -58,11 +58,11 @@ if( ! View::is('404', 'txt') && ( $logout_request || $login_error) ):
 	if( $logout_request):
 		session_logout(); // defined in application/session.php
 	?>
-		<script>window.onload_functions.push( function() {
+		<script>window.onLoadFunctions.push( function() {
 			display_info("You are now logged out.", 10000);
 		});</script>
 <?php elseif( $login_error ): // if not logout ?>
-		<script>window.onload_functions.push( function() {
+		<script>window.onLoadFunctions.push( function() {
 			display_error("<?php echo $_SESSION['login_error'] ?>", 10000);
 		});</script>
 <?php

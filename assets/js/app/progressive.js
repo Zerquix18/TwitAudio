@@ -6,41 +6,39 @@
 * @author Zerquix18
 *
 **/
-window.progressive_text = {
+window.progressiveText = {
 
-	total_progressives: [],
+	totalProgressives: [],
 
 	start: function( selector, texts, interval ) {
 		
 		interval = interval || 5;
-		this.total_progressives[ selector ] = [];
-		var mili_seconds;
-		var change_text = function( selector, text ) {
+		this.totalProgressives[ selector ] = [];
+		var miliSeconds;
+		var changeText = function( selector, text ) {
 				$(selector).text(text);
 			};
 
 		for( var i = 0; i < texts.length; i++ ) {
-			mili_seconds = interval * (i * 1000);
+			miliSeconds = interval * (i * 1000);
 			var id = window.setTimeout(
-				change_text,
-				mili_seconds,
+				changeText,
+				miliSeconds,
 				selector,
 				texts[i]
 			);
-			this.total_progressives[ selector ].push( id );
+			this.totalProgressives[ selector ].push(id);
 		}
 	},
 
 	stop: function( selector ) {
 
-		if( ! in_array( selector, this.total_progressives ) ) {
+		if( ! inArray( selector, this.totalProgressives ) ) {
 			return false;
 		}
-
-		for( var i = 0; i < this.total_progressives[ selector ].length; i++) {
-			window.clearTimeout( this.total_progressives[ selector ][i] );
+		for( var i = 0; i < this.totalProgressives[ selector ].length; i++) {
+			window.clearTimeout( this.totalProgressives[ selector ][i] );
 		}
-
+		
 	}
-
 };

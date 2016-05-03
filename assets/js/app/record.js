@@ -14,15 +14,15 @@ window.record = {
 	/**
 	* @return bool
 	**/
-	can_record: function() {
-		navigator.get_media = (
+	canRecord: function() {
+		navigator.getMedia = (
 				navigator.getUserMedia ||
 				navigator.webkitGetUserMedia ||
 				navigator.mozGetUserMedia ||
 				navigator.msGetUserMedia
 			);
 
-		if( ! navigator.get_media ) {
+		if( ! navigator.getMedia ) {
 			return false;
 		}
 
@@ -40,14 +40,14 @@ window.record = {
 	* @return void
 	**/
 	init: function() {
-		if( ! this.can_record() ) {
+		if( ! this.canRecord() ) {
 			return;
 		}
 		if( this.initialized ) {
 			return;
 		}
 
-		navigator.get_media({
+		navigator.getMedia({
 				audio: true
 			},
 
@@ -61,8 +61,8 @@ window.record = {
 							* these 2 variables are set in
 							* templates/footer.phtml
 							**/
-							workerPath : workerpath,
-							mp3LibPath : lamepath,
+							workerPath : workerPath,
+							mp3LibPath : lamePath,
 							recordAsMP3 : true,
 							channels: 1
 						}
@@ -77,7 +77,7 @@ window.record = {
 				window.record.initialized = false;
 				$("div#waiting").hide();
 				$("div#post").show();
-				display_error(
+				displayError(
 					'Microphone access is not allowed or was blocked.'
 				);
 			});
@@ -94,29 +94,29 @@ window.record = {
 		$("#post").hide();
 		$("#record_form").show();
 		$("#cleft").show();
-		this.counter_left();
-		unfinished_audio('start');
+		this.counterLeft();
+		unfinishedAudio('start');
 	},
 
 	stop: function() {
-		if( ! this.is_recording ) {
+		if( ! this.isRecording ) {
 			return;
 		}
 		
-		this.is_recording = false;
+		this.isRecording = false;
 		this.recorder.stop();
-		if( 'undefined' !== typeof this.seconds_left_interval ) {
-			clearInterval( this.seconds_left_interval);
+		if( 'undefined' !== typeof this.secondsLeftInterval ) {
+			clearInterval( this.secondsLeftInterval);
 		}
-		if( 'undefined' !== typeof this.recording_seconds_interval ) {
-			clearInterval( this.recording_seconds_interval );
+		if( 'undefined' !== typeof this.recordingSecondsInterval ) {
+			clearInterval( this.recordingSecondsInterval );
 		}
-		delete this.seconds_left;
-		delete this.recording_seconds;
-		delete this.seconds_left_interval;
-		delete this.recording_seconds_interval;
+		delete this.secondsLeft;
+		delete this.recordingSeconds;
+		delete this.secondsLeftInterval;
+		delete this.recordingSecondsInterval;
 
-		window.upload_audio( { 'is_voice' : true } );
+		window.uploadAudio( {isVoice:true} );
 		this.recorder.clear();
 		$("#count").html("0:00");
 	},
@@ -124,96 +124,96 @@ window.record = {
 	cancel: function() {
 		this.recorder.clear();
 
-		if( 'undefined' !== typeof this.seconds_left_interval ) {
-			clearInterval( this.seconds_left_interval );
+		if( 'undefined' !== typeof this.secondsLeftInterval ) {
+			clearInterval( this.secondsLeftInterval );
 		}
-		if( 'undefined' !== typeof this.recording_seconds_interval ) {
-			clearInterval( this.recording_seconds_interval );
+		if( 'undefined' !== typeof this.recordingSecondsInterval ) {
+			clearInterval( this.recordingSecondsInterval );
 		}
 
-		delete this.seconds_left;
-		delete this.recording_seconds;
-		delete this.seconds_left_interval;
-		delete this.recording_seconds_interval;
+		delete this.secondsLeft;
+		delete this.recordingSeconds;
+		delete this.secondsLeftInterval;
+		delete this.recordingSecondsInterval;
 
 		$("#cleftn").html("3");
 		$("#count").html("0:00");
 		$("#record_form").hide();
 		$("div#post").show();
-		unfinished_audio('stop');
+		unfinishedAudio('stop');
 	},
 
 	/**
 	* starts a countdown of 3 seconds BEFORE
 	* to start recording
 	**/
-	counter_left: function() {
+	counterLeft: function() {
 		// static variable
-		if( 'undefined' == typeof this.seconds_left ) {
-			this.seconds_left = 3;
+		if( 'undefined' == typeof this.secondsLeft ) {
+			this.secondsLeft = 3;
 		}
 
-		if( 'undefined' == typeof this.seconds_left_interval ) {
-			this.seconds_left_interval = setInterval(
-					this.counter_left.bind(this),
+		if( 'undefined' == typeof this.secondsLeftInterval ) {
+			this.secondsLeftInterval = setInterval(
+					this.counterLeft.bind(this),
 					1000
 				);
 			return;
 		}
 
-		if( this.seconds_left > 0 ) {
-			this.seconds_left -= 1;
-			$("#cleftn").text( String(this.seconds_left) );
+		if( this.secondsLeft > 0 ) {
+			this.secondsLeft -= 1;
+			$("#cleftn").text( String(this.secondsLeft) );
 			return;
 		}
-		if( 0 === this.seconds_left ) {
+		if( 0 === this.secondsLeft ) {
 			// initialize everything
-			clearInterval(this.seconds_left_interval);
-			delete this.seconds_left;
-			delete this.seconds_left_interval;
+			clearInterval(this.secondsLeftInterval);
+			delete this.secondsLeft;
+			delete this.secondsLeftInterval;
 			$("#cleft").hide();
 			window.record.recorder.record(); // starts recording!
-			this.is_recording = true;
+			this.isRecording = true;
 			
-			this.update_seconds();
+			this.updateSeconds();
 		}
 	},
 	/**
 	* updates the seconds while recording
-	* 'max_duration' is declared in templates/footer.phtml
+	* 'maxDuration' is declared in templates/footer.phtml
 	**/
-	update_seconds: function() {
-		if( 'undefined' === typeof this.recording_seconds_interval ) {
-			this.recording_seconds_interval = setInterval(
-				this.update_seconds.bind(this),
+	updateSeconds: function() {
+		if( 'undefined' === typeof this.recordingSecondsInterval ) {
+			this.recordingSecondsInterval = setInterval(
+				this.updateSeconds.bind(this),
 				1000
 			);
-			this.recording_seconds = 0;
+			this.recordingSeconds = 0;
 			return;
 		}
 		// start increasing
-		if( this.recording_seconds < max_duration ) {
-			this.recording_seconds += 1;
+		if( this.recordingSeconds < maxDuration ) {
+			this.recordingSeconds += 1;
 
-			var result, first_number, second_number;
+			var result, firstNumber, secondNumber;
 
-			if( this.recording_seconds < 60 ){
-				first_number  = 0;
-				second_number = this.recording_seconds;
+			if( this.recordingSeconds < 60 ){
+				firstNumber  = 0;
+				secondNumber = this.recordingSeconds;
 			}else{
-				first_number = Math.floor(this.recording_seconds / 60 );
-				second_number = this.recording_seconds - (first_number*60);
+				firstNumber  = Math.floor(this.recordingSeconds / 60 );
+				secondNumber = this.recordingSeconds - (firstNumber*60);
 			}
-			if( String(second_number).length === 1 )
-				second_number = "0" + String(second_number);
+			if( String(secondNumber).length === 1 )
+				secondNumber = "0" + String(secondNumber);
 
-			result = String( first_number ) + ':' + String(second_number);
+			result = String( firstNumber ) + ':' + String(secondNumber);
 
 			$("#count").text(result);
 			return;
 		}
 
-		if( max_duration === this.recording_seconds ) {
+		if( maxDuration === this.recordingSeconds ) {
 			Materialize.toast('Time is up!', 5000, 'rounded');
 			this.stop();
 		}
