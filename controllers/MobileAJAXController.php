@@ -334,11 +334,6 @@ class MobileAJAXController {
 				if( ! $charge ) {
 					throw new MobileAJAXException( $payment->error );
 				}
-				HTTP::result( array(
-						'success' => true,
-						'result'  => 'Thanks, you are now premium! Enjoy!'
-					)
-				);
 				break;
 			case "paypal":
 				throw new MobileAJAXException('Paypal is not supported yet');
@@ -348,6 +343,12 @@ class MobileAJAXController {
 						'No right method was specified'
 					);
 		}
+		HTTP::result( array(
+				'success'       => true,
+				'result'        => 'Thanks, you are now premium! Enjoy!',
+				'premium_until' => date('d/m/Y', $charge['premium_until'])
+			)
+		);
 	}
 	/**
 	*
