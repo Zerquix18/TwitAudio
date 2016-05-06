@@ -24,13 +24,13 @@ class Audio {
 
 	public $options;
 
-	public $allowed_formats = array('aac', 'mp4', 'mp3', 'ogg', 'wav');
+	public static $allowed_formats = array('mp3', 'ogg');
 
 	private $format;
 
 	public function __construct( $audio_path, array $options ) {
-		$id3                 = new \getID3();
-		$this->info          = $id3->analyze($audio_path);
+		$getid3              = new \getID3();
+		$this->info          = $getid3->analyze($audio_path);
 		$this->audio         =
 		$this->original_name = $audio_path;
 		$this->format        = last( explode(".", $audio_path) );
@@ -59,86 +59,36 @@ class Audio {
 		if(		! array_key_exists('fileformat', $this->info)
 			||  ! in_array(
 					$this->format = $this->info['fileformat'],
-					$this->allowed_formats
+					self::$allowed_formats
 				)
 			) {
 			$this->error = 'The format of the audio is not allowed...';
 			return false;
 		}
 
-		if( $this->format == 'mp4' ) {
-			$this->format = 'm4a';
-		}
-
-		/** create a new name **/
-		$new_name = $this->generate_name($this->info['filenamepath']);
-		rename($this->audio, $new_name);
-		$this->audio = $new_name;
-
 		$decrease_bitrate = '';
 		if( $this->options['decrease_bitrate'] ) {
-			if( in_array($this->format, array(
-					'mp3',
-					'ogg',
-					'wav'
-					)
-				)
-			) {
-				$decrease_bitrate  = ' -C ';
-				$decrease_bitrate .= $this->options['is_voice'] ? '64' : '128';
-			}
+			$decrease_bitrate  = ' -C ';
+			$decrease_bitrate .= $this->options['is_voice'] ? '64' : '128';
 		}
 		// correct format done.
-
-		if( 'mp3' === $this->format ) {
-			// if mp3, check it's not malformed ...
-			$new_name = $this->generate_name($this->audio);
-			// remake the file just to see
-			// it there's not an EOF
-			$l = $this->exec("sox $this->audio $decrease_bitrate $new_name");
-			if( trim($l) !== '' ) { // <-- EOF BABE
-				unlink($this->audio);
-				$this->error      = 
-							"There was a problem while proccessing the audio";
-				$this->error_code = 2;
-				return false;
-			}
-			unlink($this->audio); //delete the old one
-			$this->audio = $new_name;
+		$new_name = self::generate_name($this->audio);
+		// remake the file to find EOF or change formats
+		$r = $this->exec(
+			"sox $this->audio $decrease_bitrate $new_name"
+		);
+		if( trim($r) !== '' ) {
+			$this->error = "There was a problem while proccessing the audio...";
+			$this->error_code = 2;
+			return false;
+		} else {
+			unlink($this->audio);
+			$this->format = 'mp3';
+			$this->audio  = $new_name;
+			$getid3       = new \getID3();
+			$this->info   = $getid3->analyze($this->audio);
 		}
-		// not an mp3... gotta convert it.
-		// and check for an EOF at the same time.
-		$name = self::get_name($this->audio);
-		if( in_array($this->format,
-				array("ogg", "wav", "aac", "m4a") ) ) {		
 
-			// if the format is ogg or wav, sox can handle it
-			if( in_array($this->format, array("ogg", "wav") ) ) {
-				$r = $this->exec(
-					"sox $this->audio $decrease_bitrate $name.mp3"
-				);
-			}elseif( in_array($this->format, 
-					array("aac", "m4a") ) ) {
-				// else, ffmpeg then save us all
-				$r = $this->exec("ffmpeg -v 5 -y -i $this->audio -acodec libmp3lame -ac 2 $name.mp3");
-			}else // this should never occur ;-;
-				return false;
-			// they both return an empty response
-			// when successful...
-
-			if( trim($r) !== '' ) {
-				$this->error      =
-				"There was a problem while proccessing the audio...";
-				$this->error_code = 2;
-				return false;
-			}else{
-				unlink($this->audio);
-				$this->format = 'mp3';
-				$this->audio  = $name . '.mp3';
-				$id3          = new \getID3();
-				$this->info   = $id3->analyze($this->audio);
-			}
-		}
 		$duration = floor($this->info['playtime_seconds']);
 		if( 0 === $duration ) {
 			$this->error = 'The audio must be longer than 1 second';
@@ -168,7 +118,7 @@ class Audio {
 		$path = implode("/", $path) . '/';
 		// generate the new name
 		$name = md5( uniqid() . rand(1,100) );
-		$path .= $name . '.' . $this->format;
+		$path .= $name . '.mp3';
 		return $path;
 	}
 	
