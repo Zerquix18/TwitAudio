@@ -11,15 +11,24 @@ namespace models;
 
 class Payment {
 
-	public $error       = '';
+	public $error = '';
 
-	private $stripe_key = 'sk_test_d4y4iNRanCY2Yj2pu0i59SMW';
+	private $stripe_live_key = 'sk_live_fY7GFRsn3Y5Bbe29CIefTwqy';
 
+	private $stripe_test_key = 'sk_test_d4y4iNRanCY2Yj2pu0i59SMW';
+
+	private static $stripe_public_test_key =
+										'pk_test_YgmlSk40LGcqNlLXmlEcgTOq';
+
+	private static $stripe_public_live_key =
+										'pk_live_y5aWgqUx4cqEbwiomsfmQZcF';
+
+	/**
+	* @todo
+	**/
 	private $paypal_key = '';
 
 	private $payment_method;
-
-	private $charge_info;
 
 	public function __construct( $payment_method, $user_id ) {
 		if( ! in_array($payment_method, array('paypal', 'stripe') ) ) {
@@ -76,7 +85,7 @@ class Payment {
 		return $result;
 	}
 	public function charge_stripe( $token ) {
-		\Stripe\Stripe::setApiKey($this->stripe_key);
+		$this->set_stripe_private_key();
 		try {
 			$this->charge_info = \Stripe\Charge::create(array(
 					'amount'      => 130, // <- CENTS
@@ -150,7 +159,7 @@ class Payment {
 	* thanks http://stackoverflow.com/a/5760371/1932946
 	* for doing what PHP could not in its entiry history
 	**/
-	public function get_next_month() {
+	private function get_next_month() {
 		$date      = new \DateTime('now');
 		$start_day = $date->format('j');
 
@@ -163,6 +172,31 @@ class Payment {
 		}
 		
 		return $date->getTimestamp();
+	}
+	private function set_stripe_private_key() {
+		if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {
+			/**
+			* no matter what, live payments cannot be available in any
+			* other side than the actual website.
+			* If we need to test, it should be outside with the test
+			* keys. If something is wrong with the website, they should
+			* just be desactivated.
+			**/
+			\Stripe\Stripe::setApiKey($this->stripe_live_key);
+		} else {
+			\Stripe\Stripe::setApiKey($this->stripe_test_key);
+		}
+	}
+	/**
+	* this is for the front end
+	**/
+	public static function get_stripe_public_key() {
+		if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {
+			// read the message in the above function
+			return self::$stripe_public_live_key;
+		} else {
+			return self::$stripe_public_test_key;
+		}
 	}
 
 	// what ya looking at
