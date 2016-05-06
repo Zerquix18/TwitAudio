@@ -175,10 +175,10 @@ class Audio {
 
 		$commands = array(
 			/* effect => its command */
-			'echo'          => 'sox %s %s echo 0.8 0.88 6 0.4',
+			'echo'          => 'sox %s %s echo 0.8 0.9 100 0.3',
 			'quick'         => 'sox %s %s speed 1.5',
 			'reverse'       => 'sox %s %s reverse',
-			'slow'          => 'sox %s %s speed 0.9',
+			'slow'          => 'sox %s %s speed 0.7',
 			'reverse_quick' => 'sox %s %s reverse speed 1.5',
 			'hilbert'       => 'sox %s %s hilbert -n 11',
 			'flanger'       => 'sox %s %s flanger',
