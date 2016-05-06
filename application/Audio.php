@@ -176,7 +176,7 @@ class Audio {
 		$commands = array(
 			/* effect => its command */
 			'echo'          => 'sox %s %s echo 0.8 0.9 100 0.3',
-			'quick'         => 'sox %s %s speed 1.5',
+			'faster'        => 'sox %s %s speed 1.5',
 			'reverse'       => 'sox %s %s reverse',
 			'slow'          => 'sox %s %s speed 0.7',
 			'reverse_quick' => 'sox %s %s reverse speed 1.5',
@@ -242,18 +242,18 @@ class Audio {
 	**/
 	public static function get_effects() {
 		$names = array(
-			'deep'		=> 'Deep',
-			'delay'		=> 'Delay',
-			'echo'		=> 'Echo',
-			'fade'		=> 'Fade',
-			'flanger'	=> 'Flanger',
-			'hilbert'	=> 'Hilbert',
-			'low'		=> 'Low',
-			'quick'		=> 'Quick',
-			'reverse'	=> 'Reversed',
-			'reverse_quick' => 'Reversed quick',
-			'slow'		=> 'Slow',
-			'tremolo'	=> 'Tremolo',
+			'deep'          => 'Deep',
+			'delay'         => 'Delay',
+			'echo'          => 'Echo',
+			'fade'          => 'Fade',
+			'faster'        => 'Faster',
+			'flanger'       => 'Flanger',
+			'hilbert'       => 'Hilbert',
+			'low'           => 'Low',
+			'reverse'       => 'Reversed',
+			'reverse_quick' => 'Reversed and faster',
+			'slow'          => 'Slow',
+			'tremolo'       => 'Tremolo',
 		);
 		return $names;
 	}
