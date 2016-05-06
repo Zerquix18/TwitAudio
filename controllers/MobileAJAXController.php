@@ -1244,7 +1244,7 @@ class MobileAJAXController {
 
 			if( ! in_array(
 				strtolower($format),
-				array("mp3", "m4a", "aac", "ogg", "wav")
+				\application\Audio::$allowed_formats
 				) ) {
 				/*
 				* this is just a kick validation

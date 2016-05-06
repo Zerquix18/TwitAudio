@@ -154,14 +154,14 @@ $("#up_file").on('change', function() {
 	format = format[ format.length - 1 ];
 	format = format.toLowerCase();
 
-	if( ! inArray(format, ['mp3', 'ogg', 'aac', 'wav', 'm4a'] ) ) {
+	if( ! inArray(format, ['mp3', 'ogg'] ) ) {
 		return displayError('Format not allowed');
 	}
 
 	/*
 	* uploadFileLimit is defined in templates/footer.phtml
 	*/ 
-	if( filesize > uploadFileLimit ) {
+	if( fileSize > uploadFileLimit ) {
 		return displayError(
 			'The file size is greater than your current ' +
 			'limit \'s, ' + uploadFileLimit + ' mb');
