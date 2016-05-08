@@ -371,6 +371,7 @@ class zerdb {
 			/**
 			* @todo make this friendly with other types
 			**/
+			$value = $this->real_escape($value);
 			$this->query .= "{$column} = '$value'";
 			if( $end !== $value )
 				$this->query .= ', ';
