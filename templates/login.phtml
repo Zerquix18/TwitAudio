@@ -59,11 +59,11 @@ if( ! View::is('404', 'txt') && ( $logout_request || $login_error) ):
 		session_logout(); // defined in application/session.php
 	?>
 		<script>window.onLoadFunctions.push( function() {
-			display_info("You are now logged out.", 10000);
+			displayInfo("You are now logged out.", 10000);
 		});</script>
 <?php elseif( $login_error ): // if not logout ?>
 		<script>window.onLoadFunctions.push( function() {
-			display_error("<?php echo $_SESSION['login_error'] ?>", 10000);
+			displayError("<?php echo $_SESSION['login_error'] ?>", 10000);
 		});</script>
 <?php
 		unset($_SESSION['login_error']);

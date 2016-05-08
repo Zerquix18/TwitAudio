@@ -200,10 +200,10 @@ class User extends \application\ModelBase {
 
 		$first_time = $this->db->query(
 				'SELECT COUNT(*) AS size FROM users
-				WHERE id = ?',
+				 WHERE id = ?',
 				$id
 			);
-		$first_time = !! $first_time->size;
+		$first_time = '0' === $first_time->size;
 
 		if( ! $first_time ) {
 			// re-update
@@ -218,10 +218,10 @@ class User extends \application\ModelBase {
 			) )->where('id', $id)->_();
 		}else{
 			// welcome, new user!
-			$favs_public =
+			$favs_public   =
 			$audios_public = (int) ! $details->protected;
-			$time = time();
-			$lang = $details->lang;
+			$time          = time();
+			$lang          = $details->lang;
 			$register_user = $this->db->insert("users", array(
 					'id'                  => $id,
 					'user'                => $user,
@@ -237,14 +237,16 @@ class User extends \application\ModelBase {
 					'lang'                => $lang
 				)
 			);
-			if( ! $register_user )
-				throw new \Exception('Database error: ' . $this->db->error);
+			if( ! $register_user ) {
+				throw new \Exception('Insert user error: ' . $this->db->error);
+			}
 		}
 
 		///////////// this is a well comented line
 		$sess_id = 'mobile' == $via ?
-				\generate_id_for('session'):
-				session_id();
+					\generate_id_for('session')
+				:
+					session_id();
 		$sess_time = time();
 
 		$register_session = $this->db->insert("sessions", array(
@@ -255,8 +257,9 @@ class User extends \application\ModelBase {
 				'is_mobile'  => ('mobile' == $via ? '1' : '0')
 			)
 		);
-		if( ! $register_session )
-			throw new \Exception('Database error: ' . $this->db->query);
+		if( ! $register_session ) {
+			throw new \Exception('Insert session error: ' . $this->db->query);
+		}
 
 		return array(
 				'id'		 => !! $id,
