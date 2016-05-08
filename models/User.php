@@ -237,14 +237,16 @@ class User extends \application\ModelBase {
 					'lang'                => $lang
 				)
 			);
-			if( ! $register_user )
+			if( ! $register_user ) {
 				throw new \Exception('Database error: ' . $this->db->error);
+			}
 		}
 
 		///////////// this is a well comented line
 		$sess_id = 'mobile' == $via ?
-				\generate_id_for('session'):
-				session_id();
+					\generate_id_for('session')
+				:
+					session_id();
 		$sess_time = time();
 
 		$register_session = $this->db->insert("sessions", array(
@@ -255,8 +257,9 @@ class User extends \application\ModelBase {
 				'is_mobile'  => ('mobile' == $via ? '1' : '0')
 			)
 		);
-		if( ! $register_session )
+		if( ! $register_session ) {
 			throw new \Exception('Database error: ' . $this->db->query);
+		}
 
 		return array(
 				'id'		 => !! $id,
