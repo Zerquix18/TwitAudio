@@ -18,7 +18,7 @@ class SearchController {
 		$type  = HTTP::get('t');
 		$order = HTTP::get('o');
 		
-		if( empty($query) ) {
+		if( ! $query ) {
 			$content = array();
 		} else {
 			$search = new Search;
@@ -32,8 +32,8 @@ class SearchController {
 		}
 		View::load_full_template('search', array(
 				'query'		=> $query,
-				'type'		=> $content['type'],
-				'order' 	=> $content['order'],
+				'type'		=> $query ? $content['type']  : '',
+				'order' 	=> $query ? $content['order'] : '',
 				'content' 	=> $content
 			)
 		);
