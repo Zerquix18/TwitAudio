@@ -13,7 +13,12 @@ View::load_template('login');
 
 // show an ad block in the footer.
 // todo: stop selling user info
-if( ! View::is('index', 'txt', '404') ): ?>
+if( ! View::is('index', 'txt', '404') ):
+
+// another awful hack till I change the template system
+$current_user = (new \models\User())->get_current_user();
+if( ! $current_user->is_premium() ):
+?>
 <div class="box ads-footer">
 	<p class="title">Advertising</p>
 	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
@@ -28,7 +33,7 @@ if( ! View::is('index', 'txt', '404') ): ?>
 		(adsbygoogle = window.adsbygoogle || []).push({});
 	</script>
 </div>
-<?php endif
+<?php endif; endif
 /** the google analytics **/
 ?>
 <script>
