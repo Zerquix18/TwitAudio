@@ -1,5 +1,7 @@
 /**
 * Javascript for the payments
+* I promise I will fix all the inconsistencies
+* of this file in less than a week
 *
 **/
 
@@ -32,26 +34,37 @@ function stripeTokenResponse( status, response ) {
 		},
 		success: function( result ) {
 			result = JSON.parse(result);
-			if( ! result.status ) {
+			if( ! result.success ) {
 				displayError( result.response );
 				$('#submit-premium').removeAttr('disabled');
 				return;
 			}
 			displayInfo(result.response);
-			
+			console.log('yup?');
 			// this is a global var
 			maxDuration = 300;
-
+			$('#post-max-minutes').text('5');
+			console.log('yup2?');
 			// say goodbye to the #premium-get tab
 			$("#premium-get-selector")
 				.removeClass('active')
-				.addClass('disabled');
+				.addClass('disabled')
+				.find('a') // the a inside has the color
+				.addClass('text-lighten-4'); // change the color c:
 			// now add that to the premium-enjoy
 			$("#premium-enjoy-selector")
 				.removeClass('disabled')
-				.addClass('active');
-			// place the premium-until
-			$("#premium-until").html(result.premium_until);
+				.addClass('active')
+				.find('a')
+				.removeClass('text-lighten-4');
+			// transform the premium_until UNIX timestamp
+			// to something legible
+			var date = new Date( parseInt(result.premium_until) * 1000 );
+			$("#premium-until").text(
+					date.getDate()     + '/' +
+					date.getMonth()    + '/' +
+					date.getFullYear()
+				);
 			// switch to the '#premium-enjoy' tab
 			$('ul.tabs').tabs('select_tab', 'premium-enjoy');
 		}
@@ -94,10 +107,10 @@ function isCardValid( card ) {
 * Prepares the form 
 *
 **/
-$('#form-premium').on('submit', function( event ) {
+$('#form-premium').on('submit', function(event) {
 	$('#submit-premium').attr('disabled', 'disabled');
 	// Request a token from Stripe:
-	Stripe.card.createToken($this, stripeTokenResponse);
+	Stripe.card.createToken($(this), stripeTokenResponse);
 	// Prevent the form from being submitted:
 	return false;
 });
@@ -120,8 +133,13 @@ $("#premium-input-card").on('change', function() {
 **/
 $("#premium-input-exp").on('change', function() {
 	var exp  = $(this).val();
-	exp      = $.trim(exp);        // replace any other way
-	exp      = exp.replace(' ', '').replace('-', '/').replace('\\','/');
+	exp      = $.trim(exp);
+								// replace any other way
+	exp      = exp
+				.split(' ').join('') // no spaces
+				.split('-').join('/') // no dashes
+				.split('\\').join('/'); // no backslashes
+
 	isValid  = function( exp ) {
 		if( ! /^([0-9]{1,2})\/([0-9]{2,4})$/.test(exp) ) {
 			return false;
@@ -177,4 +195,13 @@ $("#premium-input-cvc").on('change', function() {
 		$(this)[0].setCustomValidity(' ');
 		$(this).removeClass('valid').addClass('invalid');
 	}
+});
+
+/**
+* starts recording after clicking on
+* "start recording" from the premium modal
+**/
+$("#premium-button-record").on('click', function() {
+	$('#payments').closeModal();
+	$("#record").trigger('click');
 });

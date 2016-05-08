@@ -64,14 +64,14 @@ class Payment {
 		}
 		$ip         = get_ip();
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-		$this->db->insert('payments', array(
-				'id'         => $this->user_id,
-				'user_id'    => $this->payment_method,
-				'user_agent' => $user_agent,
-				'ip'         => $ip,
-				'time'       => time()
+		$db->insert('payments', array(
+				'user_id'         => $this->user_id,
+				'method'          => $this->payment_method,
+				'user_agent'      => $user_agent,
+				'ip'              => $ip,
+				'time'            => time()
 			)
-		);
+		) or die( $db->error );
 		$premium_until = $this->get_next_month();
 		$db->update('users', array(
 				'upload_seconds_limit' => '300',
@@ -85,6 +85,7 @@ class Payment {
 		return $result;
 	}
 	public function charge_stripe( $token ) {
+		global $db; // a dirty hack :(
 		$this->set_stripe_private_key();
 		try {
 			$this->charge_info = \Stripe\Charge::create(array(
@@ -163,12 +164,12 @@ class Payment {
 		$date      = new \DateTime('now');
 		$start_day = $date->format('j');
 
-		$date->modify('+1 month');
+		$date->modify('+1 month 21:00:00');
 
 		$end_day   = $date->format('j');
 
 		if( $start_day != $end_day ) {
-			$date->modify('last day of last month');
+			$date->modify('last day of last month 21:00:00');
 		}
 		
 		return $date->getTimestamp();

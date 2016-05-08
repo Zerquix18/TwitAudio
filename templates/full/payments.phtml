@@ -1,6 +1,6 @@
 <?php
 $current_user  = (new \models\User())->get_current_user();
-$is_premium    = !$current_user->is_premium();
+$is_premium    = $current_user->is_premium();
 $premium_until = $current_user->premium_until;
 ?>
 <div class="row">
@@ -56,9 +56,35 @@ $premium_until = $current_user->premium_until;
 		</ul>
 	</div>
     <div id="premium-overview" class="col s12">
-    	Test 1
+    	<h4>Become premium!</h4>
+    	<!--
+    		Worst design for a premium overview
+    		But I promise to change it :'v
+    	-->
+    	<p>Being premium brings you the following features:</p>
+    	<ul class="collection">
+    		<li class="collection-item">
+    			<i class="fa fa-plus"></i>&nbsp;
+    			5 minutes to upload your voice notes or audios
+    		</li>
+    		<li class="collection-item">
+    			<i class="fa fa-magic"></i>&nbsp;
+    			9 more effects
+    		</li>
+    		<li class="collection-item">
+    			<i class="fa fa-thumbs-up"></i>&nbsp;
+    			The quality in the audios is not decreased
+    		</li>
+    		<li class="collection-item">
+    			<i class="fa fa-ban"></i>
+    			No ads!
+    		</li>
+    	</ul>
+    	<p>The price is <strong>1,30</strong> US dollars.</p>
+    	
     </div>
     <div id="premium-get" class="col s12">
+        <h5>Credit Card</h5>
         <form id="form-premium">
         <div class="form-premium-inputs">
 			<div class="row">

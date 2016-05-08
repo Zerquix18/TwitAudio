@@ -345,8 +345,8 @@ class MobileAJAXController {
 		}
 		HTTP::result( array(
 				'success'       => true,
-				'result'        => 'Thanks, you are now premium! Enjoy!',
-				'premium_until' => date('d/m/Y', $charge['premium_until'])
+				'response'      => 'Thanks, you are now premium! Enjoy!',
+				'premium_until' => $charge['premium_until']
 			)
 		);
 	}

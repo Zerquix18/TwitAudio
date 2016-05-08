@@ -33,7 +33,13 @@ $minutes_limit = $current_user->get_limit('audio_duration') / 60;
 		</div>
 	</div>
 	<div id="record_form" style="display:none">
-		<div>You can record up to <?php echo $minutes_limit ?> minutes.</div>
+		<div>
+			You can record up to
+			<span id="post-max-minutes">
+				<?php echo $minutes_limit ?>
+			</span>
+			minutes.
+		</div>
 		<span id="cleft">Recording in <span id="cleftn">3</span>...</span>
 		<hr>
 		<div id="record_actions">
