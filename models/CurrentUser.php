@@ -159,6 +159,10 @@ class CurrentUser extends \application\ModelBase {
 	* @return bool
 	**/
 	function is_premium() {
+		if( ! property_exists($this, 'id') ) {
+			// not logged
+			return false;
+		}
 		$duration = (int) $this->upload_seconds_limit;
 		return $duration > 120;
 	}
