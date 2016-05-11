@@ -283,7 +283,11 @@ class View {
 			</span>
 		</a>
 	<?php endif;
-		if( is_logged() && $user['id'] == $GLOBALS['_USER']->id ): ?>
+		// no, this is not dirty.
+		// the 'is_logged' function
+		// returns an integer with
+		// the user ID
+		if( is_logged() == $user['id'] ): ?>
 		<a
 		href="javascript:void(0);"
 		class="audio-btn delit"

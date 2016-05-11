@@ -25,8 +25,8 @@ class User extends \application\ModelBase {
 	*
 	**/
 	public function get_current_user( $user_context = array() ) {
-		// if $user was passed, it's because it's complete
-		// so don't call complete_user again
+		// if $user_context was passed, it's because it's completed
+		// so it won't call complete_user again
 		// cuz complete_user calls this function
 		// and it causes a loop
 
@@ -34,7 +34,7 @@ class User extends \application\ModelBase {
 			return new \models\CurrentUser($user_context);
 		}
 
-		$user = $this->user !== null ?
+		$user = is_logged() ?
 			$this->complete_user( (array) $this->user )
 		:
 			array();

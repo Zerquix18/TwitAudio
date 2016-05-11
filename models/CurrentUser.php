@@ -71,8 +71,8 @@ class CurrentUser extends \application\ModelBase {
 
 		// not cached, make twitter requests
 		$twitter = new \application\Twitter(
-				$this->user->access_token,
-				$this->user->access_token_secret
+				$this->access_token,
+				$this->access_token_secret
 			);
 		$g = $twitter->tw->get(
 			'friendships/lookup',

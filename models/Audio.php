@@ -41,13 +41,13 @@ class Audio extends \application\ModelBase {
 		}
 
 		if( $has('id') ) {
-
-			if( null !== $this->user ) {
+			if( is_logged() ) {
+				$current_user = (new \models\User())->get_current_user();
 				$favorited = db()->query(
 					'SELECT COUNT(*) AS size FROM favorites
 					 WHERE audio_id = ? AND user_id = ?',
 					$audio['id'],
-					$this->user->id
+					$current_user->id
 				);
 				$audio['favorited'] = !! $favorited->size;
 			}else{
@@ -127,7 +127,11 @@ class Audio extends \application\ModelBase {
 	*
 	**/
 	public function get_recent_audios_by_user() {
-		$result                = array();
+		$result = array();
+		if( ! is_logged() ) {
+			return $result;
+		}
+		$current_user = (new \models\User)->get_current_user();
 		$recent_audios_by_user = db()->query(
 					'SELECT * FROM audios
 					 WHERE reply_to = \'0\'
@@ -135,7 +139,7 @@ class Audio extends \application\ModelBase {
 					 AND user = ?
 					 ORDER BY `time` DESC
 					 LIMIT 3',
-					$this->user->id
+					$current_user->id
 				);
 		while( $audio = $recent_audios_by_user->r->fetch_assoc() ) {
 			$result[] = $this->complete_audio($audio);
@@ -353,11 +357,11 @@ class Audio extends \application\ModelBase {
 			return false;
 		}
 
-		$audio_id = generate_id('audio');
-
+		$audio_id     = generate_id('audio');
+		$current_user = (new \models\User)->get_current_user();
 		db()->insert("audios", array(
 				'id'          => $audio_id,
-				'user'        => $this->user->id,
+				'user'        => $current_user->id,
 				'audio'       => $options['audio_url'], // nameofthefile.mp3
 				'reply_to'    => 0,
 				'description' => $options['description'],
@@ -372,9 +376,10 @@ class Audio extends \application\ModelBase {
 
 		if( '1' == $options['send_to_twitter'] ) {
 			// magic!
+
 			$twitter = new Twitter(
-					$this->user->access_token,
-					$this->user->access_token_secret
+					$current_user->access_token,
+					$current_user->access_token_secret
 				);
 			$tweet = 'https://twitaudio.com/'. $audio_id;
 			$tweet_length = strlen($tweet);
@@ -407,10 +412,11 @@ class Audio extends \application\ModelBase {
 			return false;
 		}
 
-		$audio_id = generate_id('audio');
+		$audio_id     = generate_id('audio');
+		$current_user = (new \models\User)->get_current_user();
 		db()->insert("audios", array(
 				'id'          => $audio_id,
-				'user'        => $this->user->id,
+				'user'        => $current_user->id,
 				'audio'       => '', // audio.mp3 (not used here)
 				'reply_to'    => $options['audio_id'],
 				'description' => $options['reply'],
@@ -424,10 +430,9 @@ class Audio extends \application\ModelBase {
 		);
 
 		if( $options['send_to_twitter'] ) {
-
 			$twitter = new \application\Twitter(
-					$this->user->access_token,
-					$this->user->access_token_secret
+					$current_user->access_token,
+					$current_user->access_token_secret
 				);
 
 			$tweet        = ' - https://twitaudio.com/'. $audio_id;
@@ -491,8 +496,10 @@ class Audio extends \application\ModelBase {
 			$audio_id
 		);
 
+		$current_user = (new \models\User)->get_current_user();
+
 		db()->insert("favorites", array(
-				'user_id'  => $this->user->id,
+				'user_id'  => $current_user->id,
 				'audio_id' => $audio_id,
 				'time'     => time()
 			)
@@ -508,10 +515,11 @@ class Audio extends \application\ModelBase {
 			"UPDATE audios SET favorites = favorites-1 WHERE id = ?",
 			$audio_id
 		);
+		$current_user = (new \models\User)->get_current_user();
 		db()->query(
 			"DELETE FROM favorites WHERE audio_id = ? AND user_id = ?",
 			$audio_id,
-			$this->user->id
+			$current_user->id
 		);
 	}
 	/**

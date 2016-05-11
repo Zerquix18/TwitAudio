@@ -5,7 +5,8 @@
 * it gonna show the info after login or logout in any page
 * let's go
 **/
-use \application\View;
+use \application\View,
+	\models\User;
 
 #first, show the modal if it's the first time the user logs in
 
@@ -21,7 +22,8 @@ if( ! View::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
 		</p>
 		<p>
 <?php
-	$status = (int) $GLOBALS['_USER']->audios_public ?
+	$current_user = (new User())->get_current_user();
+	$status       = !! $current_user->audios_public ?
 											'public' : 'private';
 	echo sprintf(
 		'Your audios were set as %1$s because your tweets are also %1$s. You can change this on your <a href="#settings" class="modal-trigger">Settings</a>.', $status
