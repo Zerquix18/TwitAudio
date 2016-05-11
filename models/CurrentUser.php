@@ -97,7 +97,7 @@ class CurrentUser extends \application\ModelBase {
 		}
 
 		$this->db->insert("following_cache", array(
-				'user_id'   => $_USER->id,
+				'user_id'   => $this->id,
 				'following' => $id,
 				'time'      => time(),
 				'result'    => (string) (int) $check
