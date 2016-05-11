@@ -160,5 +160,5 @@ function last( array $array ) {
 * @return bool
 **/
 function is_mobile() {
-	return 'mob' !== substr( $_SERVER['REQUEST_URI'], 1, 3);
+	return 'mob' === substr( $_SERVER['REQUEST_URI'], 1, 3);
 }

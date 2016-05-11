@@ -43,6 +43,9 @@ function _is_logged() {
 $just_1_query = _is_logged();
 
 function is_logged() {
+	if( defined('IS_LOGGED_MOBILE') ) {
+		return constant('IS_LOGGED_MOBILE');
+	}
 	return $GLOBALS['just_1_query']; // such a pro, thats me
 }
 
@@ -86,7 +89,9 @@ function check_authorization() {
 	$_USER = $db->query(
 		'SELECT * FROM users WHERE id = ?',
 		$session->user_id
-	); // now the user is logged
+	);
+	define('IS_LOGGED_MOBILE', true);
+	// now the user is logged
 	session_cache_limiter('public');
 	session_cache_expire(30);
 	session_id($authorization);
