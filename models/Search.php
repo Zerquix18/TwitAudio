@@ -67,7 +67,7 @@ class Search extends \application\ModelBase {
 					  AND status = \'1\'
 					  AND MATCH(`description`)
 						AGAINST (? IN BOOLEAN MODE)';
-			$count = $this->db->query(
+			$count = db()->query(
 					'SELECT COUNT(*) AS size FROM audios
 					 WHERE reply_to = \'0\'
 					 AND status = \'1\'
@@ -79,7 +79,7 @@ class Search extends \application\ModelBase {
 				$query = 'SELECT user,name,avatar,bio,verified FROM users
 						  WHERE MATCH(`user`, `name`, `bio`)
 						  AGAINST (? IN BOOLEAN MODE)';
-				$count = $this->db->query(
+				$count = db()->query(
 						'SELECT COUNT(*) AS size FROM users
 					     WHERE MATCH(`user`, `name`, `bio`)
 					     AGAINST (? IN BOOLEAN MODE)',
@@ -119,7 +119,7 @@ class Search extends \application\ModelBase {
 				'audios'	=> array()
 			);
 		$query       .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$search       = $this->db->query($query, $criteria);
+		$search       = db()->query($query, $criteria);
 		$users        = new User;
 		$current_user = $users->get_current_user();
 		$audios_model = new Audio;

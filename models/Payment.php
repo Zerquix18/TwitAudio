@@ -43,7 +43,6 @@ class Payment {
 	* @return array
 	**/
 	public function charge( $token ) {
-		global $db; // this is a bit dirty...
 		ignore_user_abort(true);
 		switch( $this->payment_method ) {
 			/**
@@ -64,16 +63,16 @@ class Payment {
 		}
 		$ip         = get_ip();
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-		$db->insert('payments', array(
+		db()->insert('payments', array(
 				'user_id'         => $this->user_id,
 				'method'          => $this->payment_method,
 				'user_agent'      => $user_agent,
 				'ip'              => $ip,
 				'time'            => time()
 			)
-		) or die( $db->error );
+		) or die( db()->error );
 		$premium_until = $this->get_next_month();
-		$db->update('users', array(
+		db()->update('users', array(
 				'upload_seconds_limit' => '300',
 				'premium_until'        => $premium_until
 			)
@@ -85,7 +84,6 @@ class Payment {
 		return $result;
 	}
 	public function charge_stripe( $token ) {
-		global $db; // a dirty hack :(
 		$this->set_stripe_private_key();
 		try {
 			$this->charge_info = \Stripe\Charge::create(array(

@@ -122,7 +122,7 @@ class User extends \application\ModelBase {
 			}
 			return $this->complete_user($result);
 		}
-		$user = $this->db->select('users', $which_info)
+		$user = db()->select('users', $which_info)
 				->where($column, $id_or_user)
 				->execute();
 
@@ -141,7 +141,7 @@ class User extends \application\ModelBase {
 			$current_user = $this->get_current_user();
 			$id = $current_user->id;
 		}
-		$audios = $this->db->query(
+		$audios = db()->query(
 			'SELECT COUNT(*) AS size FROM audios
 			WHERE reply_to = \'0\'
 			AND user = ?
@@ -159,7 +159,7 @@ class User extends \application\ModelBase {
 			$current_user = $this->get_current_user();
 			$id = $current_user->id;
 		}
-		$favorites = $this->db->query(
+		$favorites = db()->query(
 			'SELECT COUNT(*) AS size FROM audios
 			 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
 			 AND F.user_id = ? AND A.status = 1',
@@ -198,7 +198,7 @@ class User extends \application\ModelBase {
 		$avatar     = $details->profile_image_url_https;
 		$verified   = (int) $details->verified;
 
-		$first_time = $this->db->query(
+		$first_time = db()->query(
 				'SELECT COUNT(*) AS size FROM users
 				 WHERE id = ?',
 				$id
@@ -207,7 +207,7 @@ class User extends \application\ModelBase {
 
 		if( ! $first_time ) {
 			// re-update
-			$r = $this->db->update("users", array(
+			$r = db()->update("users", array(
 				"user"			=> $user,
 				"name"			=> $name,
 				"avatar" 		=> $avatar,
@@ -222,7 +222,7 @@ class User extends \application\ModelBase {
 			$audios_public = (int) ! $details->protected;
 			$time          = time();
 			$lang          = $details->lang;
-			$register_user = $this->db->insert("users", array(
+			$register_user = db()->insert("users", array(
 					'id'                  => $id,
 					'user'                => $user,
 					'name'                => $name,
@@ -238,7 +238,7 @@ class User extends \application\ModelBase {
 				)
 			);
 			if( ! $register_user ) {
-				throw new \Exception('Insert user error: ' . $this->db->error);
+				throw new \Exception('Insert user error: ' . db()->error);
 			}
 		}
 
@@ -249,7 +249,7 @@ class User extends \application\ModelBase {
 					session_id();
 		$sess_time = time();
 
-		$register_session = $this->db->insert("sessions", array(
+		$register_session = db()->insert("sessions", array(
 				'user_id'    => $id,
 				'sess_id'    => $sess_id,
 				'time'       => $sess_time,
@@ -258,7 +258,7 @@ class User extends \application\ModelBase {
 			)
 		);
 		if( ! $register_session ) {
-			throw new \Exception('Insert session error: ' . $this->db->query);
+			throw new \Exception('Insert session error: ' . db()->query);
 		}
 
 		return array(

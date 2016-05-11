@@ -43,7 +43,7 @@ class Audio extends \application\ModelBase {
 		if( $has('id') ) {
 
 			if( null !== $this->user ) {
-				$favorited = $this->db->query(
+				$favorited = db()->query(
 					'SELECT COUNT(*) AS size FROM favorites
 					 WHERE audio_id = ? AND user_id = ?',
 					$audio['id'],
@@ -54,7 +54,7 @@ class Audio extends \application\ModelBase {
 				$audio['favorited'] = false;
 			}
 
-			$replies_count = $this->db->query(
+			$replies_count = db()->query(
 				'SELECT COUNT(*) AS size FROM audios
 				WHERE status = \'1\' AND reply_to = ?',
 				$audio['id']
@@ -106,7 +106,7 @@ class Audio extends \application\ModelBase {
 			return false;
 		}
 
-		$audio = $this->db->select('audios', $whichinfo)
+		$audio = db()->select('audios', $whichinfo)
 				 ->where( array(
 				 		'id'     => $id,
 				 		'status' => 1
@@ -128,7 +128,7 @@ class Audio extends \application\ModelBase {
 	**/
 	public function get_recent_audios_by_user() {
 		$result                = array();
-		$recent_audios_by_user = $this->db->query(
+		$recent_audios_by_user = db()->query(
 					'SELECT * FROM audios
 					 WHERE reply_to = \'0\'
 					 AND status = \'1\'
@@ -150,7 +150,7 @@ class Audio extends \application\ModelBase {
 	**/
 	public function get_popular_audios() {
 		$result          = array();
-		$recents_popular = $this->db->query(
+		$recents_popular = db()->query(
 			'SELECT * FROM audios
 			WHERE user NOT IN (
 					SELECT id
@@ -189,7 +189,7 @@ class Audio extends \application\ModelBase {
 				  AND reply_to = '0'
 				  AND status = '1'
 				  ORDER BY time DESC";
-		$count = $this->db->query(
+		$count = db()->query(
 				"SELECT COUNT(*) AS size FROM audios
 				 WHERE user = ? AND reply_to = '0'",
 				$user_id
@@ -214,7 +214,7 @@ class Audio extends \application\ModelBase {
 		}
 
 		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$audios = $this->db->query($query, $user_id);
+		$audios = db()->query($query, $user_id);
 		$result = array(
 				'audios' => array()
 			);
@@ -243,7 +243,7 @@ class Audio extends \application\ModelBase {
 				  WHERE reply_to = ?
 				  AND status = '1'
 				  ORDER BY time DESC";
-		$count = $this->db->query(
+		$count = db()->query(
 				"SELECT COUNT(*) AS size FROM audios
 				 WHERE reply_to = ?",
 				 $audio_id
@@ -270,7 +270,7 @@ class Audio extends \application\ModelBase {
 		}
 
 		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$audios = $this->db->query($query, $audio_id);
+		$audios = db()->query($query, $audio_id);
 		$result = array(
 				'audios'	=>	array()
 			);
@@ -297,7 +297,7 @@ class Audio extends \application\ModelBase {
 					AS A INNER JOIN favorites AS F ON A.id = F.audio_id
 					AND F.user_id = ? AND A.status = '1'
 					ORDER BY F.time DESC";
-		$count = $this->db->query(
+		$count = db()->query(
 				"SELECT COUNT(*) AS size FROM audios
 				 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
 				 AND F.user_id = ? AND A.status = '1'",
@@ -325,7 +325,7 @@ class Audio extends \application\ModelBase {
 		}
 			
 		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$audios = $this->db->query($query, $user_id);
+		$audios = db()->query($query, $user_id);
 		$result = array(
 				'audios'	=>	array()
 			);
@@ -355,7 +355,7 @@ class Audio extends \application\ModelBase {
 
 		$audio_id = generate_id('audio');
 
-		$this->db->insert("audios", array(
+		db()->insert("audios", array(
 				'id'          => $audio_id,
 				'user'        => $this->user->id,
 				'audio'       => $options['audio_url'], // nameofthefile.mp3
@@ -387,7 +387,7 @@ class Audio extends \application\ModelBase {
 					) . '...';
 			$tweet = $description . ' ' . $tweet;
 			if( $tweet_id = $twitter->tweet($tweet) )
-				$this->db->update("audios", array(
+				db()->update("audios", array(
 						"tw_id" => $tweet_id
 					)
 				)->where("id", $audio_id)->_();
@@ -408,7 +408,7 @@ class Audio extends \application\ModelBase {
 		}
 
 		$audio_id = generate_id('audio');
-		$this->db->insert("audios", array(
+		db()->insert("audios", array(
 				'id'          => $audio_id,
 				'user'        => $this->user->id,
 				'audio'       => '', // audio.mp3 (not used here)
@@ -433,7 +433,7 @@ class Audio extends \application\ModelBase {
 			$tweet        = ' - https://twitaudio.com/'. $audio_id;
 			$tweet_length = strlen($tweet);
 
-			$at = $this->db->query(
+			$at = db()->query(
 				"SELECT user FROM users WHERE id = ?",
 				$options['user_id']
 			);
@@ -445,7 +445,7 @@ class Audio extends \application\ModelBase {
 			$tweet = $reply . $tweet;
 			$in_reply_to = $options['tw_id'] !== '' ? $options['tw_id'] : '';
 			if( $tweet_id = $twitter->tweet($tweet, $in_reply_to) )
-				$this->db->update("audios", array(
+				db()->update("audios", array(
 						"tw_id" => $tweet_id
 					)
 				)->where("id", $audio_id)->_();
@@ -468,10 +468,10 @@ class Audio extends \application\ModelBase {
 	**/
 	public function delete( array $audio ) {
 		$id = $audio['id'];
-		$this->db->delete('audios',    array('id'       => $id) )->_();
-		$this->db->delete('audios',    array('reply_to' => $id) )->_();
-		$this->db->delete('plays',     array('audio_id' => $id) )->_();
-		$this->db->delete('favorites', array('audio_id' => $id) )->_();
+		db()->delete('audios',    array('id'       => $id) )->_();
+		db()->delete('audios',    array('reply_to' => $id) )->_();
+		db()->delete('plays',     array('audio_id' => $id) )->_();
+		db()->delete('favorites', array('audio_id' => $id) )->_();
 
 		if( ! empty($audio['audio']) ) {
 			@unlink(
@@ -486,12 +486,12 @@ class Audio extends \application\ModelBase {
 	* @return void
 	**/
 	public function favorite( $audio_id ) {
-		$this->db->query(
+		db()->query(
 			"UPDATE audios SET favorites = favorites+1 WHERE id = ?",
 			$audio_id
 		);
 
-		$this->db->insert("favorites", array(
+		db()->insert("favorites", array(
 				'user_id'  => $this->user->id,
 				'audio_id' => $audio_id,
 				'time'     => time()
@@ -504,11 +504,11 @@ class Audio extends \application\ModelBase {
 	* @return void
 	**/
 	public function unfavorite( $audio_id ) {
-		$this->db->query(
+		db()->query(
 			"UPDATE audios SET favorites = favorites-1 WHERE id = ?",
 			$audio_id
 		);
-		$this->db->query(
+		db()->query(
 			"DELETE FROM favorites WHERE audio_id = ? AND user_id = ?",
 			$audio_id,
 			$this->user->id
@@ -522,7 +522,7 @@ class Audio extends \application\ModelBase {
 	**/
 	public function register_play( $audio_id ) {
 		$user_ip    = get_ip(); // ← /application/functions.php
-		$was_played = $this->db->query(
+		$was_played = db()->query(
 				"SELECT COUNT(*) AS size FROM plays
 				 WHERE user_ip = ?
 				 AND  audio_id = ?",
@@ -534,12 +534,12 @@ class Audio extends \application\ModelBase {
 			return false;
 		}
 
-		$this->db->query(
+		db()->query(
 			"UPDATE audios SET plays = plays+1 WHERE id = ?",
 			$audio_id
 		);
 		
-		$this->db->insert("plays", array(
+		db()->insert("plays", array(
 				'user_ip'  => $user_ip,
 				'audio_id' => $audio_id,
 				'time'     => time()

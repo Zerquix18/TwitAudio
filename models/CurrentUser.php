@@ -53,12 +53,12 @@ class CurrentUser extends \application\ModelBase {
 		}
 
 		// not public. check if cached ...
-		$this->db->query( // cleans
+		db()->query( // cleans
 			"DELETE FROM following_cache WHERE `time` < ?",
 			time() - 1800 // (60*30) half hour
 		);
 
-		$is_following = $this->db->query(
+		$is_following = db()->query(
 				'SELECT result FROM following_cache
 				 WHERE user_id = ? AND following = ?',
 				$this->id,
@@ -96,7 +96,7 @@ class CurrentUser extends \application\ModelBase {
 			$check = in_array('following', $g[0]->connections);
 		}
 
-		$this->db->insert("following_cache", array(
+		db()->insert("following_cache", array(
 				'user_id'   => $this->id,
 				'following' => $id,
 				'time'      => time(),
@@ -167,7 +167,7 @@ class CurrentUser extends \application\ModelBase {
 		return $duration > 120;
 	}
 	public function update_settings( array $settings ) {
-		return $this->db->update(
+		return db()->update(
 				'users',
 				$settings
 			)->where('id', $this->id)

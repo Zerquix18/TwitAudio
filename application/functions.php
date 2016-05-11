@@ -23,7 +23,6 @@ function format_number( $count ) {
 * @return string
 **/
 function generate_id( $for ) {
-	global $db;
 	$chars = 
 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890';
 	if( ! in_array($for, array('session', 'audio') ) ) {
@@ -36,7 +35,7 @@ function generate_id( $for ) {
 	// check out this amazing hack!
 	while(
 		($check = (
-			$db->query(
+			db()->query(
 				"SELECT COUNT(*) AS size FROM $table
 				 WHERE $column = ?", 
 				$id = 'session' == $for ?
@@ -161,4 +160,13 @@ function last( array $array ) {
 **/
 function is_mobile() {
 	return 'mob' === substr( $_SERVER['REQUEST_URI'], 1, 3);
+}
+/**
+* Returns the database global variable
+* That variable has the zerdb class
+* to perform queries.
+**/
+function db() {
+	global $db;
+	return $db;
 }

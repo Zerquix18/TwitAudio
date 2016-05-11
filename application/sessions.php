@@ -28,11 +28,10 @@ if( ! is_mobile() ) {
 // just a helper:
 
 function _is_logged() {
-	global $db;
 	if( ! isset($_COOKIE['ta_session']) ) {
 		return 0;
 	}
-	$session = $db->query(
+	$session = db()->query(
 		"SELECT user_id FROM sessions
 		 WHERE sess_id = ? AND is_mobile = '0'",
 		session_id()
@@ -55,7 +54,7 @@ function is_logged() {
 **/
 
 function check_authorization() {
-	global $_USER, $db;
+	global $_USER;
 	$TACrypt = new \application\TACrypt();
 	$headers = apache_request_headers();
 	if( empty($headers['Authorization']) ) {
@@ -73,7 +72,7 @@ function check_authorization() {
 			)
 		);
 	}
-	$session = $db->query(
+	$session = db()->query(
 			'SELECT user_id FROM sessions
 			 WHERE sess_id = ? AND is_mobile = \'1\'',
 			$authorization
@@ -86,7 +85,7 @@ function check_authorization() {
 		);
 	}
 	// for global use
-	$_USER = $db->query(
+	$_USER = db()->query(
 		'SELECT * FROM users WHERE id = ?',
 		$session->user_id
 	);
@@ -99,8 +98,7 @@ function check_authorization() {
 }
 
 function session_logout() {
-	global $db;
-	$db->query(
+	db()->query(
 		'DELETE FROM sessions WHERE sess_id = ?',
 		session_id()
 	);
