@@ -12,6 +12,7 @@
 		"forms.js",
 		"functions.js",
 		"load_more.js",
+		"payments.js",
 		"progressive.js",
 		"ready.js",
 		"record.js"

@@ -1,5 +1,7 @@
 <?php
 use \application\View;
+$current_user = (new \models\User())->get_current_user();
+if( ! $current_user->is_premium() ):
 ?>
 <div class="box ads_box">
 	<p class="title">Advertising</p>
@@ -15,6 +17,7 @@ use \application\View;
 		(adsbygoogle = window.adsbygoogle || []).push({});
 	</script>
 </div>
+<?php endif ?>
 <div class="box">
 	<ul class="links">
 		<li>

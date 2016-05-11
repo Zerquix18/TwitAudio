@@ -306,6 +306,51 @@ class MobileAJAXController {
 		HTTP::result(array('success' => true) + $audio);
 	}
 	/**
+	* Charges a user via stripe
+	* Paypal is not supported yet
+	**/
+	private function charge() {
+		$this->set_rules( array(
+				// get will be supported to get the paypal url
+				'method'        => 'POST',
+				'via'           => 'mob,ajax',
+				'require_login' => true,
+			)
+		);
+		$method       = HTTP::post('method');
+		$current_user = ( new \models\User )->get_current_user();
+		if( $current_user->is_premium() ) {
+			throw new MobileAJAXException('You are already premium.');
+		}
+		switch( $method ) {
+			case "card":
+				$token = HTTP::post('token');
+				if( ! $token )
+					throw new MobileAJAXException(
+							'No token was specified'
+						);
+				$payment = new \models\Payment('stripe', $current_user->id);
+				$charge  = $payment->charge($token);
+				if( ! $charge ) {
+					throw new MobileAJAXException( $payment->error );
+				}
+				break;
+			case "paypal":
+				throw new MobileAJAXException('Paypal is not supported yet');
+				break;
+			default:
+				throw new MobileAJAXException(
+						'No right method was specified'
+					);
+		}
+		HTTP::result( array(
+				'success'       => true,
+				'response'      => 'Thanks, you are now premium! Enjoy!',
+				'premium_until' => $charge['premium_until']
+			)
+		);
+	}
+	/**
 	*
 	* Checks what effects were loaded already
 	* Params:

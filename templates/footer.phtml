@@ -13,7 +13,12 @@ View::load_template('login');
 
 // show an ad block in the footer.
 // todo: stop selling user info
-if( ! View::is('index', 'txt', '404') ): ?>
+if( ! View::is('index', 'txt', '404') ):
+
+// another awful hack till I change the template system
+$current_user = (new \models\User())->get_current_user();
+if( ! $current_user->is_premium() ):
+?>
 <div class="box ads-footer">
 	<p class="title">Advertising</p>
 	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
@@ -28,7 +33,7 @@ if( ! View::is('index', 'txt', '404') ): ?>
 		(adsbygoogle = window.adsbygoogle || []).push({});
 	</script>
 </div>
-<?php endif
+<?php endif; endif
 /** the google analytics **/
 ?>
 <script>
@@ -114,6 +119,15 @@ var maxDuration     = "<?php echo $current_user->get_limit('audio_duration') ?>"
 		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
 	</div>
 </div>
+<div id="payments" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<h4>Premium</h4>
+		<?php View::load_full_template('payments') ?>
+	</div>
+	<div class="modal-footer">
+		<a href="javascript:void(0);" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+	</div>
+</div>
 <?php endif;
 	$all_scripts = file_get_contents(
 			$_SERVER['DOCUMENT_ROOT'] . '/assets/js/scripts.json'
@@ -143,5 +157,11 @@ var maxDuration     = "<?php echo $current_user->get_limit('audio_duration') ?>"
 		endforeach;
 	}
 ?>
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript">
+	Stripe.setPublishableKey('<?php
+			echo \models\Payment::get_stripe_public_key();
+		?>');
+</script>
 </body>
 </html>
