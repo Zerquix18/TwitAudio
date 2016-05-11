@@ -39,8 +39,7 @@ class View {
 			}
 			require $path;
 		} catch ( \Exception $e ) {
-			global $_CONFIG;
-			if( $_CONFIG['display_errors'] ) {
+			if( Config::get('is_production') ) {
 				echo $e->getMessage();
 			}
 		}
@@ -56,8 +55,7 @@ class View {
 			}
 			require $path;
 		} catch ( \Exception $e ) {
-			global $_CONFIG;
-			if( $_CONFIG['display_errors'] ) {
+			if( Config::get('is_production') ) {
 				echo $e->getMessage();
 			}
 		}

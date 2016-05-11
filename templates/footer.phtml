@@ -133,7 +133,7 @@ var maxDuration     = "<?php echo $current_user->get_limit('audio_duration') ?>"
 			$_SERVER['DOCUMENT_ROOT'] . '/assets/js/scripts.json'
 		);
 	$all_scripts = json_decode( $all_scripts, true );
-	if( '0' === $GLOBALS['_CONFIG']['minify_html'] ) {
+	if( ! Config::get('is_production') ) {
 		// if not live
 		foreach( $all_scripts as $dir => $scripts ):
 			$scripts_length = count($scripts);

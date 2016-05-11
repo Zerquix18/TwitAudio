@@ -17,7 +17,7 @@ try {
 
 	$_CONFIG = parse_ini_file($config_file);
 	$_SERVER['DOCUMENT_ROOT'] = $_CONFIG['document_root'];
-
+	require dirname(__FILE__) . '/application/Config.php';
 } catch (\Exception $e ) {
 
 	if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {
@@ -26,14 +26,14 @@ try {
 
 	exit( $e->getMessage() );
 }
+// now we call Config::get()
 
-if( '1' == $_CONFIG['display_errors'] ) {
-	error_reporting(E_ALL);
-} else {
+if( Config::get('is_production') ) {
 	error_reporting(0);
-}
-
-if( '1' == $_CONFIG['minify_html'] ) {
+	ob_start();
+} else {
+	error_reporting(E_ALL);
+	/** minify HTML **/
 	ob_start( function($output) {
 		return preg_replace(
 			['/\>[^\S ]+/s','/[^\S ]+\</s','/(\s)+/s'],
@@ -41,30 +41,29 @@ if( '1' == $_CONFIG['minify_html'] ) {
 			$output
 		);
 	});
-} else {
-	ob_start();
 }
 
 /** database connection **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/zerdb.php';
 try {
 	$db = new zerdb(
-		$_CONFIG['host'],
-		$_CONFIG['user'],
-		$_CONFIG['password'],
-		$_CONFIG['database']
+		Config::get('host'),
+		Config::get('user'),
+		Config::get('password'),
+		Config::get('database')
 	);
 	if( ! $db->ready ) {
 		throw new \Exception( $db->error );
 	}
 
 } catch( \Exception $e ) {
-	if( $_CONFIG['display_errors'] ) {
+	if( Config::get('is_production') ) {
 		echo $e->getMessage();
 	} else {
 		exit( file_get_contents('assets/templates/error-500.html') );
 	}
 }
+
 
 /** vendor autoloader **/
 
@@ -74,7 +73,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/application/functions.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
 
-spl_autoload_register( function ( $name ) use ($_CONFIG) {
+spl_autoload_register( function ( $name ) {
 	$file = str_replace('\\', '/', $name);
 	$file = $_SERVER['DOCUMENT_ROOT'] . '/' . $file . '.php';
 	if( file_exists( $file ) ) {
@@ -93,7 +92,7 @@ $_USER = ( $id = is_logged() ) ?
 /** Now JUST DO IT! **/
 
 $router = new AltoRouter();
-$router->setBasePath( $_CONFIG['base_path'] );
+$router->setBasePath( Config::get('base_path') );
 $router->addMatchTypes( array(
 		'valid_username' 	=> '([\w]{2,15})',
 		'valid_audio_id'	=> '([A-Za-z0-9]{6})',

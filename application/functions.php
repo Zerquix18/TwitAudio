@@ -23,7 +23,7 @@ function format_number( $count ) {
 * @return string
 **/
 function generate_id( $for ) {
-	global $db, $_CONFIG;
+	global $db;
 	$chars = 
 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890';
 	if( ! in_array($for, array('session', 'audio') ) ) {
@@ -57,8 +57,7 @@ function generate_id( $for ) {
 * @return string
 **/
 function url( $path = '' ) {
-	global $_CONFIG; //defined in config.ini
-	return $_CONFIG['url'] . $path;
+	return Config::get('url') . $path;
 }
 /**
 * Returns the avatar resized

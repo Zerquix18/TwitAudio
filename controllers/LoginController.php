@@ -20,15 +20,13 @@ class LoginController {
 	private $redirect_to = '';
 
 	public function __construct( $action ) {
-		global $_CONFIG;
 		try {
 			if( ! isset($_COOKIE['ta_session']) ) {
 				throw new \Exception('Cookies are needed to sign in');
 			}
 			$this->$action();
 		} catch (\Exception $e) {
-			if( $_CONFIG['display_errors'] ) {
-				// are we in production? no.
+			if( Config::get('is_production') ) {
 				$_SESSION['login_error'] = $e->getMessage();
 			} else {
 				$_SESSION['login_error'] =
