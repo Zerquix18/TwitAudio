@@ -244,7 +244,7 @@ class User extends \application\ModelBase {
 
 		///////////// this is a well comented line
 		$sess_id = 'mobile' == $via ?
-					\generate_id_for('session')
+					generate_id('session')
 				:
 					session_id();
 		$sess_time = time();

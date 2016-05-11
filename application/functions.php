@@ -3,71 +3,97 @@
 * Functions file
 *
 **/
+/**
+* Formats a number, making it smaller and easy to read.
+* @param $count - string|int
+* @return string
+**/
 function format_number( $count ) {
 	$count = (int) $count; // just in case
 	if( $count >= 1000 &&  $count < 1000000 ) {
-		return number_format( $count/1000, 1 ) . 'k';
+		return number_format($count / 1000, 1) . 'k';
 	} elseif( $count >= 1000000 ) {
-		return number_format( $count/1000000, 1 ) . "m";
+		return number_format($count / 1000000, 1) . "m";
 	}
-	return $count;
+	return (string) $count;
 }
-
-function generate_id_for( $for ) {
+/**
+* Generates an non-existent ID for the given param $for
+* @param $for string
+* @return string
+**/
+function generate_id( $for ) {
 	global $db, $_CONFIG;
 	$chars = 
 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890';
-	try {
-		if( ! in_array($for, array('session', 'audio') ) ) {
-			throw new \Exception(
-				"generate_id_for only accepts 'session' and 'audio'"
-			);
-		}
-		$table = 'session' == $for ? 'sessions' : 'audios';
-		$column = 'session' == $for ? 'sess_id' : 'id';
-		while( // check if exists
-			($check = (
-				$db->query(
-					"SELECT COUNT(*) AS size FROM $table
-					 WHERE $column = ?", 
-					$id = 'session' == $for ?
-					'ta-' . substr( str_shuffle($chars), 0, 29)
-					:
-					substr( str_shuffle($chars), 0, 6)
-				)
-			) ) && $check->size > 0
+	if( ! in_array($for, array('session', 'audio') ) ) {
+		return trigger_error(
+			"generate_id only accepts 'session' and 'audio'"
 		);
-		return $id;		
-	} catch (\Exception $e ) {
-		if( $_CONFIG['display_errors'] ) {
-			exit( $e->getMessage() );
-		}
 	}
+	$table  = 'session' == $for ? 'sessions' : 'audios';
+	$column = 'session' == $for ? 'sess_id'  : 'id';
+	// check out this amazing hack!
+	while(
+		($check = (
+			$db->query(
+				"SELECT COUNT(*) AS size FROM $table
+				 WHERE $column = ?", 
+				$id = 'session' == $for ?
+				'ta-' . substr( str_shuffle($chars), 0, 29)
+				:
+				substr( str_shuffle($chars), 0, 6)
+			)
+		) ) && $check->size > 0
+	);
+	return $id;
 }
+/**
+* Returns the URL of the website, with HTTP and the final slash
+* If the param $path is passed, then it will return
+* the url + the path
+*
+* @param $path string
+* @return string
+**/
 function url( $path = '' ) {
 	global $_CONFIG; //defined in config.ini
 	return $_CONFIG['url'] . $path;
 }
+/**
+* Returns the avatar resized
+* based on $link.
+* @param $link string
+* @param $size string
+**/
 function get_avatar( $link, $size = '' ) {
 	$hola = explode(".", $link);
 	$format = end($hola);
 	$hola = explode("_", $link);
 	array_pop($hola);
 	$link = implode("_", $hola);
-	if( $size == 'bigger' )
+	if( $size == 'bigger' ) {
 		return $link . '_bigger.'. $format;
-	elseif($size == '')
+	} elseif( $size == '' ) {
 		return $link . '.' . $format;
-	else
-		return $link . '_normal.' . $format;
+	}
+	return $link . '_normal.' . $format;
 }
-function date_differences( $oldtime ) {
-	$old_date = new \Datetime('@'.$oldtime);
+/**
+* Returns the differences between $old_time
+* and NOW.
+* @param $old_time string
+* @return string
+*
+**/
+function get_date_differences( $old_time ) {
+	$old_date = new \Datetime('@' . $old_time);
 	$current_date = new \DateTime();
 	$diff = $current_date->diff($old_date);
 	$diff->w = floor( $diff->days / 7 );
-	if( $diff->w > 4 )
-		return date('d/m/Y', $oldtime);
+	if( $diff->w > 4 ) {
+		return date('d/m/Y', $old_time);
+	}
 	if( $diff->w >= 1) {
 		return sprintf( $diff->w == 1 ?
 				'%d week'
@@ -76,32 +102,40 @@ function date_differences( $oldtime ) {
 			$diff->w
 		);
 	}
-	if( $diff->d >= 1 )
+	if( $diff->d >= 1 ) {
 		return sprintf( $diff->d == 1 ?
 				'%d day'
 			:
 				'%d days'
 			, $diff->d);
-	if( $diff->h >= 1 )
+	}
+	if( $diff->h >= 1 ) {
 		return sprintf( $diff->h == 1 ?
 				'%d hour'
 			:
 				'%d hours'
 			, $diff->h);
-	if( $diff->i >= 1 )
+	}
+	if( $diff->i >= 1 ) {
 		return sprintf( $diff->i == 1 ?
 				'%d min'
 			:
 				'%d mins'
 			, $diff->i);
-	if( $diff->s >= 1 )
+	}
+	if( $diff->s >= 1 ) {
 		return sprintf( $diff->s == 1 ?
 				'%d second'
 			:
 				'%d seconds'
 			, $diff->s);
+	}
 	return 'now';
 }
+/**
+* Returns the current IP address of the user.
+* @return string
+**/
 function get_ip() {
 	if( ! empty($_SERVER['HTTP_CLIENT_IP']) ) {
 		return $_SERVER['HTTP_CLIENT_IP'];
@@ -113,6 +147,19 @@ function get_ip() {
 	
 	return $_SERVER['REMOTE_ADDR'];
 }
+/**
+* PHP "strict standards" does not let me to do this
+* end( explode( something ) )
+* so I do last( explode( something) )
+**/
 function last( array $array ) {
 	return end($array);
+}
+/**
+* Returns a bool if we are being called
+* from the mobile API or not.
+* @return bool
+**/
+function is_mobile() {
+	return 'mob' !== substr( $_SERVER['REQUEST_URI'], 1, 3);
 }

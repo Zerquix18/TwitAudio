@@ -353,7 +353,7 @@ class Audio extends \application\ModelBase {
 			return false;
 		}
 
-		$audio_id = generate_id_for('audio');
+		$audio_id = generate_id('audio');
 
 		$this->db->insert("audios", array(
 				'id'          => $audio_id,
@@ -407,7 +407,7 @@ class Audio extends \application\ModelBase {
 			return false;
 		}
 
-		$audio_id = generate_id_for('audio');
+		$audio_id = generate_id('audio');
 		$this->db->insert("audios", array(
 				'id'          => $audio_id,
 				'user'        => $this->user->id,

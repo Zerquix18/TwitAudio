@@ -16,7 +16,7 @@ ob_end_clean();
 for($i = 0; $i < 100; $i++) {
 	/** FILL audios ! **/
 	$db->insert("audios", array(
-			$audio_id = generate_id_for('audio'),
+			$audio_id = generate_id('audio'),
 			"142105347", // my id (Zerquix18)
 			'noexistingfile.mp3', // nameofthefile.mp3
 			0, // reply_to
@@ -32,7 +32,7 @@ for($i = 0; $i < 100; $i++) {
 	for($j = 0; $j < 50; $j++) {
 		/** FILL replies! **/
 		$db->insert("audios", array(
-				$reply_id = generate_id_for('audio'),
+				$reply_id = generate_id('audio'),
 				"142105347",
 				'', // audio.mp3 (not used here)
 				$audio_id, // reply_to

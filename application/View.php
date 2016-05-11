@@ -168,7 +168,7 @@ class View {
 			else
 				echo $audio['id']
 			?>">
-				<?php echo date_differences( $audio['time'] ) ?>
+				<?php echo get_date_differences( $audio['time'] ) ?>
 			</a>
 		</span>
 		<?php
