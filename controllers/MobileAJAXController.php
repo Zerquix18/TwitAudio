@@ -81,7 +81,7 @@ class MobileAJAXController {
 					)
 				);
 			} elseif(  'ajax' == $this->via
-					&& $GLOBALS['_CONFIG']['display_errors']
+					&& Config::get('is_production')
 				) {
 				// if we're not in production
 				// it will be useful for testing purposes
@@ -104,7 +104,7 @@ class MobileAJAXController {
 			* Something else like TwitterOAuth
 			* or a DB query
 			**/
-			if( $GLOBALS['_CONFIG']['display_errors'] ) {
+			if( Config::get('is_production') ) {
 				// if we're not in production
 				HTTP::result( array(
 						'success'  => false,

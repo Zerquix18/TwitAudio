@@ -18,7 +18,7 @@ $audio = $template['audio']
             $_SERVER['DOCUMENT_ROOT'] . '/assets/css/styles.json'
         );
     $all_styles = json_decode( $all_styles, true );
-    if( '0' === $GLOBALS['_CONFIG']['minify_html'] ) {
+    if( ! Config::get('is_production') ) {
         // if not live
         foreach( $all_styles as $dir => $styles ):
             $styles_count = count($styles);
