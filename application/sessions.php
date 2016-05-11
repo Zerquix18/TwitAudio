@@ -6,7 +6,8 @@
 **/
 
 session_name('ta_session');
-if( 'mob' != substr( $_SERVER['REQUEST_URI'], 1, 3) ) {
+
+if( ! is_mobile() ) {
 	if( ! isset($_COOKIE['ta_session']) ) {
 		session_id( generate_id('session') );
 	}
