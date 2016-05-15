@@ -6,8 +6,10 @@
 * @copyright Copyright (c) 2015 Luis A. Martínez
 *
 **/
-use \application\View;
-use \application\HTTP;
+use \application\View,
+	\application\HTTP,
+	\models\Users,
+	\models\Audios;
 
 if( ! isset($template['robots']) )
 	$template['robots'] = true;
@@ -31,7 +33,7 @@ if( ! isset($template['robots']) )
 			$_SERVER['DOCUMENT_ROOT'] . '/assets/css/styles.json'
 		);
 	$all_styles = json_decode( $all_styles, true );
-	if( ! Config::get('is_production') ) {
+	if( ! \Config::get('is_production') ) {
 		// if not live
 		foreach( $all_styles as $dir => $styles ):
 			$styles_count = count($styles);
@@ -138,11 +140,10 @@ if( $show_sidebar ): // do I show sidebar? not in 404 or text pages
 		</li>
 	<?php else:
 	// get counts
-	$users = new \models\User();
-	$current_user = $users->get_current_user();
+	$current_user = Users::get_current_user();
 	// sending no id to get_audios|fav_count will take the logged user:
-	$audios       = $users->get_audios_count();
-	$favorites    = $users->get_favorites_count();
+	$audios       = Audios::get_audios_count($current_user->id);
+	$favorites    = Audios::get_favorites_count($current_user->id);
 	?>
 		<li>
 			<a

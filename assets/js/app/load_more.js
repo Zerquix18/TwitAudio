@@ -79,7 +79,7 @@ $(window).scroll( function() {
 		},
 		success: function( result ) {
 			// if its JSON is because there was an error
-			if( isJson(result) ) {
+			if( isJson(result) && '' !== result ) {
 				result = JSON.parse(result);
 				return displayError(result.response);
 			}

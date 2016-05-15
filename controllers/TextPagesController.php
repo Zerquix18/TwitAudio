@@ -9,7 +9,6 @@
 *
 **/
 namespace controllers;
-
 use \application\View;
 /**
 *
@@ -18,6 +17,7 @@ use \application\View;
 *
 **/
 class TextPagesController {
+	
 	public function __construct( $page ) {
 		$file = $_SERVER['DOCUMENT_ROOT'] .
 			'/templates/html/' . $page . '.html';

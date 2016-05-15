@@ -9,8 +9,10 @@
 *
 **/
 namespace controllers;
-use \application\View, \application\HTTP, \models\Search;
-
+use \application\View,
+	\application\HTTP,
+	\models\Search;
+	
 class SearchController {
 
 	public function __construct() {
@@ -18,17 +20,16 @@ class SearchController {
 		$type  = HTTP::get('t');
 		$order = HTTP::get('o');
 		
-		if( ! $query ) {
-			$content = array();
-		} else {
-			$search = new Search;
-			$content = $search->do_search( array(
+		if( $query ) {
+			$content = Search::do_search( array(
 					'query'		=> $query,
 					'type'		=> $type,
 					'order'		=> $order,
 					'page'		=> 1
 				)
 			);
+		} else {
+			$content = array();
 		}
 		View::load_full_template('search', array(
 				'query'		=> $query,

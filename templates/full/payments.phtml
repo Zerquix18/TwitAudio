@@ -1,5 +1,6 @@
 <?php
-$current_user  = (new \models\User())->get_current_user();
+use \models\Users;
+$current_user  = Users::get_current_user();
 $is_premium    = $current_user->is_premium();
 $premium_until = $current_user->premium_until;
 ?>

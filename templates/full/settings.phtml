@@ -1,7 +1,8 @@
 <?php
-$user = new \models\User();
-$user = $user->user;
-use \application\View;
+use \application\View,
+	\Models\Users;
+	
+$user = Users::get_current_user();
 ?>
 <form
 	method="POST"

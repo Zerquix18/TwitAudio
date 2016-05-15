@@ -56,7 +56,7 @@ function generate_id( $for ) {
 * @return string
 **/
 function url( $path = '' ) {
-	return Config::get('url') . $path;
+	return \Config::get('url') . $path;
 }
 /**
 * Returns the avatar resized

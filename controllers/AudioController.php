@@ -7,22 +7,19 @@
 *
 **/
 namespace controllers;
-
 use \application\View,
-	\models\Audio,
-	\models\User,
-	\application\HTTP;
-
+	\application\HTTP,
+	\models\Audios,
+	\models\Users;
+	
 class AudioController {
-
 	public function __construct( $audio_id ) {
-		$audios = new Audio;
-		$audio = $audios->get_audio_info($audio_id);
-		if( empty($audio) ) {
+		$audio = Audios::get($audio_id);
+		if( ! $audio ) {
 			View::exit_404();
 		}
 
-		$current_user = (new User)->get_current_user();
+		$current_user = Users::get_current_user();
 		if( ! $current_user->can_listen( $audio['user']['user'] ) ) {
 			View::exit_404();
 		}
@@ -33,15 +30,11 @@ class AudioController {
 				);
 		}
 
-		$replies = $audios->load_replies($audio['id'], 1);
+		$replies = Audios::get_replies($audio['id'], 1);
 		/** LINKED REPLIES **/
 		// Dragons be here
 		if( $reply_id = HTTP::get('reply_id') ) { // was the param sent?
-			$reply = $audios->get_audio_info(
-					$reply_id,
-					'id,user,audio,reply_to,description,
-						time,plays,favorites,duration'
-				);
+			$reply = Audios::get($reply_id);
 			if( ! empty($reply) && $reply['reply_to'] == $audio_id ) {
 				// reply exists and it's replying to this audio
 				$linked             = $reply_id;

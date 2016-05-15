@@ -9,11 +9,10 @@
 *
 **/
 namespace controllers;
-
 use \application\Twitter,
-	\application\HTTP;
-
-
+	\application\HTTP,
+	\models\Users;
+	
 class LoginController {
 
 	// the place to redirect after a success or error
@@ -25,15 +24,16 @@ class LoginController {
 				throw new \Exception('Cookies are needed to sign in');
 			}
 			$this->$action();
-		} catch (\Exception $e) {
-			if( Config::get('is_production') ) {
-				$_SESSION['login_error'] = $e->getMessage();
-			} else {
+		} catch ( \Exception $e ) {
+			// A database error, Abraham library... who knows?!
+			if( \Config::get('is_production') ) {
 				$_SESSION['login_error'] =
 				'There was a problem while login you in. Please, try again.';
+			} else {
+				$_SESSION['login_error'] = $e->getMessage();
 			}
-			HTTP::redirect( $this->redirect_to ?: url() );
 		}
+		HTTP::redirect( $this->redirect_to ?: url() );
 	}
 
 	private function signin() {
@@ -60,7 +60,7 @@ class LoginController {
 			throw new \Exception('Could not get login URL');
 		}
 
-		HTTP::redirect($login_url);
+		$this->redirect_to = $login_url;
 	}
 	/**
 	* Back from Twitter
@@ -104,25 +104,24 @@ class LoginController {
 		unset($_SESSION['oauth_token']);
 		unset($_SESSION['oauth_token_secret']);
 
+		// if it fails, then it will itself throw an exception:
 		$tokens = $twitter->tw->oauth(
 					"oauth/access_token",
 					array("oauth_verifier" => $oauth_verifier)
 				);
-		$users  = new \models\User();
-		$create_user = $users->create(
-				$tokens['oauth_token'],
-				$tokens['oauth_token_secret'],
-				'web'
-			);
+		
+		$create_user = Users::insert( array(
+				'access_token'        => $tokens['oauth_token'],
+				'access_token_secret' => $tokens['oauth_token_secret']
+			)
+		);
 
-		if( false === $create_user ) {
+		if( ! $create_user ) {
 			throw new \Exception('Internal error while registering user');
 		}
 
 		if( $create_user['first_time'] ) {
 			$_SESSION['first_time'] = true;
 		}
-
-		HTTP::redirect($this->redirect_to);
 	}
 }

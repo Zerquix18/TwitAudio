@@ -26,13 +26,10 @@ try {
 
 	exit( $e->getMessage() );
 }
-// now we call Config::get()
+// now we call \Config::get()
 
-if( Config::get('is_production') ) {
+if( \Config::get('is_production') ) {
 	error_reporting(0);
-	ob_start();
-} else {
-	error_reporting(E_ALL);
 	/** minify HTML **/
 	ob_start( function($output) {
 		return preg_replace(
@@ -41,23 +38,26 @@ if( Config::get('is_production') ) {
 			$output
 		);
 	});
+} else {
+	error_reporting(E_ALL);
+	ob_start();
 }
 
 /** database connection **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/zerdb.php';
 try {
 	$db = new zerdb(
-		Config::get('host'),
-		Config::get('user'),
-		Config::get('password'),
-		Config::get('database')
+		\Config::get('host'),
+		\Config::get('user'),
+		\Config::get('password'),
+		\Config::get('database')
 	);
 	if( ! $db->ready ) {
 		throw new \Exception( $db->error );
 	}
 
 } catch( \Exception $e ) {
-	if( Config::get('is_production') ) {
+	if( \Config::get('is_production') ) {
 		echo $e->getMessage();
 	} else {
 		exit( file_get_contents('assets/templates/error-500.html') );
@@ -76,7 +76,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
 spl_autoload_register( function ( $name ) {
 	$file = str_replace('\\', '/', $name);
 	$file = $_SERVER['DOCUMENT_ROOT'] . '/' . $file . '.php';
-	if( file_exists( $file ) ) {
+	if( is_readable( $file ) ) {
 		require $file;
 	}
 });

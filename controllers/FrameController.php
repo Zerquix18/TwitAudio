@@ -7,13 +7,13 @@
 *
 **/
 namespace controllers;
-use \application\View, \models\Audio;
-
+use \application\View,
+	\models\Audios;
+	
 class FrameController {
 
 	public function __construct( $audio_id ) {
-		$audios = new Audio;
-		$audio  = $audios->get_audio_info($audio_id);
+		$audio  = Audios::get($audio_id);
 		
 		if( empty($audio) ) {
 			View::exit_404();

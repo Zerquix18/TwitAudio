@@ -6,9 +6,8 @@
 *
 **/
 namespace controllers;
-
-use \application\View;
-
+use \application\View,
+	\models\Audios;
 class FrontController {
 
 	public function __construct() {
@@ -16,11 +15,9 @@ class FrontController {
 		if( ! is_logged() || \application\HTTP::get('logout') ) {
 			return View::load_full_template('index');
 		}
-		
-		$audios = new \models\Audio();
 		$data   = array(
-				'recent_popular' => $audios->get_popular_audios(),
-				'recent_audios'	 => $audios->get_recent_audios_by_user(),
+				'recent_popular' => Audios::get_popular_audios(),
+				'recent_audios'	 => Audios::get_recent_audios(),
 			);
 		
 		View::load_full_template('default', $data);

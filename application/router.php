@@ -13,7 +13,7 @@ if( 'cli' === php_sapi_name() ) {
 	return;
 }
 $router = new AltoRouter();
-$router->setBasePath( Config::get('base_path') );
+$router->setBasePath( \Config::get('base_path') );
 $router->addMatchTypes( array(
 		'valid_username' 	=> '([\w]{2,15})',
 		'valid_audio_id'	=> '([A-Za-z0-9]{6})',

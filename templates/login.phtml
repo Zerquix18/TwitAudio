@@ -6,7 +6,7 @@
 * let's go
 **/
 use \application\View,
-	\models\User;
+	\models\Users;
 
 #first, show the modal if it's the first time the user logs in
 
@@ -22,7 +22,7 @@ if( ! View::is('404', 'txt', 'index' ) && isset($_SESSION['first_time']) ):
 		</p>
 		<p>
 <?php
-	$current_user = (new User())->get_current_user();
+	$current_user = Users::get_current_user();
 	$status       = !! $current_user->audios_public ?
 											'public' : 'private';
 	echo sprintf(

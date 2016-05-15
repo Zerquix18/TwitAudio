@@ -6,7 +6,8 @@
 * @copyright Copyright (c) 2015 Luis A. Martínez
 *
 **/
-use \application\View;
+use \application\View,
+	\models\Users;
 
 // get the info to show after login
 View::load_template('login');
@@ -16,7 +17,7 @@ View::load_template('login');
 if( ! View::is('index', 'txt', '404') ):
 
 // another awful hack till I change the template system
-$current_user = (new \models\User())->get_current_user();
+$current_user = Users::get_current_user();
 if( ! $current_user->is_premium() ):
 ?>
 <div class="box ads-footer">
@@ -44,9 +45,7 @@ var workerPath = "<?php View::load_script('vendor/recorderWorker.js') ?>";
 var lamePath   = "<?php View::load_script('vendor/lame.all.js') ?>";
 var ajaxUrl    = '<?php echo url() . "ajax/" ?>';
 var swfPath    = '<?php echo url() . "assets/swf/" ?>';
-<?php if( is_logged() && ! View::is('404') ):
-	$current_user = (new \models\User())->get_current_user();
-?>
+<?php if( is_logged() && ! View::is('404') ): ?>
 var uploadFileLimit = "<?php echo $current_user->get_limit('file_upload') ?>";
 var maxDuration     = "<?php echo $current_user->get_limit('audio_duration') ?>";
 <?php endif ?>
@@ -133,7 +132,7 @@ var maxDuration     = "<?php echo $current_user->get_limit('audio_duration') ?>"
 			$_SERVER['DOCUMENT_ROOT'] . '/assets/js/scripts.json'
 		);
 	$all_scripts = json_decode( $all_scripts, true );
-	if( ! Config::get('is_production') ) {
+	if( ! \Config::get('is_production') ) {
 		// if not live
 		foreach( $all_scripts as $dir => $scripts ):
 			$scripts_length = count($scripts);

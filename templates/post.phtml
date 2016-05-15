@@ -1,6 +1,7 @@
 <?php
-use \application\View;
-$current_user  = (new \models\User())->get_current_user();
+use \application\View,
+	\models\Users;
+$current_user  = Users::get_current_user();
 $minutes_limit = $current_user->get_limit('audio_duration') / 60;
 ?>
 <div class="box">

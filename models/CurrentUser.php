@@ -6,15 +6,14 @@
 **/
 namespace models;
 
-class CurrentUser extends \application\ModelBase {
+class CurrentUser {
 
 	/**
 	* @param $user_info comes from the User model
-	* @see \models\User::get_current_user()
+	* @see \models\Users::get()
 	*
 	**/
 	public function __construct( array $user_info = array() ) {
-		parent::__construct(); // call to modelbase
 
 		if( empty($user_info) ) {
 			return;
@@ -41,10 +40,9 @@ class CurrentUser extends \application\ModelBase {
 			return true;
 		}
 
-		$users = new \models\User();
-		$check = $users->get_user_info($id, 'audios_public');
+		$user = Users::get( $id, array('audios_public') );
 
-		if( $check['audios_public'] ) {
+		if( $user['audios_public'] ) {
 			return true;
 		}
 
@@ -95,14 +93,19 @@ class CurrentUser extends \application\ModelBase {
 		} else {
 			$check = in_array('following', $g[0]->connections);
 		}
-
-		db()->insert("following_cache", array(
-				'user_id'   => $this->id,
-				'following' => $id,
-				'time'      => time(),
-				'result'    => (string) (int) $check
-			)
-		);
+		db()->query(
+				'INSERT INTO following_cache
+				 SET
+				 	user_id   = ?,
+				 	following = ?,
+				 	`time`    = ?,
+				 	result    = ?
+				',
+				$this->id,
+				$id,
+				time(),
+				(string) (int) $check
+			);
 
 		return $check;
 	}
@@ -110,6 +113,9 @@ class CurrentUser extends \application\ModelBase {
 	* Get a limit of the current user
 	**/
 	public function get_limit( $limit ) {
+		if( ! property_exists($this, 'id') ) {
+			return 0;
+		}
 		$duration = (int) $this->upload_seconds_limit;
 		switch( $limit ) {
 			case 'file_upload':
@@ -135,7 +141,7 @@ class CurrentUser extends \application\ModelBase {
 		$all_effects = array(
 				/** effects for all the users **/
 				'echo',
-				'quick',
+				'faster',
 				'reverse',
 				/** effects for paid users */
 				'slow',
@@ -163,14 +169,39 @@ class CurrentUser extends \application\ModelBase {
 			// not logged
 			return false;
 		}
-		$duration = (int) $this->upload_seconds_limit;
-		return $duration > 120;
+		$duration      = (int) $this->upload_seconds_limit;
+		$premium_until = (int) $this->premium_until;
+		return ($duration > 120) && (time() < $premium_until);
 	}
 	public function update_settings( array $settings ) {
-		return db()->update(
-				'users',
-				$settings
-			)->where('id', $this->id)
-			 ->execute();
+		$column_value = '';
+		$params       = array();
+		$last         = end($settings);
+		reset($settings);
+		while( list($option, $value) = each($settings) ) {
+			// this way the params are protected
+			$column_value .= "{$option} = ?,";
+			$params[]     = $value;
+		}
+		/**
+		* Delete the last comma because there was no way
+		* to check for the last value inside the loop
+		**/
+		$column_value = substr($column_value, 0, -1);
+		//add the id
+		$params[] = $this->id;
+		//
+		$result   = db()->query(
+				"UPDATE users
+				 SET
+				 	{$column_value}
+				 WHERE id = ?
+				",
+				$params
+			);
+		if( ! $result ) {
+			throw new \Exception('UPDATE error: ' . db()->error);
+		}
+		return $result;
 	}
 }

@@ -32,7 +32,7 @@ class Payment {
 
 	public function __construct( $payment_method, $user_id ) {
 		if( ! in_array($payment_method, array('paypal', 'stripe') ) ) {
-			trigger_error('Payment method is wrong', E_USER_ERROR);
+			trigger_error('Payment method is wrong');
 		}
 		$this->payment_method = $payment_method;
 		$this->user_id        = $user_id;
@@ -63,21 +63,40 @@ class Payment {
 		}
 		$ip         = get_ip();
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-		db()->insert('payments', array(
-				'user_id'         => $this->user_id,
-				'method'          => $this->payment_method,
-				'user_agent'      => $user_agent,
-				'ip'              => $ip,
-				'time'            => time()
-			)
-		) or die( db()->error );
+		$insert     = db()->query(
+				'INSERT INTO payments
+				 SET
+				 	user_id    = ?,
+				 	method     = ?,
+				 	user_agent = ?,
+				 	ip         = ?,
+				 	`time`     = ?
+				',
+				$this->user_id,
+				$this->payment_method,
+				$user_agent,
+				$ip,
+				time()
+			);
+		if( ! $insert ) {
+			throw new \Exception('INSERT error: ' . db()->error);
+		}
 		$premium_until = $this->get_next_month();
-		db()->update('users', array(
-				'upload_seconds_limit' => '300',
-				'premium_until'        => $premium_until
-			)
-		)->where('id', $this->user_id)
-		 ->_();
+		$update = db()->query(
+				'UPDATE users
+				 SET
+				 	upload_seconds_limit = ?,
+				 	premium_until        = ?
+				 WHERE
+				 	id                   = ?
+				',
+				'300',
+				$premium_until,
+				$this->user_id	
+			);
+		if( ! $update ) {
+			throw new \Exception('UPDATE error: ' . db()->error);
+		}
 		$result = array(
 				'premium_until' => $premium_until
 			);

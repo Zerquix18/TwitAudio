@@ -12,15 +12,12 @@
 *
 **/
 namespace models;
-use \models\User, \models\Audio;
+use \models\Users,
+	\models\Audios;
+	
+class Search {
 
-class Search extends \application\ModelBase {
-
-	public function __construct() {
-		parent::__construct();
-	}
-
-	public function do_search( array $options ) {
+	public static function do_search( array $options ) {
 		/*
 		* Sometimes you just hate the PHP inconsistency.
 		* property_exists( $haystack, $needle )
@@ -30,7 +27,8 @@ class Search extends \application\ModelBase {
 		if(    ! array_key_exists('query', $options)
 			|| ! array_key_exists('page',  $options)
 		) {
-			return false;
+			trigger_error('Missing options query or page');
+			return array();
 		}
 
 		$criteria = $options['query'];
@@ -94,6 +92,7 @@ class Search extends \application\ModelBase {
 					'page' 		 => $page,
 					'total'		 => $count,
 					'type'       => $type,
+					'order'      => $order
 				);
 		}
 		$total_pages = ceil( $count / 10 );
@@ -104,6 +103,7 @@ class Search extends \application\ModelBase {
 					'page' 		 => $page,
 					'total'		 => $count,
 					'type'       => $type,
+					'order'      => $order
 				);
 		if( 'a' == $type ) {
 			// if the type is audios then we can sort
@@ -120,18 +120,16 @@ class Search extends \application\ModelBase {
 			);
 		$query       .= ' LIMIT '. ($page-1) * 10 . ',10';
 		$search       = db()->query($query, $criteria);
-		$users        = new User;
-		$current_user = $users->get_current_user();
-		$audios_model = new Audio;
+		$current_user = Users::get_current_user();
 		while( $res = $search->r->fetch_assoc() ) {
 			// now we have the result
 			// we got to know which function to call
 			if( 'a' === $type ) {
 				if( $current_user->can_listen($res['user']) ) {
-					$result['audios'][] = $audios_model->complete_audio($res);
+					$result['audios'][] = Audios::complete($res);
 				}
 			}else{ // if looking for users
-				$result['audios'][] = $users->complete_user($res);
+				$result['audios'][] = Users::complete($res);
 			}
 		}
 		$result['page']      = $page;
