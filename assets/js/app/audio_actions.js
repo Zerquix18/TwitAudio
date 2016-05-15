@@ -1,15 +1,19 @@
 /**
-* Actions made to an audio
-*
-* favorite
-* delete
-* play
-*
+ * Actions made to an audio
+ *
+ * favorite
+ * delete
+ * play
+ *
+ * @author Zerquix18
+ * @copyright 2016 Luis A. Martínez
 **/
 
-/** favorite **/
-// called 'laic' (like) cause in the start they were likes
-
+/**
+ * Favorites an audio. Called laic because in the start they
+ * were likes.
+ * 
+ */
 $(document).on('click', '.laic', function(e) {
 	var id = $(this).data('id');
 	var lastFavoriteId = $(this);

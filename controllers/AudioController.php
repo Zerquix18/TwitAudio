@@ -1,10 +1,10 @@
 <?php
 /**
-* Controller for audio pages
-*
-* @author Zerquix18 <zerquix18@outlook.com>
-* @copyright (c) 2016 - Luis A. Martínez
-*
+ * AudioController.php
+ * Controller for audio pages
+ *
+ * @author Zerquix18 <zerquix18@outlook.com>
+ * @copyright 2016 Luis A. Martínez
 **/
 namespace controllers;
 use \application\View,
@@ -13,6 +13,14 @@ use \application\View,
 	\models\Users;
 	
 class AudioController {
+	/**
+	 * Prints the HTML with the content for the audio ID.
+	 * If the audio does not exist,
+	 * or the current user can't listen to it,
+	 * then prints a 404.
+	 * 
+	 * @param string $audio_id
+	 */
 	public function __construct( $audio_id ) {
 		$audio = Audios::get($audio_id);
 		if( ! $audio ) {

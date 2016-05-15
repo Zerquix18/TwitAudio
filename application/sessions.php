@@ -1,14 +1,22 @@
 <?php
 /**
-* Handle session related data
-* @author Zerquix18 <zerquix18@outlook.com>
-* @copyright Copyright (c) 2016 - Luis A. Martínez
+ * Handle session related data
+ * @author Zerquix18 <zerquix18@outlook.com>
+ * @copyright 2016 Luis A. Martínez
 **/
 
 session_name('ta_session');
 
 if( ! is_mobile() ) {
+	/*
+	 * Don't set the cookies for sessions in the mobile side
+	 * They are not used.
+	 */
 	if( ! isset($_COOKIE['ta_session']) ) {
+		/*
+		 * If the cookie does not exist,
+		 * generate a new ID.
+		 */
 		session_id( generate_id('session') );
 	}
 
@@ -18,15 +26,18 @@ if( ! is_mobile() ) {
 				$_COOKIE['ta_session']
 			)
 		) {
-		// if cookie isn't valid,
-		// PHP will throw a unavoidable warning
-		// when calling session_start();
+		/*
+		 * if cookie isn't valid,
+		 * PHP will throw a unavoidable warning
+		 * when calling session_start();
+		 */
 		session_start();
 	}
 }
-
-// just a helper:
-
+/**
+ * Returns the user ID
+ * @return boolean
+**/
 function _is_logged() {
 	if( ! isset($_COOKIE['ta_session']) ) {
 		return 0;
@@ -41,6 +52,15 @@ function _is_logged() {
 
 $just_1_query = _is_logged();
 
+/**
+ * Returns if the user is logged or not.
+ * The constant IS_LOGGED_MOBILE is set by
+ * check_authorization
+ *
+ * @see  _is_logged for the global+
+ * @see  check_authorization for the constant
+ * @return integer
+ */
 function is_logged() {
 	if( defined('IS_LOGGED_MOBILE') ) {
 		return constant('IS_LOGGED_MOBILE');
@@ -49,8 +69,7 @@ function is_logged() {
 }
 
 /**
-* Checks authorization header in the mobile side
-* @return void
+ * Checks the authorization header for the mobile side
 **/
 
 function check_authorization() {
@@ -89,14 +108,16 @@ function check_authorization() {
 		'SELECT * FROM users WHERE id = ?',
 		$session->user_id
 	);
-	define('IS_LOGGED_MOBILE', true);
+	define('IS_LOGGED_MOBILE', (int) $_USER->id);
 	// now the user is logged
 	session_cache_limiter('public');
 	session_cache_expire(30);
 	session_id($authorization);
 	session_start();
 }
-
+/**
+ * Logouts the user
+ */
 function session_logout() {
 	db()->query(
 		'DELETE FROM sessions WHERE sess_id = ?',

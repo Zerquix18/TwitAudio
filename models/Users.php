@@ -14,15 +14,14 @@ use \application\interfaces\ModelInterface,
 
 class Users implements ModelInterface {
 	/**
-	* Returns an array with all the data
-	* of the current user.
-	*
-	* @return array
-	* @param $user_content array (optional) - The data
-	* that the array will return
+	 * Returns an pobject with all the data
+	 * of the current user.
+	 *
+	 * @param  array $user_content The data that the array will return
+	 * @return object
 	*
 	**/
-	public static function get_current_user( $user_context = array() ) {
+	public static function get_current_user( array $user_context = array() ) {
 		// if $user_context was passed, it's because it's completed
 		// so it won't call complete_user again
 		// cuz complete_user calls this function
@@ -40,15 +39,21 @@ class Users implements ModelInterface {
 		return new CurrentUser( $user );
 	}
 	/**
-	* Fills the array $user
-	* With more info about the user,
-	* forces the types and deletes
-	* useless stuff
-	*
-	* @param  $user array - They array with the data to work with
-	* @return array
+	 * Fills the array $user
+	 * With more info about the user,
+	 * forces the types and deletes
+	 * useless stuff
+	 *
+	 * @param  array $user - They array with the data to work with
+	 * @return array
 	**/
 	public static function complete( array $user ) {
+
+		/**
+		 * Check if $key is un $user
+		 * @var Clousure
+		 * @return bool
+		 */
 		$has = function( $key ) use ( $user ) {
 			return array_key_exists($key, $user);
 		};
@@ -97,12 +102,12 @@ class Users implements ModelInterface {
 		return $user;
 	}
 	/**
-	* Gets the info about the given user
-	* From the database.
-	*
-	* @param $id_or_user - The ID or USER to extract the info
-	* @param $which_columns - The columns of the database
-	* @return array
+	 * Gets the info about the given user
+	 * From the database.
+	 *
+	 * @param string $id_or_user    The ID or USER to extract the info
+	 * @param array  $which_columns The columns of the database
+	 * @return array
 	**/
 	public static function get( $id_or_user, array $which_columns = array() ) {
 		if( array() === $which_columns ) {
@@ -144,14 +149,11 @@ class Users implements ModelInterface {
 		return self::complete( (array) $user );
 	}
 	/**
-	* Registers an user in the database if it does not
-	* exist. If it does exist, then it re-updates its info.
-	*
-	* @param $access_token - The Twitter access token after a successful
-	* login.
-	* @param $access_token_secret - The Twitter access token secret
-	* after a successful login.
-	* @return array - An array with the user data
+	 * Registers an user in the database if it does not
+	 * exist. If it does exist, then it re-updates its info.
+	 * @param  array $options An array with the access tokens
+	 * @throws \Exception
+	 * @return array The user data
 	**/
 	public static function insert( array $options = array() ) {
 		$required_options = array('access_token', 'access_token_secret');

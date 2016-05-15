@@ -1,33 +1,59 @@
 <?php
 /**
-*
-* TwitAudio class for audio manipulation
-* Requires getID3, SoX & FFMEPG
-*
-* @author Zerquix18 <zerquix18@outlook.com>
-* @copyright Copyright (c) 2015 Luis A. Martínez
-* @since {27/9/2015}
+ *
+ * TwitAudio class for audio manipulation
+ * Requires getID3 and SoX
+ *
+ * @author Zerquix18 <zerquix18@outlook.com>
+ * @copyright 2016 Luis A. Martínez
 **/
 namespace application;
 
 class Audio {
-
+	/**
+	 * The audio.mp3 file
+	 * @var string
+	 */
 	public $audio;
-	
+	/**
+	 * The original name given in the constructor
+	 * @var string
+	 */
 	public $original_name;
-	
+	/**
+	 * Info returned by getID3
+	 * @var array
+	 */
 	public $info;
-	
+	/**
+	 * To check if there was an error
+	 * @var boolean
+	 */
 	public $error = false;
-	
+	/**
+	 * The error code
+	 * @var integer
+	 */
 	public $error_code;
-
+	/**
+	 * Options passed in the constructor
+	 * @var array
+	 */
 	public $options;
-
+	/**
+	 * The list of allowed formats
+	 * @var array
+	 */
 	public static $allowed_formats = array('mp3', 'ogg');
-
+	/**
+	 * The format of the audio evaluated.
+	 * @var string
+	 */
 	private $format;
-
+	/**
+	 * @param string $audio_path
+	 * @param array  $options
+	 */
 	public function __construct( $audio_path, array $options ) {
 		$getid3              = new \getID3();
 		$this->info          = $getid3->analyze($audio_path);
@@ -37,9 +63,15 @@ class Audio {
 
 		$this->load_options($options);
 
-		if( $this->options['validate'] )
+		if( $this->options['validate'] ) {
 			$this->validate();
+		}
 	}
+	/**
+	 * Loads the option to the array $this->options
+	 * 
+	 * @param  array $options
+	 */
 	private function load_options( array $options ) {
 		$default_options = array(
 				'validate'          => true,
@@ -49,11 +81,11 @@ class Audio {
 			);
 		$this->options   = array_merge($default_options, $options);
 	}
-	private function last( array $array ) {
-	#PHP Strict Standards:
-		#Only variables should be passed by reference
-		return end($array); // <- fak u
-	}
+	/**
+	 * Validates the current $this->audio checking that it is a real
+	 * audio and that it doesn't have EOFs.
+	 * 
+	 */
 	private function validate() {
 		// if getid3 couldn't get the format or it's not allowed
 		if(		! array_key_exists('fileformat', $this->info)
@@ -102,15 +134,24 @@ class Audio {
 		}
 		return true;
 	}
-	
+	/**
+	 * Returns the path without the format of $name
+	 * 
+	 * @param  string $name A path to the file
+	 * @return string
+	 */
 	public static function get_name( $name ) {
-		// get the path without the format
 		$name = explode(".", $name);
 		array_pop($name);
 		$name = implode($name);
 		return $name;
 	}
-	
+	/**
+	 * Generates a name and returns it, using $base to get the path
+	 * 
+	 * @param  string $base
+	 * @return string
+	 */
 	private function generate_name( $base ) {
 		// get the path
 		$path = explode("/", $base);
@@ -121,13 +162,23 @@ class Audio {
 		$path .= $name . '.mp3';
 		return $path;
 	}
-	
+	/**
+	 * Executes a command in the system.
+	 * 
+	 * @param  string $command
+	 * @return $string The result of the execution
+	 */
 	private function exec( $command ) {
 		exec($command . " 2>&1", $output);
 		return implode("\n", $output);
 	}
 	/**
-	* @return string
+	 * Cuts $this->audio from $start to $end
+	 * @param string $start Must be a number bigger than 0
+	 * @param string $end   Must be a number lower than the duration
+	 *                      of the current audio.
+	 * @return string The name of the new file. An empty string in case of
+	 *                error.
 	**/
 	public function cut( $start, $end ) {
 		if( $this->error ) {
@@ -163,10 +214,18 @@ class Audio {
 		$this->info  = $id3->analyze($this->audio);
 		return $this->audio;
 	}
-	/** static functions **/
+
+	/************************ static methods *****************/
+
 	/**
-	* @return array
-	**/
+	 * Applies effects to $filename using $effects
+	 * 
+	 * @param  string $filename A path to the audio
+	 * @param  array  $effects  The list of effects to be applied
+	 * @return array  A multidimensional array with arrays of two keys:
+	 *                The PID of the process of the system applying the effect
+	 *                And the filename of the effect being applied.
+	 */
 	public static function apply_effects( $filename, array $effects ) {
 
 		if( ! file_exists($filename) ) {
@@ -209,8 +268,10 @@ class Audio {
 		return $result;
 	}
 	/**
-	* @return array
-	**/
+	 * Return the list of effect that were already applied
+	 * @param  string $info The $_SESSION[$id] array
+	 * @return array
+	 */
 	public static function get_finished_effects( array $info ) {
 		$result = array();
 		foreach( $info as $effectname => $effectinfo ) {
@@ -226,8 +287,11 @@ class Audio {
 		return $result;
 	}
 	/**
-	* @return void
-	**/
+	 * After a posted audio, cleans all the effects files remaining in
+	 * the tmp/ dir.
+	 * 
+	 * @param  array $session_id The array of $_SESSION[$id]
+	 */
 	public static function clean_tmp( array $session_id ) {
 		
 		@unlink( $session_id['tmp_url'] );
@@ -238,7 +302,8 @@ class Audio {
 
 	}
 	/**
-	* @return array
+	 * Returns the list of effects available for everyone.
+	 * @return array
 	**/
 	public static function get_effects() {
 		$names = array(

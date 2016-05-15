@@ -4,9 +4,9 @@
 *
 **/
 /**
-* Formats a number, making it smaller and easy to read.
-* @param $count - string|int
-* @return string
+ * Formats a number, making it smaller and easy to read.
+ * @param  string|int $count
+ * @return string
 **/
 function format_number( $count ) {
 	$count = (int) $count; // just in case
@@ -18,41 +18,47 @@ function format_number( $count ) {
 	return (string) $count;
 }
 /**
-* Generates an non-existent ID for the given param $for
-* @param $for string
-* @return string
+ * Generates an non-existent ID in the database
+ * @param  string $for Must be audio|session
+ * @return string the ID :)
 **/
 function generate_id( $for ) {
 	$chars = 
 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890';
 	if( ! in_array($for, array('session', 'audio') ) ) {
-		return trigger_error(
+		trigger_error(
 			"generate_id only accepts 'session' and 'audio'"
 		);
+		return '';
 	}
 	$table  = 'session' == $for ? 'sessions' : 'audios';
 	$column = 'session' == $for ? 'sess_id'  : 'id';
-	// check out this amazing hack!
-	while(
-		($check = (
-			db()->query(
-				"SELECT COUNT(*) AS size FROM $table
-				 WHERE $column = ?", 
-				$id = 'session' == $for ?
-				'ta-' . substr( str_shuffle($chars), 0, 29)
-				:
-				substr( str_shuffle($chars), 0, 6)
-			)
-		) ) && $check->size > 0
-	);
+	$check  = false;
+	$id     = '';
+	while( ! $check ) {
+		if( 'session' == $for ) {
+			$id = 'ta-' . substr( str_shuffle($chars), 0, 29);
+		} else {
+			$id = substr( str_shuffle($chars), 0, 6);
+		}
+		$result = db()->query(
+				'SELECT COUNT(*) AS size FROM {$table}
+				 WHERE {$column} = ?',
+				$id
+			);
+		if( ! $result ) {
+			throw new \Exception('SELECT error: ' . db()->error);
+		}
+		if( (int) $result->size > 0 ) {
+			$check = true;
+		}
+	}
 	return $id;
 }
 /**
 * Returns the URL of the website, with HTTP and the final slash
-* If the param $path is passed, then it will return
-* the url + the path
 *
-* @param $path string
+* @param  $path string If it's passed, then it's appended to the URL
 * @return string
 **/
 function url( $path = '' ) {
@@ -61,8 +67,8 @@ function url( $path = '' ) {
 /**
 * Returns the avatar resized
 * based on $link.
-* @param $link string
-* @param $size string
+* @param $link string The Twitter URL of the avatar.
+* @param $size string bigger or empty.
 **/
 function get_avatar( $link, $size = '' ) {
 	$hola = explode(".", $link);
@@ -78,11 +84,11 @@ function get_avatar( $link, $size = '' ) {
 	return $link . '_normal.' . $format;
 }
 /**
-* Returns the differences between $old_time
-* and NOW.
-* @param $old_time string
-* @return string
-*
+ * Returns the differences between $old_time
+ * and NOW.
+ * @param $old_time string
+ * @return string
+ *
 **/
 function get_date_differences( $old_time ) {
 	$old_date = new \Datetime('@' . $old_time);
@@ -131,8 +137,8 @@ function get_date_differences( $old_time ) {
 	return 'now';
 }
 /**
-* Returns the current IP address of the user.
-* @return string
+ * Returns the current IP address of the user.
+ * @return string
 **/
 function get_ip() {
 	if( ! empty($_SERVER['HTTP_CLIENT_IP']) ) {
@@ -146,16 +152,18 @@ function get_ip() {
 	return $_SERVER['REMOTE_ADDR'];
 }
 /**
-* PHP "strict standards" does not let me to do this
-* end( explode( something ) )
-* so I do last( explode( something) )
+ * PHP "strict standards" does not let me to do this
+ * end( explode( '.', $something ) )
+ * so I do last( explode( '.', $something) )
+ * FUCK THE POLICE
+ * @param  array $array
+ * @return mixed
 **/
 function last( array $array ) {
 	return end($array);
 }
 /**
-* Returns a bool if we are being called
-* from the mobile API or not.
+* Checks if the request was done to the mobile API
 * @return bool
 **/
 function is_mobile() {
@@ -165,6 +173,7 @@ function is_mobile() {
 * Returns the database global variable
 * That variable has the zerdb class
 * to perform queries.
+* @return object
 **/
 function db() {
 	global $db;

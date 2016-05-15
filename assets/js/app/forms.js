@@ -8,11 +8,13 @@
 /************************* UPLOAD *************************/
 
 /**
-* Uploads an audio
-* If options.isVoice = true then
-* it will upload the binary of the recorder
-* if not, it will upload the 'up_file' input
-*
+ * Uploads an audio
+ * If options.isVoice = true then
+ * it will upload the binary of the recorder
+ * if not, it will upload the 'up_file' input
+ *
+ * @param {Object} options
+ * 
 **/
 window.uploadAudio = function( options ) {
 		var isVoice = options.isVoice || false;
@@ -133,9 +135,9 @@ window.uploadAudio = function( options ) {
 		$("#up_form").ajaxSubmit(uploadForm);
 };
 
-/*
-* Will execute when the user clicks on the upload icon
-*/
+/**
+ * Will execute when the user clicks on the upload icon
+**/
 
 $("#upload").on('click', function() {
 	$("#up_file").trigger('click');
@@ -143,7 +145,7 @@ $("#upload").on('click', function() {
 });
 
 /**
-* Will execute when the user tries to upload an audio
+ * Will execute when the user tries to upload an audio
 **/
 
 $("#up_file").on('change', function() {
@@ -172,9 +174,9 @@ $("#up_file").on('change', function() {
 
 /************************* CUT *************************/
 
-/*
-* Will execute when the user submits
-* The cut form
+/**
+ * Will execute when the user submits
+ * The cut form
 **/
 
 $("#cut_form").ajaxForm({
@@ -243,9 +245,9 @@ $("#cut_form").ajaxForm({
 	}
 });
 
-/*
-* Will validate the #cut_form inputs
-*/
+/**
+ * Will validate the #cut_form inputs
+**/
 
 $("#end, #start").on('keyup', function() {
 
@@ -266,7 +268,7 @@ $("#end, #start").on('keyup', function() {
 
 		numbers = start.split(':');
 		start   = ( parseInt(numbers[0]) * 60 ) + parseInt(numbers[1]);
-	}else {
+	} else {
 		start   = parseInt( start );
 	}
 
@@ -303,6 +305,11 @@ $("#cut_cancel, #post_cancel").on('click', function() {
 
 /************************* POST *************************/
 
+/**
+ * Prepares the the Post Form :O
+ * @param  {string} id     The temporary ID of the audio
+ * @param  {string} tmpUrl The temporary URL of the audio
+ */
 window.preparePostForm = function( id, tmpUrl ) {
 
 	$("#a_id").val(id);

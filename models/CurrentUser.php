@@ -9,9 +9,9 @@ namespace models;
 class CurrentUser {
 
 	/**
-	* @param $user_info comes from the User model
-	* @see \models\Users::get()
-	*
+	 * @param $user_info comes from the User model
+	 * @see \models\Users::get()
+	 *
 	**/
 	public function __construct( array $user_info = array() ) {
 
@@ -24,9 +24,9 @@ class CurrentUser {
 		}
 	}
 	/**
-	* Checks if the logged user
-	* can listen to the audios of $id
-	* @return bool
+	 * Checks if the logged user
+	 * can listen to the audios of $id
+	 * @return bool
 	**/
 
 	public function can_listen( $id ) {
@@ -110,7 +110,11 @@ class CurrentUser {
 		return $check;
 	}
 	/**
-	* Get a limit of the current user
+	 * Get a limit of the current user
+	 * Current limits are:
+	 * 'file_upload'    (will return it in mbs)
+	 * 'audio_duration' (will return it in seconds)
+	 *  @param  string $limit
 	**/
 	public function get_limit( $limit ) {
 		if( ! property_exists($this, 'id') ) {
@@ -135,7 +139,9 @@ class CurrentUser {
 		}
 	}
 	/**
-	* @return array
+	 * Returns the list of available effects for the logged user
+	 * 
+	 * @return array
 	**/
 	public function get_available_effects() {
 		$all_effects = array(
@@ -161,8 +167,8 @@ class CurrentUser {
 		return $all_effects;
 	}
 	/**
-	* Checks if user is premium
-	* @return bool
+	 * Checks if user is premium
+	 * @return bool
 	**/
 	function is_premium() {
 		if( ! property_exists($this, 'id') ) {
@@ -173,6 +179,12 @@ class CurrentUser {
 		$premium_until = (int) $this->premium_until;
 		return ($duration > 120) && (time() < $premium_until);
 	}
+	/**
+	 * Updates the settings of the logged user
+	 * @param  array  $settings The settings, must be keys of the database
+	 * @throws \Exception
+	 * @return bool
+	 */
 	public function update_settings( array $settings ) {
 		$column_value = '';
 		$params       = array();

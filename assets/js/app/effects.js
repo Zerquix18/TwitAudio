@@ -1,8 +1,8 @@
 /**
-* Loads the effects and apply them
-*
-* @author Zerquix18
-*
+ * Loads the effects and apply them
+ *
+ * @author Zerquix18
+ * @copyright 2016 Luis A. Martínez
 **/
 window.effects = {
 
@@ -16,6 +16,10 @@ window.effects = {
 
 	loadedUrls: [],
 
+	/**
+	 * Loads the effects for a temporary audio
+	 * @param  {String} audioId The temporary ID of the audio
+	 */
 	load: function( audioId ) {
 		if( ! this.allEffectsLoaded ) {
 			return;
@@ -106,7 +110,11 @@ window.effects = {
 			}
 		});
 	},
-
+	/**
+	 * Prepares all the effects before they are loaded
+	 * So the page shows that they are loading
+	 * @param  {Objecto} effects The effects to load.
+	 */
 	showLoading: function( effects ) {
 		/**
 		* We have now an array
@@ -142,7 +150,7 @@ window.effects = {
 
 					if( undefined === $(this).data('url') ) {
 						// no urls loaded
-						return false;
+						return;
 					}
 
 					$.jPlayer.pause();
@@ -165,7 +173,10 @@ window.effects = {
 				$("#" + effectSelector).show();
 			}
 	},
-
+	/**
+	 * Cleans all the temporary effects after the audio is canceled
+	 * Or uploaded.
+	 */
 	clean: function() {
 		// arrivederchi!
 		$(".effect_preview").not('#effect_none').remove();

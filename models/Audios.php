@@ -14,13 +14,13 @@ use \application\interfaces\ModelInterface,
 
 class Audios implements ModelInterface {
 	/**
-	* Loads the user info, how many favorites
-	* and how many replies, etc. the audio has.
-	* And adds it to the array.
-	*
-	* @param array $audio - The array to be completed
-	* @return array - The audio completed
-	*
+	 * Loads the user info, how many favorites
+	 * and how many replies, etc. the audio has.
+	 * And adds it to the array.
+	 *
+	 * @param  array $audio The array to be completed
+	 * @return array        The audio completed
+	 *
 	**/
 	public static function complete( array $audio ) {
 
@@ -90,11 +90,12 @@ class Audios implements ModelInterface {
 		return $audio;
 	}
 	/**
-	* Returns an array with the info of the audio $id
-	*
-	* @param $id - the ID of the audio to load
-	* @param $whichinfo - The database columns
-	* @return array
+	 * Returns an array with the info of the audio $id
+	 *
+	 * @param  string $id       The ID of the audio to load
+	 * @param  array $whichinfo The database columns
+	 * @throws \Exception 
+	 * @return array
 	*
 	**/
 	public static function get( $id, array $which_columns = array() ) {
@@ -134,11 +135,11 @@ class Audios implements ModelInterface {
 		return self::complete( (array) $audio );
 	}
 	/**
-	* Returns an array with the last 3 recent audios
-	* of the logged user
-	*
-	* @return array
-	*
+	 * Returns an array with the last 3 recent audios
+	 * of the logged user
+	 *
+	 * @return array
+	 *
 	**/
 	public static function get_recent_audios() {
 		$result = array();
@@ -161,10 +162,10 @@ class Audios implements ModelInterface {
 		return $result;
 	}
 	/**
-	* Returns an array with the
-	* 3 most listened audios of
-	* the last 30 days
-	* @return array
+	 * Returns an array with the
+	 * 3 most listened audios of
+	 * the last 30 days
+	 * @return array
 	**/
 	public static function get_popular_audios() {
 		$result          = array();
@@ -194,11 +195,11 @@ class Audios implements ModelInterface {
 	}
 
 	/**
-	* Returns an array with the last 10 audios of $user_id
-	*
-	* @param $user_id - The ID of the user
-	* @param $page    - The page number
-	* @return array
+	 * Returns an array with the last 10 audios of $user_id
+	 *
+	 * @param string  $user_id The ID of the user
+	 * @param integer $page    The page number
+	 * @return array
 	*
 	**/
 	public static function get_audios( $user_id, $page = 1 ) {
@@ -257,12 +258,12 @@ class Audios implements ModelInterface {
 	}
 
 	/**
-	* Returns an array with the last 10 replies of $audio_id
-	*
-	* @param $user_id - The ID of the user
-	* @param $page    - The page number
-	* @return array
-	*
+	 * Returns an array with the last 10 replies of $audio_id
+	 *
+	 * @param string  $audio_id The ID of the audio
+	 * @param integer $page     The page number
+	 * @return array
+	 *
 	**/
 	public static function get_replies( $audio_id, $page = 1 ) {
 		$query = "SELECT id,user,audio,reply_to,description,
@@ -313,12 +314,12 @@ class Audios implements ModelInterface {
 	}
 
 	/**
-	* Returns an array with the last 10 favorites of $user_id
-	*
-	* @param $user_id - The ID of the user
-	* @param $page    - The page number
-	* @return array
-	*
+	 * Returns an array with the last 10 favorites of $user_id
+	 *
+	 * @param $user_id - The ID of the user
+	 * @param $page    - The page number
+	 * @return array
+	 *
 	**/
 	public static function get_favorites( $user_id, $page = 1 ) {
 		$query = "SELECT DISTINCT A.* FROM audios
@@ -367,8 +368,10 @@ class Audios implements ModelInterface {
 		return $result;
 	}
 	/**
-	* Get the count of audios of $id
-	* @return integer
+	 * Get the count of audios of the user $id
+	 *
+	 * @param string $id
+	 * @return integer
 	**/
 	public static function get_audios_count( $id ) {
 		$audios = db()->query(
@@ -381,8 +384,8 @@ class Audios implements ModelInterface {
 		return (int) $audios->size;
 	}
 	/**
-	* Get the count of favorites of $id
-	* @return integer
+	 * Get the count of favorites of the user $id
+	 * @return integer
 	**/
 	public static function get_favorites_count( $id ) {
 		$favorites = db()->query(
@@ -393,7 +396,12 @@ class Audios implements ModelInterface {
 		);
 		return (int) $favorites->size;
 	}
-
+	/**
+	 * Inserts an audio|reply in the database
+	 * @param  array  $options The keys to insert
+	 * @return array           An array with everything inserted so it can
+	 *                         be displayed in screen instantly.
+	 */
 	public static function insert( array $options ) {
 		if( empty($options['audio']) && empty($options['reply_to']) ) {
 			// come on! need one of both
@@ -541,12 +549,12 @@ class Audios implements ModelInterface {
 	}
 
 	/**
-	* Will delete an audio or a reply
-	*
-	* This function is BLIND
-	* It will delete the audio without any
-	* comprobation.
-	* @return void
+	 * Will delete an audio or a reply
+	 *
+	 * This function is BLIND
+	 * It will delete the audio without any
+	 * comprobation.
+	 * @return void
 	**/
 	public static function delete( array $audio ) {
 		$id = $audio['id'];
@@ -563,9 +571,8 @@ class Audios implements ModelInterface {
 		}
 	}
 	/**
-	* Favorites an audio
-	* @param $audio_id string
-	* @return void
+	 * Favorites an audio
+	 * @param string $audio_id
 	**/
 	public static function register_favorite( $audio_id ) {
 		$update = db()->query(
@@ -596,9 +603,8 @@ class Audios implements ModelInterface {
 		}
 	}
 	/**
-	* Favorites a tweet
-	* @param $audio_id string
-	* @return void
+	 * Unfavorites an audio
+	 * @param  string $audio_id
 	**/
 	public static function unregister_favorite( $audio_id ) {
 		$update = db()->query(

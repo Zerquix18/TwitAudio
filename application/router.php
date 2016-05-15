@@ -19,8 +19,7 @@ $router->addMatchTypes( array(
 		'valid_audio_id'	=> '([A-Za-z0-9]{6})',
 	)
 );
-/**
-* The home page*/
+// the home page
 $router->map(
 		'GET', // method
 		'/', // path
@@ -29,8 +28,8 @@ $router->map(
 		}
 	);
 /**
-* The login page
-* The param login will be either signin or callback
+ * The login page
+ * The param login will be either signin or callback
 **/
 $router->map(
 		'GET',
@@ -40,7 +39,7 @@ $router->map(
 		}
 	);
 /**
-* Text pages
+ * Text pages
 **/
 $router->map(
 		'GET',
@@ -72,11 +71,11 @@ $router->map(
 	);
 
 /**
-*    ^ That guy must be above 
-*because if it's not the guy below will catch it
-*
-* Audio pages
-*
+ *    ^ That guy must be above 
+ * because if it's not the guy below will catch it
+ *
+ * Audio pages
+ *
 **/
 
 $router->map(
@@ -87,7 +86,7 @@ $router->map(
 		}
 	);
 /**
-* Frame for audios
+ * Frame for audios
 **/
 $router->map(
 		'GET',
@@ -122,7 +121,7 @@ $router->map('GET', '/re-update-943', function() {
 	echo implode("\n", $output);
 });
 
-/** end routes, match em'! **/
+// end routes, match em'!
 
 $match = $router->match();
 

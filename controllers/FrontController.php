@@ -1,15 +1,16 @@
 <?php
 /**
-*
-* Front Controller
-* Loads the home page
-*
+ *
+ * Front Controller
+ * Loads the home page
 **/
 namespace controllers;
 use \application\View,
 	\models\Audios;
 class FrontController {
-
+	/**
+	 * Prints the home page
+	 */
 	public function __construct() {
 
 		if( ! is_logged() || \application\HTTP::get('logout') ) {

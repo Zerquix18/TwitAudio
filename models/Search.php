@@ -16,7 +16,17 @@ use \models\Users,
 	\models\Audios;
 	
 class Search {
-
+	/**
+	 * Performs a search
+	 * Options are:
+	 * 'query'
+	 * 'page'
+	 * 'sort' (d=date,p=plays)
+	 * 'type' (a=audios,u=user)
+	 * 
+	 * @param  array  $options
+	 * @return array
+	 */
 	public static function do_search( array $options ) {
 		/*
 		* Sometimes you just hate the PHP inconsistency.

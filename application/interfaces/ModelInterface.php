@@ -10,38 +10,37 @@
 namespace application\interfaces;
 interface ModelInterface {
 	/**
-	* Used to complete and clean something after
-	* a SELECT. It will clean unuseful data,
-	* force some types and add aditional data.
-	*
-	* @param $array_to_complete array
-	* @return array
-	**/
+	 * To complete things after a SELECT query. This will force types,
+	 * add aditional keys and delete useless stuff after a query.
+	 *
+	 * @param  array $array_to_complete
+	 * @return array
+	 */
 	public static function complete( array $array_to_complete );
 	/**
-	* Used to DELETE something in the database.
-	*
-	* @param $parameters array
-	**/
+	 * Deletes something, like an audio or a user.
+	 * 
+	 * @param  array $parameters
+	 * @throws \Exception if there was a query error
+	 */
 	public static function delete(  array $parameters );
 	/**
-	* Used to INSERT something in the database
-	* Returns an array with useful data.
-	* In case of error, returns an empty array.
-	*
-	* @param $parameters array - An array with the pair key=>value to insert
-	* in the database.
-	* @return array
-	**/
+	 * Inserts something in the database.
+	 * 
+	 * @param  array $parameters
+	 * @throws \Exception if there was an query error
+	 * @return array Useful information to display after the insert
+	 */
 	public static function insert(   array $parameters );
 	/**
-	* Used to SELECT something from the database.
-	*
-	* @param $by string - An ID or username
-	* @param $which_columns -An array with the columns
-	*  of the database to extract.
-	* @return array
-	**/
+	 * Get something from the database.
+	 * 
+	 * @param  string $by An ID or user
+	 * @param  array  $which_columns A list of columns of the database
+	 * to select the info.
+	 * @throws  \Exception if there was a query error
+	 * @return array  An empty array in case that nothing was found.
+	 */
 	public static function get( $by, array $which_columns = array() );
 	
 }

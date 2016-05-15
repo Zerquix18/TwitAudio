@@ -11,17 +11,24 @@
 namespace application\exceptions;
 
 class MobileAJAXException extends \Exception {
-
+	/**
+	 * Saves the options
+	 * @var array
+	 */
 	public $options;
 
-	public function __construct($message, array $options = array() ) {
+	/**
+	 * @param string $message The exception message
+	 * @param array $options  Options for behavior
+	 */
+	public function __construct( $message, array $options = array() ) {
 		/**
-		* 'show_in_web' will determine if we shall return
-		* the error message of the exception OR we will just
-		* return 'There was a problem while processing your
-		* request'. 
-		* 'error_code' will determine the error code in the mobile
-		* side.
+		 * 'show_in_web' will determine if we shall return
+		 * the error message of the exception OR we will just
+		 * return 'There was a problem while processing your
+		 * request'. 
+		 * 'error_code' will determine the error code in the mobile
+		 * side.
 		**/
 		$default_options = array(
 				'show_in_web'	=> false,

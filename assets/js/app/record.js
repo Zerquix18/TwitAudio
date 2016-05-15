@@ -9,11 +9,15 @@
 
 window.record = {
 
+	/**
+	 * @type {Boolean}
+	 */
 	initialized: false,
 
 	/**
-	* @return bool
-	**/
+	 * Returns true if the browser supports audio recording
+	 * @return {Boolean}
+	 */
 	canRecord: function() {
 		navigator.getMedia = (
 				navigator.getUserMedia ||
@@ -36,9 +40,7 @@ window.record = {
 
 		return true;
 	},
-	/**
-	* @return void
-	**/
+
 	init: function() {
 		if( ! this.canRecord() ) {
 			return;
@@ -82,7 +84,9 @@ window.record = {
 				);
 			});
 	}, // init func
-
+	/**
+	 * Starts recording
+	 */
 	start: function() {
 		if( ! this.initialized ) {
 			$("div#post").hide();
@@ -97,7 +101,9 @@ window.record = {
 		this.counterLeft();
 		unfinishedAudio('start');
 	},
-
+	/**
+	 * Stops recording
+	 */
 	stop: function() {
 		if( ! this.isRecording ) {
 			return;
@@ -120,7 +126,9 @@ window.record = {
 		this.recorder.clear();
 		$("#count").html("0:00");
 	},
-
+	/**
+	 * Cancels recording
+	 */
 	cancel: function() {
 		this.recorder.clear();
 
@@ -144,8 +152,8 @@ window.record = {
 	},
 
 	/**
-	* starts a countdown of 3 seconds BEFORE
-	* to start recording
+	 * starts a countdown of 3 seconds BEFORE
+	 * to start recording
 	**/
 	counterLeft: function() {
 		// static variable
@@ -179,8 +187,8 @@ window.record = {
 		}
 	},
 	/**
-	* updates the seconds while recording
-	* 'maxDuration' is declared in templates/footer.phtml
+	 * updates the seconds while recording
+	 * 'maxDuration' is declared in templates/footer.phtml
 	**/
 	updateSeconds: function() {
 		if( 'undefined' === typeof this.recordingSecondsInterval ) {

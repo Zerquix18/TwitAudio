@@ -30,6 +30,13 @@ class Payment {
 
 	private $payment_method;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param string $payment_method Must be stripe|paypal
+	 * @param string $user_id        The ID of the user that is making
+	 *                               the payment.
+	 */
 	public function __construct( $payment_method, $user_id ) {
 		if( ! in_array($payment_method, array('paypal', 'stripe') ) ) {
 			trigger_error('Payment method is wrong');
@@ -39,8 +46,10 @@ class Payment {
 	}
 
 	/**
-	* Charges the user and makes it premium
-	* @return array
+	 * Charges the user and makes it premium
+	 * @param string $token A stripe|paypal token
+	 * @throws \Exception
+	 * @return array
 	**/
 	public function charge( $token ) {
 		ignore_user_abort(true);
@@ -102,6 +111,11 @@ class Payment {
 			);
 		return $result;
 	}
+	/**
+	 * Charges the user via Stripe
+	 * @param  string $token The Stripe token
+	 * @return bool
+	 */
 	public function charge_stripe( $token ) {
 		$this->set_stripe_private_key();
 		try {
@@ -172,11 +186,11 @@ class Payment {
 	public function get_paypal_url() {}
 
 	/**
-	* Returns the timestamp for the same day number
-	* of today in the next month
-	* thanks http://stackoverflow.com/a/5760371/1932946
-	* for doing what PHP could not in its entiry history
-	**/
+	 * Returns the timestamp for the same day number
+	 * of today in the next month
+	 * thanks http://stackoverflow.com/a/5760371/1932946
+	 * for doing what PHP could not in its entiry history
+	 **/
 	private function get_next_month() {
 		$date      = new \DateTime('now');
 		$start_day = $date->format('j');
@@ -191,6 +205,9 @@ class Payment {
 		
 		return $date->getTimestamp();
 	}
+	/**
+	 * Set the stripe key
+	 */
 	private function set_stripe_private_key() {
 		if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {
 			/**
@@ -206,7 +223,7 @@ class Payment {
 		}
 	}
 	/**
-	* this is for the front end
+	 * this is for the front end
 	**/
 	public static function get_stripe_public_key() {
 		if( 'www.twitaudio.com' === $_SERVER['HTTP_HOST'] ) {

@@ -1,15 +1,17 @@
 <?php
 /**
-* This class has 2 static methods
-* To get and set config in runtime
-* The global $_CONFIG is set in index.php
-*
+ * This class has 2 static methods
+ * To get and set config in runtime
+ * The global $_CONFIG is set in index.php
+ *
+ * @author Zerquix18 <zerquix18@outlook.com>
+ * @copyright 2016 Luis A. Martínez
 **/
 class Config {
 	/**
-	* Returns $key from $_CONFIG
-	* @param $key string
-	* @return mixed
+	 * Returns $key from $_CONFIG
+	 * @param  string $key
+	 * @return mixed  The key of $_CONFIG or NULL if it does not exist.
 	**/
 	public static function get( $key ) {
 		global $_CONFIG;
@@ -19,10 +21,9 @@ class Config {
 		return $_CONFIG[$key];
 	}
 	/**
-	* Sets $key and $value to $_CONFIG
-	* @param $key string
-	* @param $value mixed
-	* @return void
+	 * Sets $key and $value to $_CONFIG
+	 * @param string $key
+	 * @param mixed  $value
 	**/
 	public static function set( $key, $value ) {
 		global $_CONFIG;

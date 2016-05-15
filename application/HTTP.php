@@ -1,13 +1,12 @@
 <?php
 /**
-* HTTP Class
-* Handles the HTTP data
-* for inputs and outputs
-* and more!
-*
-* @author Zerquix18 <zerquix18@outlook.com>
-* @copyright Copyright (c) 2016 - Luis A. Martínez
-*
+ * HTTP Class
+ * Includes functions related to requests
+ * for inputs and outputs
+ * and more!
+ *
+ * @author Zerquix18 <zerquix18@outlook.com>
+ * @copyright 2016 Luis A. Martínez
 **/
 
 namespace application;
@@ -15,7 +14,12 @@ namespace application;
 class HTTP {
 	/**
 	* Returns the GET parameter $param
-	* @return string
+	* Something like $_GET[$param] but it will check that it exists
+	* and that it is a string, not an array. So we can avoid
+	* param[]=something.
+	* 
+	* @return string The GET param or empty if it does not exist 
+	*                                       or it is not valid.
 	**/
 	public static function get( $param ) {
 		if( ! isset( $_GET[ $param ] ) || ! is_string( $_GET[ $param ] ) ) {
@@ -25,7 +29,12 @@ class HTTP {
 	}
 	/**
 	* Returns the POST parameter $param
-	* @return string
+	* Something like $_POST[$param] but it will check that it exists
+	* and that it is a string, not an array. So we can avoid
+	* param[]=something.
+	* 
+	* @return string The POST param or empty if it does not exist 
+	*                                       or it is not valid.
 	**/
 	public static function post( $param ) {
 		if( ! isset( $_POST[ $param ] ) || ! is_string( $_POST[ $param ] ) ) {
@@ -34,10 +43,11 @@ class HTTP {
 		return trim( $_POST[ $param ] );
 	}
 	/**
-	* Returns the page number validated
-	* $page_number may be the page number
-	* sent through AJAX
-	* @return integer
+	 * Returns the page number validated
+	 * $page_number may be the page number
+	 * sent through AJAX.
+	 * 
+	 * @return integer The page number or 0 if it is not valid.
 	**/
 	public static function sanitize_page_number( $page_number ) {
 		if( ! ctype_digit($page_number) ) {
@@ -49,19 +59,20 @@ class HTTP {
 		return (int) $page_number;
 	}
 	/**
-	* Protects a string from XSS
-	* @return string
+	 * Sanitizes a string of HTML tags.
+	 * @return string
 	**/
 	public static function xss_protect( $str ) {
 		return htmlspecialchars( $str, ENT_QUOTES, 'utf-8');
 	}
 	/**
-	* Sanitizes a string
-	* and prepares it
-	* @return string
+	 * Sanitizes a string for the audios description.
+	 * Protects it from XSS, adds links for http|https
+	 * And add links for @mentions.
+	 * @return string
 	**/
 	public static function sanitize( $str ) {
-		if( mb_strlen( $str, 'utf8' ) < 1 ) {
+		if( mb_strlen($str, 'utf8') < 1 ) {
 			return '';
 		}
 		$str = self::xss_protect( $str );
@@ -83,24 +94,33 @@ class HTTP {
 		return $str;
 	}
 	/**
-	* Exits a JSON string
-	* from the given array
-	* @return void
+	 * Exits a JSON string
+	 * from the given array $options
+	 * It is used to return things in AJAX requests so it
+	 * MUST contain the key "success".
+	 * 
+	 * @param array $options The list of keys to be exit as JSON
 	**/
 	public static function result( array $options ) {
 		if(    ! array_key_exists('success', $options)
 			|| ! is_bool($options['success'])
 			) {
-			return;
+			trigger_error('HTTP::result must have the key success');
+			exit(); // exit but with nothing
 		}
-		exit( json_encode( $options ) );
+		exit( json_encode($options) );
 	}
 	/**
-	* Performs an HTTP redirect
-	* @return void
+	 * Performs an HTTP redirect
+	 *
+	 * @param string  $url The URL to redirect to
+	 * @param integer $status The HTTP redirect status.
+	 *                        If the status is 302 then it is for a temporary
+	 *                        redirect. If it is 301 then it will be for a
+	 *                        permanent redirect.
 	**/
 	public static function redirect( $url, $status = 302 ) {
-		header('Location: ' . $url, true, $status);
+		header( sprintf('Location: %s', $url), true, $status);
 		exit;
 	}
 }
