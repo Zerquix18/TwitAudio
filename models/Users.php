@@ -173,7 +173,7 @@ class Users implements ModelInterface {
 
 		if( ! is_object($details) || ! property_exists($details, 'id') ) {
 			throw new \Exception(
-				'Twitter did not return anything: ' . print_r($details)
+				'Twitter did not return anything: ' . print_r($details, true)
 			);
 		}
 
