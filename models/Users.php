@@ -126,7 +126,7 @@ class Users implements ModelInterface {
 		$id_or_user   = (string) $id_or_user;
 		$column       = ctype_digit( $id_or_user ) ? 'id' : 'user';
 		$current_user = self::get_current_user();
-		if( is_logged() == $current_user->id ) {
+		if( is_logged() && is_logged() === $current_user->id ) {
 			// if it's the same user, don't do extra queries
 			// return only the columns required
 			$result = array();
@@ -138,7 +138,7 @@ class Users implements ModelInterface {
 		}
 		$columns = implode(',', $which_columns);
 		$user = db()->query(
-				'SELECT {$columns} FROM users WHERE {$column} = ?',
+				"SELECT {$columns} FROM users WHERE {$column} = ?",
 				$id_or_user
 			);
 
