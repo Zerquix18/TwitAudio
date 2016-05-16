@@ -33,25 +33,22 @@ function generate_id( $for ) {
 	}
 	$table  = 'session' == $for ? 'sessions' : 'audios';
 	$column = 'session' == $for ? 'sess_id'  : 'id';
-	$check  = false;
 	$id     = '';
-	while( ! $check ) {
+	while( true ) {
 		if( 'session' == $for ) {
 			$id = 'ta-' . substr( str_shuffle($chars), 0, 29);
 		} else {
 			$id = substr( str_shuffle($chars), 0, 6);
 		}
 		$result = db()->query(
-				'SELECT COUNT(*) AS size FROM {$table}
-				 WHERE {$column} = ?',
-				$id
+				"SELECT COUNT(*) AS size FROM {$table}
+				 WHERE {$column} = '{$id}'"
 			);
 		if( ! $result ) {
 			throw new \Exception('SELECT error: ' . db()->error);
 		}
-		if( (int) $result->size > 0 ) {
-			$check = true;
-		}
+		if( 0 === (int) $result->size )
+			break;
 	}
 	return $id;
 }
