@@ -57,7 +57,7 @@ try {
 	}
 
 } catch( \Exception $e ) {
-	if( \Config::get('is_production') ) {
+	if( ! \Config::get('is_production') ) {
 		echo $e->getMessage();
 	} else {
 		exit( file_get_contents('assets/templates/error-500.html') );

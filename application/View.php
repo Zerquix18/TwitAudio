@@ -39,7 +39,7 @@ class View {
 			}
 			require $path;
 		} catch ( \Exception $e ) {
-			if( \Config::get('is_production') ) {
+			if( ! \Config::get('is_production') ) {
 				echo $e->getMessage();
 			}
 		}
@@ -55,7 +55,7 @@ class View {
 			}
 			require $path;
 		} catch ( \Exception $e ) {
-			if( \Config::get('is_production') ) {
+			if( ! \Config::get('is_production') ) {
 				echo $e->getMessage();
 			}
 		}
