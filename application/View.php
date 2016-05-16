@@ -41,51 +41,38 @@ class View {
 		global $_TITLE;
 		$_TITLE = $title;
 	}
-	/**
-	* Tell the search engines
-	* if they should index the page
-	* @param $robots bool
-	* @return void
-	**/
-	public static function allow_robots( $robots ) {
-		$_ROBOTS = $robots;
-	}
-	/**
-	* Loads a template
-	* from a group.
-	* The param $template must be a template with its group.
-	* Something like "main/audio" or "main/profile"
-	* The function will return nothing if it doesn't.
-	* @param $template string
-	* @param $strings  array
-	**/
-	public static function load_template( $template, $strings = array() ) {
-		$group_template = explode('/', $template);
-		if( 2 !== $group_template ) {
-			return;
+
+	/** Loads templates / assets **/
+
+	public static function load_template( $templatename,
+											$template = array() ) {
+		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/'
+											. $templatename . '.phtml';
+		try {
+			if( ! file_exists($path) ) {
+				throw new \Exception('Cannot open template: ' . $path);
+			}
+			require $path;
+		} catch ( \Exception $e ) {
+			if( ! \Config::get('is_production') ) {
+				echo $e->getMessage();
+			}
 		}
-		$group         = $group_template[0];
-		$template      = $group_template[1];
-		$templates_dir = $_SERVER['DOCUMENT_ROOT'] . 'views/';
-		/**
-		* $templates_dir is the template for
-		* all the dirs for templates
-		* while $template_dir is only
-		* for this group.
-		**/
-		$template_dir  = $templates_dir . $group . '/';
-		if( ! is_dir($template_dir) ) {
-			/**
-			* The templates are separated in groups
-			* The templates for the main site are in the dir
-			* views/main
-			* future templates will be in different dirs
-			* like admin/main, support/main
-			* etc.
-			* If there's no dir, then we have nothing to look at there.
-			**/
-			trigger_error('Could not load templates dir ' . $templates_dir);
-			return;
+	}
+
+	public static function load_full_template( $templatename,
+												$template = array() ) {
+		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/full/'
+											. $templatename . '.phtml';
+		try {
+			if( ! file_exists($path) ) {
+				throw new \Exception('Cannot open template: ' . $path );
+			}
+			require $path;
+		} catch ( \Exception $e ) {
+			if( ! \Config::get('is_production') ) {
+				echo $e->getMessage();
+			}
 		}
 		$template_file = $template_dir . $template . '.hbs';
 		if( ! file_exists($template_file) ) {

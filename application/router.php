@@ -24,7 +24,7 @@ $router->map(
 		'GET', // method
 		'/', // path
 		function() {
-			return new \controllers\FrontController();
+			new \controllers\FrontController();
 		}
 	);
 /**
@@ -35,7 +35,7 @@ $router->map(
 		'GET',
 		'/[signin|callback:login]',
 		function( $login ) {
-			return new \controllers\LoginController( $login );
+			new \controllers\LoginController( $login );
 		}
 	);
 /**
@@ -45,7 +45,7 @@ $router->map(
 		'GET',
 		'/[about|terms|privacy|faq|licensing:page]',
 		function( $page ) {
-			return new \controllers\TextPagesController( $page );
+			new \controllers\TextPagesController( $page );
 		}
 	);
 /**
@@ -55,7 +55,7 @@ $router->map(
 		'GET',
 		'/[audios|favorites:profile_page]/[valid_username:user]',
 		function( $profile_page, $user ) {
-			return new \controllers\ProfileController(
+			new \controllers\ProfileController(
 						$profile_page,
 						$user
 					);
@@ -66,7 +66,7 @@ $router->map(
 		'GET',
 		'/search',
 		function() {
-			return new \controllers\SearchController();
+			new \controllers\SearchController();
 		}
 	);
 
@@ -82,7 +82,7 @@ $router->map(
 		'GET',
 		'/[valid_audio_id:audio_id]',
 		function( $audio_id ) {
-			return new \controllers\AudioController( $audio_id );
+			new \controllers\AudioController( $audio_id );
 		}
 	);
 /**
@@ -92,7 +92,7 @@ $router->map(
 		'GET',
 		'/frame/[valid_audio_id:audio_id]',
 		function( $id ) {
-			return new \controllers\FrameController( $id );
+			new \controllers\FrameController( $id );
 		}
 	);
 
@@ -101,11 +101,22 @@ $router->map(
 		'GET|POST',
 		'/[ajax|mob:via]/[get|post:method]/[a:action]',
 		function( $via, $method, $action ) {
-			return new \controllers\MobileAJAXController(
+			new \controllers\MobileAJAXController(
 					$via, $method, $action
 				);
 		}
 	);
+
+/** For testing */
+if( ! Config::get('is_production') ) {
+	$router->map(
+		'GET|POST',
+		'/tests/[a:file]',
+		function( $file ) {
+			require $file;
+		}
+	);
+}
 /**
 * The page to re-update everything
 * from the repo
