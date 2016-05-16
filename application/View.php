@@ -8,9 +8,14 @@ namespace application;
 use \application\HTTP;
 
 class View {
-
-	/** Set the current page **/
-
+	/**
+	* Check if we are in a certain template
+	* to do something.
+	* Ex: if we are in a 404 page, don't show something
+	* You can pass it multiple params
+	* to check for multiple pages.
+	* @return bool
+	**/
 	public static function is() {
 		global $_PAGE;
 		if( isset($_PAGE) ) {
@@ -18,66 +23,120 @@ class View {
 		}
 		return false;
 	}
+	/**
+	* Set the current page
+	* @param $page string
+	* @return void
+	**/
 	public static function set_page( $page ) {
 		global $_PAGE;
 		$_PAGE = $page;
 	}
+	/**
+	* Set the title for the browser window
+	* @param $title str
+	* @return void
+	**/
 	public static function set_title( $title ) {
 		global $_TITLE;
 		$_TITLE = $title;
 	}
-
-	/** Loads templates / assets **/
-
-	public static function load_template( $templatename,
-											$template = array() ) {
-		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/'
-											. $templatename . '.phtml';
-		try {
-			if( ! file_exists($path) ) {
-				throw new \Exception('Cannot open template: ' . $path);
-			}
-			require $path;
-		} catch ( \Exception $e ) {
-			if( \Config::get('is_production') ) {
-				echo $e->getMessage();
-			}
+	/**
+	* Tell the search engines
+	* if they should index the page
+	* @param $robots bool
+	* @return void
+	**/
+	public static function allow_robots( $robots ) {
+		$_ROBOTS = $robots;
+	}
+	/**
+	* Loads a template
+	* from a group.
+	* The param $template must be a template with its group.
+	* Something like "main/audio" or "main/profile"
+	* The function will return nothing if it doesn't.
+	* @param $template string
+	* @param $strings  array
+	**/
+	public static function load_template( $template, $strings = array() ) {
+		$group_template = explode('/', $template);
+		if( 2 !== $group_template ) {
+			return;
 		}
+		$group         = $group_template[0];
+		$template      = $group_template[1];
+		$templates_dir = $_SERVER['DOCUMENT_ROOT'] . 'views/';
+		/**
+		* $templates_dir is the template for
+		* all the dirs for templates
+		* while $template_dir is only
+		* for this group.
+		**/
+		$template_dir  = $templates_dir . $group . '/';
+		if( ! is_dir($template_dir) ) {
+			/**
+			* The templates are separated in groups
+			* The templates for the main site are in the dir
+			* views/main
+			* future templates will be in different dirs
+			* like admin/main, support/main
+			* etc.
+			* If there's no dir, then we have nothing to look at there.
+			**/
+			trigger_error('Could not load templates dir ' . $templates_dir);
+			return;
+		}
+		$template_file = $template_dir . $template . '.hbs';
+		if( ! file_exists($template_file) ) {
+			/**
+			* if the template does not exist...
+			**/
+			trigger_error('Template does not exist: ' . $template);
+			return;
+		}
+		/**
+		* Let's load our template
+		**/
+		$template_php = LightnCandy::compile(
+				$templates_dir . $template . 'hbs'
+			);
+		/**
+		* Now, in the views dir we have the main template
+		* which loads the header and the footer
+		* and loads other partials.
+		* First we compile the default template for the group.
+		**/
+		$group_php     = LightnCandy::compile($template_dir . $group . '.hbs');
+		$group_strings = self::get_default_strings_for($group);
+		// now we have everything, print it
+		$renderer = LightnCandy::prepare($group_php, array(
+				''
+			)
+		);
 	}
 
-	public static function load_full_template( $templatename,
-												$template = array() ) {
-		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/full/'
-											. $templatename . '.phtml';
-		try {
-			if( ! file_exists($path) ) {
-				throw new \Exception('Cannot open template: ' . $path );
-			}
-			require $path;
-		} catch ( \Exception $e ) {
-			if( \Config::get('is_production') ) {
-				echo $e->getMessage();
-			}
-		}
-	}
+	/**
+	* Loads assets
+	**/
 
 	public static function load_script( $script_name ) {
-		echo url( 'assets/js/' . $script_name );
+		return url('assets/js/'  . $script_name);
 	}
 
 	public static function load_style( $style_name ) {
-		echo url( 'assets/css/' . $style_name );
+		return url('assets/css/' . $style_name);
 	}
 
 	public static function load_img( $img_name ) {
-		echo url( 'assets/img/' . $img_name );
+		return url('assets/img/' . $img_name);
 	}
 	/**
 	* alias
 	* @see load_img
 	**/
-	public static function load_image( $image_name) {
-		return self::load_img( $image_name );
+	public static function load_image( $image_name ) {
+		return self::load_img($image_name);
 	}
 	/**
 	* Returns the twitter image
