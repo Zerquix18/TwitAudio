@@ -19,21 +19,39 @@ use \application\View;
 class TextPagesController {
 	
 	public function __construct( $page ) {
-		$file = $_SERVER['DOCUMENT_ROOT'] .
+		try {
+			$file = $_SERVER['DOCUMENT_ROOT'] .
 			'/templates/html/' . $page . '.html';
 			
-		if( ! is_readable($file) ) {
-			View::exit_404();
-		}
+			if( ! is_readable($file) ) {
+				View::exit_404();
+			}
 
-		$text = file_get_contents($file);
-		$text = nl2br($text);
+			$text   = file_get_contents($file);
+			$text   = nl2br($text);
 
-		$template = array(
-				'text' => $text,
-				'page' => $page
+			$bars   = array('text' => $text);
+
+			$titles = array(
+				'about' 	=> 'About',
+				'terms' 	=> 'Terms of Service',
+				'privacy' 	=> 'Privacy Policy',
+				'faq' 		=> 'FAQ',
+				'contact' 	=> 'Contact',
+				'licensing' => 'Licensing',
 			);
+			$title = str_replace(
+							array_keys($titles),
+							array_values($titles),
+							$page
+						);
 
-		View::load_full_template('text', $template);
+			View::set_page('text');
+			View::set_title($title);
+			echo View::get_group_template('main/text', $bars);
+
+		} catch ( \Exception $e ) {
+			echo $e->getMessage();
+		}
 	}
 }

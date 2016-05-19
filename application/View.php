@@ -1,400 +1,401 @@
 <?php
 /**
-* View
-* Loads everything related to front-end
-*
+ * View.php
+ * Loads all the templates and their stuff
+ *
+ * @author Zerquix18 <zerquix18@outlook.com>
+ * @copyright 2016 Luis A. Martínez
 **/
 namespace application;
-use \application\HTTP;
+use \application\HTTP,
+	\LightnCandy\LightnCandy;
 
 class View {
 	/**
-	* Check if we are in a certain template
-	* to do something.
-	* Ex: if we are in a 404 page, don't show something
-	* You can pass it multiple params
-	* to check for multiple pages.
-	* @return bool
-	**/
+	 * Stores the current page. The page will be
+	 * 'home-logged'. With that we can detect what page are we in
+	 * so we can show an specific content.
+	 * @var string
+	 */
+	private static $page;
+	/**
+	 * Stores the title of the current window.
+	 * @var string
+	 */
+	private static $title;
+	/**
+	 * Stores whether we should allow robots (.eg meta name="robots")
+	 * @var boolean
+	 */
+	private static $robots;
+	/**
+	 * Saves the options.
+	 * @see self::get_template_options
+	 * @var array
+	 */
+	private static $options = array();
+	/**
+	 * This function returns if we are in one page specified by the params
+	 * The page will be set with the load_template function
+	 * Ex: is('404', 'text', 'home-logged')
+	 * 
+	 * @return boolean
+	 */
 	public static function is() {
-		global $_PAGE;
-		if( isset($_PAGE) ) {
-			return in_array( $_PAGE, func_get_args() );
-		}
-		return false;
+		$args = func_get_args();
+		return in_array(self::$page, $args);
 	}
 	/**
-	* Set the current page
-	* @param $page string
-	* @return void
-	**/
+	 * Sets the current page
+	 * @see self::$page
+	 * @param string $page_name The current page name
+	 * 
+	 */
 	public static function set_page( $page ) {
-		global $_PAGE;
-		$_PAGE = $page;
+		self::$page = $page;
+		// yup. it works.
 	}
 	/**
-	* Set the title for the browser window
-	* @param $title str
-	* @return void
-	**/
+	 * Sets the title of the current window.
+	 * @param string $title
+	 */
 	public static function set_title( $title ) {
-		global $_TITLE;
-		$_TITLE = $title;
+		self::$title = $title;
 	}
-
-	/** Loads templates / assets **/
-
-	public static function load_template( $templatename,
-											$template = array() ) {
-		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/'
-											. $templatename . '.phtml';
-		try {
-			if( ! file_exists($path) ) {
-				throw new \Exception('Cannot open template: ' . $path);
-			}
-			require $path;
-		} catch ( \Exception $e ) {
-			if( ! \Config::get('is_production') ) {
-				echo $e->getMessage();
-			}
-		}
+	/**
+	 * Should we allow robots? (e.g meta name="robots")
+	 * @param boolean $robots
+	 */
+	public static function set_robots( $robots ) {
+		self::$robots = $robots;
 	}
-
-	public static function load_full_template( $templatename,
-												$template = array() ) {
-		$path = $_SERVER['DOCUMENT_ROOT'] . '/templates/full/'
-											. $templatename . '.phtml';
-		try {
-			if( ! file_exists($path) ) {
-				throw new \Exception('Cannot open template: ' . $path );
-			}
-			require $path;
-		} catch ( \Exception $e ) {
-			if( ! \Config::get('is_production') ) {
-				echo $e->getMessage();
-			}
+	/**
+	 * Returns the full URL to a script
+	 * @param  string $script The script to load (must contain .js)
+	 * @return string
+	 */
+	public static function get_script( $script ) {
+		return url('assets/js/' . $script);
+	}
+	/**
+	 * Returns the full URL to a style
+	 * @param  string $style The style to load (must contain .css)
+	 * @return string
+	 */
+	public static function get_style( $style ) {
+		if( ! \Config::get('is_production') ) {
+			/*
+				If we're not in production, then the CSS will be located in
+				css/app/css.css
+				Inside that CSS, if we call to ../img/
+				it will point to css/img/
+				So I made this file to deal with it.
+				:)
+			 */
+			return url('assets/css/load_style.php?style=' . $style);
 		}
-		$template_file = $template_dir . $template . '.hbs';
+		return url('assets/css/' . $style);
+	}
+	/**
+	 * Returns the full URL to an image
+	 * @param  string $image The image to load (must contain its format)
+	 * @return string
+	 */
+	public static function get_image( $image ) {
+		return url('assets/img/' . $image);
+	}
+	/** 
+	 * Returns the list of options. They can be set in first place
+	 * using self::$template_options = array(...)
+	 * Here then it will add the ones that are missing.
+	 * 
+	 * @return array
+	 */
+	public static function get_template_options() {
+		$default_options = array(
+				/*
+				 * the current group we are working with. It is set
+				 * after a call to get_template.
+				 */
+				'current_group' => 'main',
+				/*
+				 * The dir to load the templates
+				 */
+				'templates_dir' => $_SERVER['DOCUMENT_ROOT'] . '/views/',
+				/*
+				 * LightnCandy flags for groups.
+				 */
+				'group_options' => array(
+					/** helpers **/
+					'helpers' => array(
+						/**
+						* Allow to load subtemplates
+						**/
+						'get_template' => '\application\View::get_template',
+						'get_partial'  => '\application\View::get_partial',
+						'get_image'   => '\application\View::get_image',
+						'get_style'   => '\application\View::get_style',
+						'get_script'  => '\application\View::get_script'
+					), // .helpers
+					'flags' =>
+					LightnCandy::FLAG_RENDER_DEBUG |
+					LightnCandy::FLAG_ERROR_EXCEPTION |
+					LightnCandy::FLAG_HANDLEBARS
+				), //.group_options
+				/*
+				 * LightnCandy flags for templates
+				 */
+				'template_options' => array(
+					'helpers' => array(
+							// don't allow a subtemplate to call another
+							// subtemplate.
+							'get_partial' => '\application\View::get_partial',
+							'get_image'   => '\application\View::get_image',
+							'get_style'   => '\application\View::get_style',
+							'get_script'  => '\application\View::get_script'
+						),
+					'flags'  =>
+					LightnCandy::FLAG_RENDER_DEBUG |
+					LightnCandy::FLAG_ERROR_EXCEPTION
+				),
+				/*
+				 * LightnCandy flags for partials
+				 */
+				'partial_options' => array(
+					'helpers' => array(
+							// allow calling partials from partials
+							'get_partial' => '\application\View::get_partial',
+							'get_image'   => '\application\View::get_image',
+							'get_style'   => '\application\View::get_style',
+							'get_script'  => '\application\View::get_script'
+						),
+					'flags'  =>
+					LightnCandy::FLAG_RENDER_DEBUG |
+					LightnCandy::FLAG_ERROR_EXCEPTION
+				)
+			); // .default_options
+		return array_merge($default_options, self::$options);
+	}
+	/**
+	 * Loads a group and a template.
+	 * The bars for the template group must be in a file
+	 * inside templates dir.
+	 * Ex: main/main.php
+	 * The main template group must be there too.
+	 * Ex: main/main.hbs
+	 * 
+	 * @param  string $group   It must be the group and its template.
+	 *                         With the format group/template.
+	 *                         Ex: main/404, main/home, main/profile
+	 * @param  array  $bars    The list of bars that the template
+	 *                         will parse.
+	 * @param  array  $lightncandy_options
+	 * @return string          Everything ready to be print.
+	 */
+	public static function get_group_template(
+										$group,
+										$bars                = array(),
+										$lightncandy_options = array()
+									) {
+		//group/template
+		$group_template = explode('/', $group);
+		if( 2 !== count($group_template) ) {
+			trigger_error(
+					'Load template sintax must be "group/template"'
+				);
+			return '';
+		}
+		$group         = $group_template[0];
+		$template      = $group_template[1];
+		$options       = self::get_template_options();
+		$templates_dir = $options['templates_dir'];
+		self::$options['current_group'] = $group;
+		$template_dir  = $templates_dir . $group . '/';
+
+		if( ! is_dir($template_dir) ) {
+			/**
+			* The templates are separated in groups
+			* The templates for the main site are in the dir
+			* views/main
+			* future templates will be in different dirs
+			* like admin/main, support/main
+			* etc.
+			* If there's no dir, then we have nothing to look at there.
+			**/
+			trigger_error('Could not load templates dir ' . $templates_dir);
+			return;
+		}
+		$template_file = $template_dir . $group . '.hbs';
 		if( ! file_exists($template_file) ) {
 			/**
 			* if the template does not exist...
 			**/
-			trigger_error('Template does not exist: ' . $template);
+			trigger_error('Template does not exist: ' . $template_file);
 			return;
 		}
 		/**
-		* Let's load our template
+		* Get the default bars for the group
+		* which are in a file. It contains
+		* the header/footer bars
+		* and other stuff.
+		**/
+		$default_bars  = self::get_default_bars($group);
+		$bars          = array_merge($default_bars, $bars);
+		/**
+		* This is global info for the templates
+		**/
+		/**
+		* Let's load our group template
 		**/
 		$template_php = LightnCandy::compile(
-				$templates_dir . $template . 'hbs'
+				file_get_contents($template_file),
+				array_merge_recursive(
+					$options['group_options'],
+					$lightncandy_options
+				)
 			);
-		/**
-		* Now, in the views dir we have the main template
-		* which loads the header and the footer
-		* and loads other partials.
-		* First we compile the default template for the group.
-		**/
-		$group_php     = LightnCandy::compile($template_dir . $group . '.hbs');
-		$group_strings = self::get_default_strings_for($group);
-		// now we have everything, print it
-		$renderer = LightnCandy::prepare($group_php, array(
-				''
-			)
+		$renderer = LightnCandy::prepare($template_php);
+		return $renderer(
+			array(
+				'body' => $template
+			) + $bars
 		);
 	}
-
 	/**
-	* Loads assets
+	 * This function instead, loads a subtemplate
+	 * which is for an specific page.
+	 * It can NOT load another subtemplates
+	 * but it can load partials.
+	 * @param string $subtemplate_name The name of the sub template.
+	 * @param array  $args             Context passed from the template or if you're
+	 *                                 calling it directly.
+	 *                                 Ex:   {{load_subtemplate 'test' this}}
+	 *                                 Ex 2: load_subtemplate('test', array())
+	 * @param array $options           If you're calling it directly,
+	 *                                 you can pass options for the LightnCandy
+	 *                                 (like helpers or flags).
+	 * @return string
 	**/
-
-	public static function load_script( $script_name ) {
-		return url('assets/js/'  . $script_name);
-	}
-
-	public static function load_style( $style_name ) {
-		return url('assets/css/' . $style_name);
-	}
-
-	public static function load_img( $img_name ) {
-		return url('assets/img/' . $img_name);
-	}
-	/**
-	* alias
-	* @see load_img
-	**/
-	public static function load_image( $image_name ) {
-		return self::load_img($image_name);
-	}
-	/**
-	* Returns the twitter image
-	* with different sizes
-	* $link must be the common twitter url
-	* @return string
-	**/
-	public static function get_twitter_image( $link, array $options ) {
-		$hola   = explode(".", $link);
-		$format = end($hola);
-		$hola   = explode("_", $link);
-		array_pop($hola);
-		$link   = implode("_", $hola);
-		$size   = isset($options['size']) ? $options['size'] : '';
-		if( 'bigger' == $size ) {
-			return $link . '_bigger.'. $format;
-		} elseif( '' === $size ) {
-			return $link . '.' . $format;
-		} else {
-			return $link . '_normal.' . $format;
+	public static function get_template(
+										$template,
+										$bars                = array(),
+										$lightncandy_options = array()
+									) {
+		// all the methods here have to have its namespace
+		$options       = \application\View::get_template_options();
+		$template_file = sprintf(
+					//ex: {...}views/main/templates/home.hbs
+					'%s/%s/templates/%s.hbs',
+					$options['templates_dir'],
+					$options['current_group'],
+					$template
+				);
+		if( ! file_exists($template_file) ) {
+			trigger_error('Template does not exist: ' . $template_file);
+			return '';
 		}
-	}
-	/**
-	* Shows the verified badge
-	* In case the user is verified
-	* @param $numb
-	**/
-	public static function show_verified_badge( $numb ) {
-		if( 0 == $numb ) {
-			return;
-		}
-		echo '<i class="fa fa-check verified" title="Verified account"></i>';
-	}
-
-	public static function display_audio( array $audio,
-										  array $options = array() ) {
-		/** THERE ARE DRAGONS HERE **/
-		//big is only for audio pages
-		$big = @$options['size'] == 'big';
-		$user = $audio['user'];
-		$profile_url = url('audios/' . $user['user']);
-		$get_avatar = $big ? $user['avatar_bigger'] : $user['avatar'];
-	?>
-	<div class="audio <?php
-	if($big) echo 'audio-big';
-	echo ' audio_' . $audio['id'];
-	?>"
-	id="<?php echo $audio['id'] ?>">
-	<div class="audio-header">
-		<a href="<?php echo url('audios/'. $user['user']) ?>">
-			<img class="circle"
-			src="<?php echo $get_avatar ?>"
-			onerror="this.src='<?php echo url('assets/img/unknown.png') ?>'"
-		<?php if($big): ?>
-			height="73"
-			width="73"
-		<?php else: ?>
-			height="48"
-			width="48"
-		<?php endif ?>
-			>
-		</a>
-		<span class="audio-user-name">
-			<a
-			class="no-deco"
-			href="<?php echo $profile_url ?>"
-			>
-				<?php echo HTTP::xss_protect( $user['name'] ) ?>
-			</a>
-		</span>
-		<span class="audio-user-user">
-			<a
-			class="no-deco"
-			href="<?php echo $profile_url ?>"
-			>
-				@<?php echo $user['user'] ?>
-			</a>
-		</span>
-		<span class="audio-date">
-			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
-			<a href="<?php
-			echo \url();
-			if( $audio['reply_to'] != '0' )
-				echo $audio['reply_to'] .
-				'?reply_id=' . $audio['id'];
-			else
-				echo $audio['id']
-			?>">
-				<?php echo get_date_differences( $audio['time'] ) ?>
-			</a>
-		</span>
-		<?php
-		if( array_key_exists('is_linked', $audio) ):
-		?>
-		<div class="chip linked_reply">
-			<i class="fa fa-link"></i>&nbsp;
-			Linked reply
-		</div>
-		<?php endif ?>
-	</div>
-	<?php if( ! empty($audio['description']) ): ?>
-		<div class="audio-description">
-			<?php echo HTTP::sanitize( $audio['description'] ) ?>
-		</div>
-	<?php endif; if( ! empty( $audio['audio'] ) ):  // if its not a reply ?>
-	<div class="audio-play">
-	<script>
-	window.onLoadFunctions.push( function() {
-		$("#player_<?php echo $audio['id'] ?>").jPlayer({
-			ready: function(event) {
-				$(this).jPlayer("setMedia", {
-					mp3: "<?php echo $audio['audio'] ?>",
-				});
-			},
-			play: function() {
-				$(".jp-jplayer").not(this).jPlayer("pause");
-			},
-			cssSelectorAncestor : '#container_<?php echo $audio['id'] ?>',
-			swfPath: swfPath,
-			supplied: "mp3",
-			wmode: "window",
-			useStateClassSkin: true,
-			autoBlur: false,
-			smoothPlayBar: true,
-			keyEnabled: true,
-			remainingDuration: true,
-			toggleDuration: true
-		});
-	});
-	</script>
-	<div id="player_<?php echo $audio['id'] ?>" class="jp-jplayer"></div>
-    <div id="container_<?php echo $audio['id'] ?>" class="jp-audio sm">
-        <div class="jp-type-single">
-            <div class="jp-gui jp-interface">
-                <ul class="jp-controls">
-                    <li><a href="javascript:;" class="jp-play plei" data-id="<?php echo $audio['id'] ?>" tabindex="1"><i class="fa fa-play control"></i></a></li>
-                    <li><a href="javascript:;" class="jp-pause" tabindex="1"><i class="fa fa-pause control"></i></a></li>
-                    <li><a href="javascript:;" class="jp-stop" tabindex="1"></a></li>
-                    <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute"><i class="fa fa-volume-up vcontrol"></i></a></li>
-                    <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute"><i class="fa fa-volume-down vcontrol"></i></a></li>
-                    <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume"></a></li>
-                </ul>
-                <div class="jp-progress">
-                    <div class="jp-seek-bar">
-                        <div class="jp-play-bar"></div>
-                    </div>
-                </div>
-                <div class="jp-volume-bar">
-                    <div class="jp-volume-bar-value"></div>
-                </div>
-                <div class="jp-current-time"></div>
-                <div class="jp-duration"></div>
-            </div>
-            <div class="jp-no-solution">
-                <span>Update Required</span>
-                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
-            </div>
-        </div>
-    </div>
-	</div>
-	<?php endif # / if its not a reply ?>
-	<div class="audio-footer">
-	<?php if( ! empty($audio['audio']) ): # if not a reply ?>
-		<a
-		class="audio-btn"
-		id="plays_<?php echo $audio['id'] ?>"
-		title="<?php
-		$singular = '%d person played this';
-		$plurar   = '%d people played this';
-		echo sprintf(
-				!! $audio['plays'] ? $singular : $plural,
-				$audio['plays']
+		$template_php  = \LightnCandy\LightnCandy::compile(
+				file_get_contents($template_file),
+				array_merge_recursive(
+					$options['template_options'],
+					$lightncandy_options
+				)
 			);
-		?>"
-		>
-			<i class="fa fa-headphones"></i>&nbsp;
-			<span>
-				<?php echo format_number($audio['plays']) ?>
-			</span>
-		</a>
-	<?php endif ?>
-		<a class="audio-btn
-		<?php if( is_logged() ):
-			echo 'laic';
-			if($audio['favorited'])
-				echo ' favorited';
-			endif ?>"
-		data-id="<?php echo $audio['id'] ?>"
-		title="Mark as favorite">
-			<i class="fa fa-star"></i>&nbsp;
-			<span>
-				<?php echo format_number($audio['favorites']) ?>
-			</span>
-		</a>
-	<?php if( ! empty($audio['audio']) ): # if not a reply ?>
-		<a class="audio-btn"
-		      href="<?php echo url() . $audio['id'] ?>#replies"
-		      title="Leave a reply"
-		      >
-			<i class="fa fa-reply"></i>&nbsp;
-			<span>
-				<?php echo format_number($audio['replies_count']) ?>
-			</span>
-		</a>
-	<?php endif;
-		// no, this is not dirty.
-		// the 'is_logged' function
-		// returns an integer with
-		// the user ID
-		if( is_logged() == $user['id'] ): ?>
-		<a
-		href="javascript:void(0);"
-		class="audio-btn delit"
-		data-id="<?php echo $audio['id'] ?>"
-		title="'Delete this audio'"
-		>
-			<i class="fa fa-times"></i> Delete
-		</a>
-		<?php endif ?>
-	</div>
-	<div class="divider"></div>
-	</div><!--/ .audio -->
-	<?php
+		$renderer = \LightnCandy\LightnCandy::prepare($template_php);
+		return $renderer($bars);
 	}
-	public static function display_user( array $user ) {
-	?>
-		<ul class="user">
-			<li>
-				<a href="<?php echo url() . 'audios/' . $user['user'] ?>">
-					<img class="circle"
-						 src="<?php echo $user['avatar'] ?>"
-						 onerror="this.src='<?php
-						 self::load_img('unknown.png')
-						 ?>'"
-						 height="48"
-						 width="48"
-					>
-				</a>
-			</li>
-		<li class="audio-user-name">
-			<a href="<?php echo url() . 'audios/' . $user['user'] ?>">
-			<?php
-			echo \application\HTTP::xss_protect( $user['name'] );
-			self::show_verified_badge($user['verified']);
-			?>
-			</a>
-		</li>
-		<li class="audio-user-user">
-			<a href="<?php echo url() . 'audios/' . $user['user'] ?>">
-				@<?php echo $user['user'] ?>
-			</a>
-		</li>
-	</ul>
-	<?php
+	/**
+	 * This is a function for loading partials inside the subtemplates
+	 * and the group templates. With this we can call templates
+	 * inside the group/partials dir and pass arguments.
+	 * That may be used to loop posts, users, audios, etc.
+	 * This function is not called from PHP. It is called
+	 * from a template. Like this:
+	 * {{get_partial 'posts' post}}
+	 * {{get_partial 'sidebar'}}
+	 *
+	 * @param string $partial The name of the file without extension
+	 * @param array  $args    An array with bars that
+	 *                        the template needs.
+	 *                        If you want to send the current context
+	 *                        just use this. Ex: {{get_partial "lol" this}}
+	 * @return string
+	**/
+	public static function get_partial(
+										$partial,
+										$bars                = array(),
+										$lightncandy_options = array()
+									) {
+		/**
+		* If the partial was called INSIDE a loop
+		* then take the pair key=>value
+		**/
+		if( ! empty($bars['_this']) ) {
+			$bars = $bars['_this'];
+		}
+		$options = \application\View::get_template_options();
+						// namespace is obligatory
+		$template_php = \LightnCandy\LightnCandy::compile(
+				/** partial to compile **/
+				file_get_contents(
+					sprintf(
+						'%s/%s/partials/%s.hbs',
+						$options['templates_dir'],
+						$options['current_group'],
+						$partial
+					)
+				),
+				array_merge_recursive(
+					$options['partial_options'],
+					$lightncandy_options
+				)
+			);
+		$renderer = \LightnCandy\LightnCandy::prepare($template_php);
+		// go ahead!
+		return $renderer( $bars );
 	}
-	public static function load_more( $toLoad, $page, $extra = '' ) {
-		$extra = !empty($extra) ? 'data-extra="'. $extra . '"' : '';
-		echo '<div id="load_more"
-		data-load="'.$toLoad.'"
-		data-page="'.$page.'" '. $extra .'></div>';
+	/**
+	 * This function returns an array
+	 * with the default bars
+	 * for the group. Those bars are
+	 * the header, footer and globals.
+	 * It should be a PHP file with an array
+	 * called $bars
+	 * @param  string $group
+	 * @return array
+	**/
+	public static function get_default_bars( $group ) {
+		$options = self::get_template_options();
+		$result  = array();
+		$result['header'] = array();
+		if( self::$title ) {
+			$result['header']['title']  = self::$title;
+		}
+		if( self::$robots ) {
+			$result['header']['robots'] = self::$robots;
+		}
+		$file    = sprintf(
+					'%s/%s/%s.php',
+					$options['templates_dir'],
+					$group,
+					$group
+				);
+		if( ! file_exists($file) ) {
+			return array();
+		}
+		require $file;
+		return $bars;
 	}
-
-	public static function alert_error($error) {
-		echo '<div class="alert error">'. $error . '</div>';
-	}
-	public static function alert_info($info) {
-		echo '<div class="alert info">'. $info . '</div>';
-	}
-
-	public static function exit_404() {
-		self::load_full_template('404');
+	/**
+	 * Exits the 404 page. It may be called from anywhere.
+	 * @param string $group The group
+	 */
+	public static function exit_404( $group = 'main' ) {
+		ob_end_clean();
+		self::set_title('Error 404');
+		self::set_page('404');
+		self::set_robots(false);
+		echo self::get_group_template("{$group}/404");
 		exit;
 	}
 }

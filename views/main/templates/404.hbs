@@ -1,0 +1,41 @@
+{{!
+	404 template
+}}
+<div class="container">
+	<img src="{{get_image 'p404.png'}}">
+	<h3 class="not-found-text">
+		We could not find that!
+	</h3>
+	<form method="GET" action="{{main.search_url}}">
+		<div class="input-field">
+			<input
+				type="text"
+				name="q"
+				title="Type something to search"
+				>
+			 <label class="active">
+			 	<i class="fa fa-search"></i>
+			 	&nbsp;Search
+			 </label>
+		</div>
+	</form>
+	<ul>
+		<li>
+			<a href="javascript:history.back();">
+				Back
+			</a>
+		</li>
+		<li>
+			<a href="{{main.home_url}}">
+				Home
+			</a>
+		</li>
+		{{#unless user.is_logged}}
+		<li>
+			<a href="{{user.signin_url}}">
+				Sign In
+			</a>
+		</li>
+		{{/unless}}
+	</ul>
+</div>

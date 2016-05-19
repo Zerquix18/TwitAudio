@@ -139,5 +139,5 @@ $match = $router->match();
 if( $match && is_callable( $match['target'] ) ) {
 	call_user_func_array( $match['target'], $match['params'] );
 } else {
-	\application\View::load_full_template('404');
+	\application\View::exit_404();
 }

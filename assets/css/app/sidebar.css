@@ -5,7 +5,7 @@
 *
 **/
 /** the search input */
-.sidebar-search {
+.left-sidebar-search {
 	padding-left: 5px;
 	padding-right: 5px;
 	color: #FFF;
@@ -14,10 +14,10 @@
 .side-nav li {
 	padding: 0;
 }
-.sidebar-list li:hover {
+.left-sidebar-list li:hover {
 	background-color: #616161;
 }
-.sidebar-list a {
+.left-sidebar-list a {
 	height: 40px;
 	line-height: 40px;
 	font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
@@ -27,19 +27,19 @@
 * the code will not work
 * don't ask why
 **/
-.side-nav .sidebar-list a {
+.side-nav .left-sidebar-list a {
 	color: #FFF;
 }
-.sidebar-list i {
+.left-sidebar-list i {
 	font-size: 20px;
 	margin: 0 5px;
 }
-.sidebar-list ._badge {
+.left-sidebar-list ._badge {
 	margin-top: 10px;
 }
-.sidebar-profile_picture {
+.left-sidebar-profile-picture {
 	vertical-align: middle;
 }
-.open-sidebar {
+.left-sidebar-open {
 	margin-left: 10px;
 }

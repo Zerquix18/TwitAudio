@@ -1,0 +1,27 @@
+{{!
+	User template
+	For the user search
+}}
+<ul class="user">
+	<li>
+		<a href="{{user.profile_url}}">
+			<img class="circle"
+				 src="{{user_avatar}}"
+				 onerror="this.src='{{get_image 'unknown.png'}}"
+				 height="48"
+				 width="48"
+			>
+		</a>
+	</li>
+	<li class="audio-user-name">
+		<a href="{{user.profile_url}}">
+		{{user.name}}
+		{{show_verified_badge user.verified}}
+		</a>
+	</li>
+	<li class="audio-user-user">
+		<a href="{{user.profile_url}}">
+			@{{user.user}}
+		</a>
+	</li>
+</ul>
