@@ -51,7 +51,12 @@ class TextPagesController {
 			echo View::get_group_template('main/text', $bars);
 
 		} catch ( \Exception $e ) {
-			echo $e->getMessage();
+			// database error or template error :c
+			if( \Config::get('is_production') ) {
+				View::exit_404();
+			} else {
+				echo $e->getMessage(), PHP_EOL;
+			}
 		}
 	}
 }
