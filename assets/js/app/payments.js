@@ -13,7 +13,7 @@
 function stripeTokenResponse( status, response ) {
 	if( response.error ) {
 		displayError(response.error.message);
-		$('#submit-premium').removeAttr('disabled');
+		$('#premium-submit').removeAttr('disabled');
 		return;
 	}
 	var params = {
@@ -36,23 +36,21 @@ function stripeTokenResponse( status, response ) {
 			result = JSON.parse(result);
 			if( ! result.success ) {
 				displayError( result.response );
-				$('#submit-premium').removeAttr('disabled');
+				$('#premium-submit').removeAttr('disabled');
 				return;
 			}
 			displayInfo(result.response);
-			console.log('yup?');
 			// this is a global var
 			maxDuration = 300;
 			$('#post-max-minutes').text('5');
-			console.log('yup2?');
 			// say goodbye to the #premium-get tab
-			$("#premium-get-selector")
+			$("#premium-selector-get")
 				.removeClass('active')
 				.addClass('disabled')
 				.find('a') // the a inside has the color
 				.addClass('text-lighten-4'); // change the color c:
 			// now add that to the premium-enjoy
-			$("#premium-enjoy-selector")
+			$("#premium-selector-enjoy")
 				.removeClass('disabled')
 				.addClass('active')
 				.find('a')

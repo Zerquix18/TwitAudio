@@ -27,7 +27,7 @@
 					{{else}}
 					class="tab col s3"
 					{{/if}}
-					id="premium-get-selector">
+					id="premium-selector-get">
 						<a
 						{{#if user.is_premium}}
 						class="blue-text text-lighten-4"
@@ -44,7 +44,7 @@
 					{{else}}
 					class="tab col s3 disabled"
 					{{/if}}
-					id="premium-enjoy-selector">
+					id="premium-selector-enjoy">
 						<a
 						{{#if user.is_premium}}
 						class="blue-text active"
@@ -88,8 +88,8 @@
 			</div><!-- #premium-overview -->
 			<div id="premium-get" class="col s12">
 				<h5>Credit Card</h5>
-				<form id="form-premium">
-					<div class="form-premium-inputs">
+				<form id="premium-form">
+					<div class="premium-inputs">
 						<div class="row">
 							<div class="input-field col s12">
 							{{! this is terrible!! too many tabs }}
@@ -141,7 +141,7 @@
 		  			</div><!-- .row -->
 				</div><!-- premium-form-inputs -->
 				<button
-				id="submit-premium"
+				id="premium-submit"
 				type="submit"
 				class="btn waves-effect waves-light center">
 					Make me premium!&nbsp;
