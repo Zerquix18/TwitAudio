@@ -88,3 +88,73 @@ function unfinishedAudio( action ) {
 	
 	return void 0;
 }
+
+/* Functions for dates */
+
+/**
+ * Returns the differences between 2 dates
+ * 
+ * @param  {Number} fromDate The date to calculate the differences.
+ * @return {String}          
+ */
+function getDateDifferences( fromDate ) {
+	// we play with milliseconds here
+	var second   = 1000;
+	var minute   = second   * 60;
+	var hour     = minute   * 60;
+	var day      = hour     * 24;
+	fromDate     = fromDate * 1000;
+	fromDate     = new Date(fromDate); 
+	var toDate   = new Date();
+	var diff     = toDate - fromDate;
+	// now these are the differences: 
+	var days     = Math.floor(diff / day);  
+	var hours    = Math.floor(diff / hour);  
+	var minutes  = Math.floor(diff / minute); 
+	var seconds  = Math.floor(diff / second);
+
+	if( seconds < 5 ) {
+		return 'now';
+	}
+	if( seconds < 60 ) {
+		return seconds + ' seconds';
+	}
+	if( 60 == seconds ) {
+		return '1 minute';
+	}
+	if( minutes < 60 ) {
+		return minutes + ' minutes';
+	}
+	if( 60 == minutes ) {
+		return '1 hour';
+	}
+	if( hours < 24 ) {
+		return hours + ' hours';
+	}
+	if( 1 == days ) {
+		return 'yesterday'; // all my troubles seem so far away
+	}
+	if( days < 7) {
+		// it is not yesterday
+		return days + ' days';
+	}
+	if( 7 == days ) {
+		return '1 week';
+	}
+	// cuz I'm too lazy to display full dates :)
+	return Math.floor(days / 7) + ' weeks';
+}
+/**
+ * Updates all the dates :O
+ *
+ */
+function updateDates() {
+	$('.datetime').each( function(i, obj) {
+		// get the timestamp
+		var timestamp = $(this).data('timestamp');
+		// make it readable (i.e 1h, 2d, 74w)
+		var date      = getDateDifferences( parseInt(timestamp) );
+		// update it
+		$(this).text(date);
+	});
+}

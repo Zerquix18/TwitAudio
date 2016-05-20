@@ -10,6 +10,7 @@ namespace models;
 
 use \application\interfaces\ModelInterface,
 	\application\Twitter,
+	\application\HTTP,
 	\models\Users;
 
 class Audios implements ModelInterface {
@@ -87,7 +88,80 @@ class Audios implements ModelInterface {
 			// num rows
 			unset($audio['nums']);
 		}
+		// if we are in web we need extra stuff for the template
+		if( ! is_mobile() ) {
+			$audio = self::complete_web($audio);
+		}
+
 		return $audio;
+	}
+	/**
+	 * Add bars for handlebars.
+	 * They're only needed in the web side.
+	 *
+	 * @param array $audio The array to complete
+	 */
+	public static function complete_web( $audio ) {
+
+		$has = function( $key ) use ( $audio ) {
+			return array_key_exists( $key, $audio );
+		};
+		$current_user = Users::get_current_user();
+
+		if( $has('user') ) {
+			$audio['user']['profile_url']  =
+			url('audios/'. $audio['user']['user']);
+
+			$audio['user']['can_favorite'] = is_logged();
+
+			// is_logged() returns the user ID
+			$is_logged = is_logged();
+			$audio['user']['can_delete']   =
+			$is_logged && $is_logged == $current_user->id;
+		}
+		if( $has('plays') ) {
+			$audio['plays_count'] = format_number($audio['plays']);
+			if( $audio['plays'] == 1 ) {
+				$plays_count_text = '%d person played this';
+			} else {
+				$plays_count_text = '%d people played this';
+			}
+			$audio['plays_count_text'] = //↓
+			sprintf($plays_count_text, $audio['plays']);
+		}
+		if( $has('replies_count') ) {
+			$audio['replies_count'] = format_number($audio['replies_count']);
+		}
+		if( $has('favorites') ) {
+			$audio['favorites_count'] = //↓
+			format_number($audio['favorites']);
+		}
+		if( $has('description') ) {
+			// add links, @mentions and avoid XSS
+			$audio['description'] = HTTP::sanitize($audio['description']);
+		}
+
+		if( $audio['reply_to'] != '0' ) {
+			/*
+				If it's a reply, then add a link to the original audio
+				But with this reply appearing first
+			 */
+			$audio['audio_url'] .=
+			url() . $audio['reply_to'] .'?reply_id=' . $audio['id'];
+		} else {
+			$audio['audio_url'] = url() . $audio['id'];
+		}
+
+		if( $has('id') && $has('audio') ) {
+		$audio['player'] = array(
+				'id'       => $audio['id'],
+				'audio'    => $audio['audio'],
+				'autoload' => true
+			);
+		}
+
+		return $audio;
+
 	}
 	/**
 	 * Returns an array with the info of the audio $id

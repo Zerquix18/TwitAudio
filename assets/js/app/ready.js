@@ -45,4 +45,7 @@ $(document).ready( function() {
 	ga('create', 'UA-69290712-1', 'auto');
 	ga('send', 'pageview');
 
+	// transform the dates
+	updateDates();
+	window.setInterval(updateDates, 20000);
 });

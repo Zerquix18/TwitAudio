@@ -4,7 +4,7 @@
 	Here user is not the logged user, it is the one
 	of the audio
 }}
-	<div
+<div
 	{{#if big}}
 	class="audio {{id}} audio-big"
 	{{else}}
@@ -15,7 +15,7 @@
 		<a href="{{user.profile_url}}">
 			<img class="circle"
 			src="{{user.avatar}}"
-			onerror="this.src='<?php echo url('assets/img/unknown.png') ?>'"
+			onerror="{{{get_image 'unknown.png'}}}"
 		{{#if big}}
 			height="73"
 			width="73"
@@ -36,7 +36,7 @@
 		<span class="audio-user-user">
 			<a
 			class="no-deco"
-			href="<?php echo $profile_url ?>"
+			href="{{user.profile_url}}"
 			>
 				@{{user.user}}
 			</a>
@@ -44,7 +44,7 @@
 		<span class="audio-date">
 			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
 			<a
-			href="{{audio_link}}"
+			href="{{audio_url}}"
 			class="datetime"
 			data-timestamp="{{time}}">
 				{{! date will be placed here with javascript }}
@@ -56,7 +56,7 @@
 			Linked reply
 		</div>
 		{{/if}}
-	</div>
+	</div><!-- .audio-header -->
 	{{#if description}}
 		<div class="audio-description">
 			{{! description comes sanitized }}
@@ -65,7 +65,7 @@
 	{{/if}}
 	{{#if player}}{{!if requires player}}
 	<div class="audio-play">
-		{{get_partial 'player' player}}
+		{{{get_partial 'player' player}}}
 	</div>
 	{{/if}}
 	<div class="audio-footer">
@@ -92,7 +92,7 @@
 		title="Mark as favorite">
 			<i class="fa fa-star"></i>&nbsp;
 			<span>
-				{{favorites_count_text}}
+				{{favorites_count}}
 			</span>
 		</a>
 	{{#if player }}{{! if it has a player, it was an audio}}
@@ -102,7 +102,7 @@
 		      >
 			<i class="fa fa-reply"></i>&nbsp;
 			<span>
-				{{replies_count_string}}
+				{{replies_count}}
 			</span>
 		</a>
 	{{/if}}

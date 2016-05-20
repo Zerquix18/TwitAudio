@@ -112,6 +112,15 @@ class View {
 	 * @return array
 	 */
 	public static function get_template_options() {
+		$global_helpers = array(
+				'get_image'   => '\application\View::get_image',
+				'get_style'   => '\application\View::get_style',
+				'get_script'  => '\application\View::get_script',
+				'alert_error' => '\application\View::alert_error',
+				'alert_info'  => '\application\View::alert_info',
+				'show_verified_badge' => // ↓
+				'\application\View::show_verified_badge'
+			);
 		$default_options = array(
 				/*
 				 * the current group we are working with. It is set
@@ -133,10 +142,8 @@ class View {
 						**/
 						'get_template' => '\application\View::get_template',
 						'get_partial'  => '\application\View::get_partial',
-						'get_image'   => '\application\View::get_image',
-						'get_style'   => '\application\View::get_style',
-						'get_script'  => '\application\View::get_script'
-					), // .helpers
+					) + $global_helpers, // .helpers
+
 					'flags' =>
 					LightnCandy::FLAG_RENDER_DEBUG |
 					LightnCandy::FLAG_ERROR_EXCEPTION |
@@ -150,13 +157,11 @@ class View {
 							// don't allow a subtemplate to call another
 							// subtemplate.
 							'get_partial' => '\application\View::get_partial',
-							'get_image'   => '\application\View::get_image',
-							'get_style'   => '\application\View::get_style',
-							'get_script'  => '\application\View::get_script'
-						),
+						) + $global_helpers,
 					'flags'  =>
 					LightnCandy::FLAG_RENDER_DEBUG |
-					LightnCandy::FLAG_ERROR_EXCEPTION
+					LightnCandy::FLAG_ERROR_EXCEPTION |
+					LightnCandy::FLAG_HANDLEBARS
 				),
 				/*
 				 * LightnCandy flags for partials
@@ -165,13 +170,11 @@ class View {
 					'helpers' => array(
 							// allow calling partials from partials
 							'get_partial' => '\application\View::get_partial',
-							'get_image'   => '\application\View::get_image',
-							'get_style'   => '\application\View::get_style',
-							'get_script'  => '\application\View::get_script'
-						),
+						) + $global_helpers,
 					'flags'  =>
 					LightnCandy::FLAG_RENDER_DEBUG |
-					LightnCandy::FLAG_ERROR_EXCEPTION
+					LightnCandy::FLAG_ERROR_EXCEPTION |
+					LightnCandy::FLAG_HANDLEBARS
 				)
 			); // .default_options
 		return array_merge($default_options, self::$options);
@@ -397,5 +400,38 @@ class View {
 		self::set_robots(false);
 		echo self::get_group_template("{$group}/404");
 		exit;
+	}
+
+	/* functions with HTML */
+
+	/**
+	 * Returs an error message
+	 * @param  string $error The error message to be show
+	 * @return string        The string with the HTML and the error
+	 */
+	public static function alert_error( $error ) {
+		$error = sprintf('<div class="alert error">%s</div>', $error);
+		return $error;
+	}
+	/**
+	 * Returns an info message
+	 * @param  string $info The error message to be show
+	 * @return string        The string with the HTML and the info
+	 */
+	public static function alert_info( $info ) {
+		$info = sprintf('<div class="alert info">%s</div>', $info);
+		return $info;
+	}
+	/**
+	 * Detects if the user is verified and returns the verified badge
+	 * @param  string $numb The string that comes from the database.
+	 *                      Must be 1 or 0
+	 * @return string
+	 */
+	public static function show_verified_badge( $numb ) {
+		if( '1' !== $numb ) {
+			return '';
+		}
+		return '<i class="fa fa-check verified" title="Verified account"></i>';
 	}
 }

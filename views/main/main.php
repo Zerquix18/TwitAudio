@@ -12,6 +12,8 @@ use \models\Users,
 
 $is_logged    = is_logged();
 $current_user = Users::get_current_user();
+$is_premium   = $is_logged && $current_user->is_premium();
+
 // contains all the strings:
 $bars      = array();
 
@@ -113,16 +115,19 @@ if( View::is('home_unlogged') && $is_logged && HTTP::get('logout') ) {
 // info of the current user
 $bars['user']                         = array();
 $bars['user']['is_logged']            = $is_logged;
-$bars['user']['is_premium']           = $current_user->is_premium();
+$bars['user']['is_premium']           = $is_premium;
 $bars['user']['file_upload_limit']    = $current_user->get_limit('file_upload');
 $bars['user']['audio_duration_limit'] = // ↓
 $current_user->get_limit('audio_duration');
+
+// sidebar
+$bars['sidebar']['show_ads'] = ! $is_premium;
 
 // 
 $bars['footer']                     = array();
 $bars['footer']['current_year']     = date('Y');
 $bars['footer']['show_ads']         = // ↓
-! View::is('home-unlogged', 'text') || ! $current_user->is_premium();
+! View::is('home-unlogged', 'text') || ! $is_premium;
 
 $bars['footer']['show_page_footer'] = View::is('home_unlogged', 'text');
 
