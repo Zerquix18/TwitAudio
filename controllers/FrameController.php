@@ -15,7 +15,7 @@ class FrameController {
 	 * If it does not exist, or the audio is not public,
 	 * then will print a 404 page.
 	 * 
-	 * @param string $audio_id}
+	 * @param string $audio_id
 	 */
 	public function __construct( $audio_id ) {
 		$audio  = Audios::get($audio_id);
@@ -29,7 +29,11 @@ class FrameController {
 		if( ! $user['audios_public'] ) {
 			View::exit_404();
 		}
+		$bars = array('frame'  =>
+				array('player' => $audio['player'])
+			);
 
-		View::load_full_template('frame', array('audio' => $audio) );
+		View::set_page('frame');
+		echo View::get_group_template('main/frame', $bars);
 	}
 }

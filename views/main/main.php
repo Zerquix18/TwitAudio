@@ -75,15 +75,15 @@ if( $is_logged ) {
 }
 
 // should we show... ?
-$bars['main']['show_sidebar'] = ! View::is('404', 'text');
-$bars['main']['show_navbar']  = ! View::is('home_unlogged');
+$bars['main']['show_sidebar'] = ! View::is('404', 'text', 'frame');
+$bars['main']['show_navbar']  = ! View::is('home_unlogged', 'frame');
 
 // the class of the body 
 if( View::is('text') ) {
 	$bars['main']['body_class'] = 'text';
 } elseif( View::is('404') ) {
 	$bars['main']['body_class'] = 'page-404';
-} elseif( View::is('home_unlogged') ) {
+} elseif( View::is('home_unlogged', 'frame') ) {
 	$bars['main']['body_class'] = 'white';
 }
 
@@ -121,13 +121,15 @@ $bars['user']['audio_duration_limit'] = // ↓
 $current_user->get_limit('audio_duration');
 
 // sidebar
-$bars['sidebar']['show_ads'] = ! $is_premium;
+// please note that the operator here is 'or' instead of '||'
+$bars['sidebar']['show_ads'] = ! View::is('frame') or ! $is_premium;
 
 // 
 $bars['footer']                     = array();
 $bars['footer']['current_year']     = date('Y');
 $bars['footer']['show_ads']         = // ↓
-! View::is('home-unlogged', 'text') || ! $is_premium;
+! View::is('home-unlogged', 'text', 'frame') or ! $is_premium;
+// note that it is 'or' instead of '||'
 
 $bars['footer']['show_page_footer'] = View::is('home_unlogged', 'text');
 
