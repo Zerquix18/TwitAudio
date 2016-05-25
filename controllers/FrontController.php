@@ -6,7 +6,8 @@
 **/
 namespace controllers;
 use \application\View,
-	\models\Audios;
+	\models\Audios,
+	\models\Users;
 class FrontController {
 	/**
 	 * Prints the home page
@@ -18,12 +19,56 @@ class FrontController {
 				echo View::get_group_template('main/home-unlogged');
 				return;
 			}
-			View::set_page('home_logged');
-			$data   = array(
-					'recent_popular' => Audios::get_popular_audios(),
-					'recent_audios'	 => Audios::get_recent_audios(),
+			// --------------------------------------
+			$show_noscript         = ! isset($_COOKIE['noscript'])  && 
+									 ! isset($_GET['_ta_script']);
+
+			$show_noscript_message =   isset($_GET['_ta_noscript']) &&
+									 ! isset($_COOKIE['noscript']);
+
+			if( $show_noscript_message ) {
+				// so it won't be shown again
+				setcookie('noscript', '1', time()+3600);
+			}
+
+			$cut_player     = array(
+					'id'       => 'cut',
+					'autoload' => false,
 				);
-			View::get_group_template('home-logged', $data);
+			$preview_player = array(
+					'id'       => 'preview',
+					'autoload' => false, 
+				);
+			$effects_player = array(
+					'id'       => 'effect_none',
+					'autoload' => false,
+				);
+
+			$current_user   = Users::get_current_user();
+			$minutes_length = $current_user->get_limit('audio_duration') / 60;
+
+			$bars   = array(
+					'home' => array(
+						// show...?
+						'show_noscript'         => $show_noscript,
+						'show_noscript_message' => $show_noscript_message,
+
+						// players
+						'cut_player'     => $cut_player,
+						'preview_player' => $preview_player,
+						'effects_player' => $effects_player,
+
+						//recents...
+
+						'recent_popular' => Audios::get_popular_audios(),
+						'recent_audios'	 => Audios::get_recent_audios(),
+
+						'minutes_length' => $minutes_length,
+					)
+				);
+			View::set_title('Home');
+			View::set_page('home_logged');
+			echo View::get_group_template('main/home-logged', $bars);
 			
 		} catch( \Exception $e ) {
 			// database error or template error :c

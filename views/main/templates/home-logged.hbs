@@ -1,0 +1,216 @@
+{{#if home.show_noscript}}
+<noscript>
+	<meta http-equiv="refresh" content="0; URL=/?_ta_noscript=1">
+</noscript>
+{{/if}}
+<div class="content main">
+	<div class="row">
+		<div class="col l9 m12 s12">
+			<div id="norecordsupport" class="red-text" style="display:none;">
+				Your current browser does not support audio recording.
+				See which <a href="{{main.faq_url}}#1">browsers support 
+				audio recording</a>.
+			</div>
+			{{#if home.show_noscript_message}}
+			<div class="red-text">
+				Your current browser does not support Javascript or is disactivated for this page. Some features may not work without Javascript.
+			</div>
+			{{/if}}
+			{{!
+				Post box
+			}}
+			<div class="box">
+				<div class="row" id="post">
+					<div class="col" id="record" title="Record audio with your microphone">
+						<i class="fa fa-microphone blue-text lighten-3-text"></i>
+						<div class="a_text">
+							record
+						</div>
+					</div>
+					<div class="col c" id="or">or</div>
+					<div class="col"
+					id="upload"
+					title="Upload a file from your computer">
+						<i class="fa fa-upload blue-text lighten-3-text"></i>
+						<div class="a_text">
+							upload
+						</div>
+					</div>
+				</div>
+				<div id="waiting" class="valign-wrapper" style="display:none">
+					<div class="valign" id="waiting_text">
+						<i class="fa fa-refresh fa-spin"></i>&nbsp;
+						Waiting for microphone access...
+					</div>
+				</div>
+				<div id="loading" style="display:none">
+					<p id="whatsloading">Uploading...</p>
+					<div class="progress blue lighten-4">
+						<div class="determinate blue" id="up_progress" style="width: 0%">
+						</div>
+					</div>
+				</div>
+				<div id="record_form" style="display:none">
+					<div>
+						You can record up to
+						<span id="post-max-minutes">
+							{{user.upload_max_limit}}
+						</span>
+						minutes.
+					</div>
+					<span id="cleft">Recording in <span id="cleftn">3</span>...</span>
+					<hr>
+					<div id="record_actions">
+						<i class="fa fa-stop" title="Stop" id="stop"></i>
+						&nbsp;<span id="count">0:00</span>
+						<span id="cancel" title="Cancel">
+							<i class="fa fa-times-circle"></i>
+							&nbsp;Cancel
+						</span>
+					</div>
+				</div>
+				<form method="POST"
+				action="{{main.ajax_url}}post/upload"
+				enctype="multipart/form-data"
+				style="display:none;" id="up_form">
+					<input type="file" id="up_file" name="up_file" style="visibility: 	hidden; display: none;" accept=".mp3,.ogg">
+				</form>
+				<form method="POST"
+				action="{{main.ajax_url}}post/cut"
+				id="cut_form" style="display:none">
+					<p class="center">
+						This audio lasts longer than your current limit's, please cut it.
+					</p>
+					{{{get_partial 'player' home.cut_player}}}
+					<input type="hidden" name="id" id="audio_id">
+					<div id="cut_block">
+						Start: <input type="text" id="start" name="start" value="0:00"> | End: <input
+						type="text" name="end" id="end"
+						value="{{home.minutes_length}}:00">
+					</div>
+					<hr>
+					<button type="submit" class="btn" id="cut_button">
+						<i class="fa fa-scissors"></i>
+						&nbsp;Cut
+					</button>
+					<button
+					type="button"
+					id="cut_cancel"
+					class="btn">
+						<i class="fa fa-times-circle"></i>&nbsp;
+						Cancel
+					</button>
+				</form>
+				<form
+				method="POST"
+				action="{{main.ajax_url}}post/post"
+				id="post_form"
+				style="display:none">
+					<p class="center">Your audio is ready!</p>
+					{{{get_partial 'player' home.preview_player}}}
+					<input type="hidden" name="id" id="a_id">
+					<input type="hidden" name="effect" id="audio_effect" value="original">
+					<div class="input-field" id="desc_">
+						<textarea maxlength="200" id="desc" name="description" class="materialize-textarea"></textarea>
+						<label for="desc">
+							<i class="fa fa-pencil"></i>&nbsp;Type a description
+						</label>
+					</div>
+					<div id="post_footer">
+						<div id="send_to_twitter" class="left">
+							<input type="hidden" name="s_twitter" value="0">
+							<input type="checkbox" class="filled-in" id="s_twitter" checked="checked" name="s_twitter" value="1">
+							<label for="s_twitter">Send to Twitter</label>
+						</div>
+						<div id="effects_modal_button" class="right">
+							<a
+							class="waves-effect
+							waves-light btn modal-trigger"
+							href="#effects_modal"
+							>
+								<i class="fa fa-magic"></i>&nbsp;
+								Add Effects
+							</a>
+						</div>
+					</div>
+					<hr>
+					<div id="post_buttons">
+						<button class="btn" type="submit">
+							Post&nbsp;
+							<i class="fa fa-send"></i>
+						</button>
+						|
+						<button type="button" id="post_cancel" class="btn">
+							Cancel&nbsp;
+							<i class="fa fa-times-circle"></i>
+						</button>
+					</div>
+				</form>
+			</div>
+			{{! modal for effects }}
+			<div id="effects_modal" class="modal modal-fixed-footer" style="max-width: 500px">
+				<div class="modal-content">
+					<h4>Add Effects</h4>
+					<div class="divider"></div>
+					<!-- copy and edit this in order to display the effects -->
+					<div id="effect_none" class="effect_preview" style="display:none">
+						<h5>Effect None</h5>
+						<div class="loading">
+							<i class="fa fa-spinner fa-spin"></i>&nbsp;
+							Loading effect...
+						</div>
+						<div class="preview" style="display:none">
+							{{{get_partial 'player' home.effects_player}}}
+			    			<button
+			    			type="button"
+			    			class="btn choose choose_effect effect_none"
+			    			data-choose="effect_none"
+			    			>
+			    				Choose
+			    			</button>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a
+					href="javascript:void(0)"
+					class="modal-action modal-close waves-effect waves-blue
+					btn-flat choose_effect original"
+					data-choose="original">
+				      	Use the original
+					</a>
+				</div>
+			</div>
+			{{! / modal for effects }}
+			<div class="row">
+				<div class="col l6 m12 s12">
+					<div class="box">
+						<p class="title">
+							Your recent audios
+						</p>
+					{{#each home.recent_audios}}
+						{{{get_partial 'audio'}}}
+					{{else}}
+						{{alert_info error.no_recent}}
+					{{/each}}
+					</div>
+				</div>
+				<div class="col l6 m12 s12">
+					<div class="box">
+						<p class="title">
+							Popular audios right now
+						</p>
+					{{#each home.recent_popular}}
+						{{{get_partial 'audio'}}}
+					{{else}}
+						{{alert_info 'ups'}}
+					{{/each}}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col l3 m12 s12">
+			{{{get_partial 'sidebar'}}}
+		</div>
+	</div>
+</div>
