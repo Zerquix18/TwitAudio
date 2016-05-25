@@ -8,7 +8,8 @@
 **/
 namespace application;
 use \application\HTTP,
-	\LightnCandy\LightnCandy;
+	\LightnCandy\LightnCandy,
+	\Exception as Exception;
 
 class View {
 	/**
@@ -145,7 +146,7 @@ class View {
 					) + $global_helpers, // .helpers
 
 					'flags' =>
-					LightnCandy::FLAG_RENDER_DEBUG |
+					LightnCandy::FLAG_ERROR_LOG |
 					LightnCandy::FLAG_ERROR_EXCEPTION |
 					LightnCandy::FLAG_HANDLEBARS
 				), //.group_options
@@ -159,7 +160,7 @@ class View {
 							'get_partial' => '\application\View::get_partial',
 						) + $global_helpers,
 					'flags'  =>
-					LightnCandy::FLAG_RENDER_DEBUG |
+					LightnCandy::FLAG_ERROR_LOG |
 					LightnCandy::FLAG_ERROR_EXCEPTION |
 					LightnCandy::FLAG_HANDLEBARS
 				),
@@ -172,10 +173,13 @@ class View {
 							'get_partial' => '\application\View::get_partial',
 						) + $global_helpers,
 					'flags'  =>
-					LightnCandy::FLAG_RENDER_DEBUG |
+					LightnCandy::FLAG_ERROR_LOG |
 					LightnCandy::FLAG_ERROR_EXCEPTION |
 					LightnCandy::FLAG_HANDLEBARS
-				)
+				),
+				'renderer_options' => array(
+						'debug' => \LightnCandy\Runtime::DEBUG_TAGS
+					)
 			); // .default_options
 		return array_merge($default_options, self::$options);
 	}
@@ -261,7 +265,8 @@ class View {
 		return $renderer(
 			array(
 				'body' => $template
-			) + $bars
+			) + $bars,
+			$options['renderer_options']
 		);
 	}
 	/**
@@ -297,15 +302,21 @@ class View {
 			trigger_error('Template does not exist: ' . $template_file);
 			return '';
 		}
-		$template_php  = \LightnCandy\LightnCandy::compile(
+		try {
+			$template_php  = \LightnCandy\LightnCandy::compile(
 				file_get_contents($template_file),
 				array_merge_recursive(
 					$options['template_options'],
 					$lightncandy_options
 				)
 			);
+		} catch( \Exception $e ) {
+			ob_end_clean();
+			echo $e->getMessage();
+			exit;
+		}
 		$renderer = \LightnCandy\LightnCandy::prepare($template_php);
-		return $renderer($bars);
+		return $renderer($bars, $options['renderer_options']);
 	}
 	/**
 	 * This is a function for loading partials inside the subtemplates
@@ -338,6 +349,7 @@ class View {
 		}
 		$options = \application\View::get_template_options();
 						// namespace is obligatory
+		try {
 		$template_php = \LightnCandy\LightnCandy::compile(
 				/** partial to compile **/
 				file_get_contents(
@@ -353,9 +365,14 @@ class View {
 					$lightncandy_options
 				)
 			);
+		} catch ( \Exception $e ) {
+			ob_end_clean();
+			echo $e->getMessage();
+			exit;
+		}
 		$renderer = \LightnCandy\LightnCandy::prepare($template_php);
 		// go ahead!
-		return $renderer( $bars );
+		return $renderer($bars, $options['renderer_options']);
 	}
 	/**
 	 * This function returns an array
