@@ -146,14 +146,14 @@ class Audios implements ModelInterface {
 				If it's a reply, then add a link to the original audio
 				But with this reply appearing first
 			 */
-			$audio['audio_url'] .=
+			$audio['audio_url'] =
 			url() . $audio['reply_to'] .'?reply_id=' . $audio['id'];
 		} else {
 			$audio['audio_url'] = url() . $audio['id'];
 		}
 
-		if( $has('id') && $has('audio') ) {
-		$audio['player'] = array(
+		if( $has('id') && $has('audio') && '' !== trim($audio['audio']) ) {
+			$audio['player'] = array(
 				'id'       => $audio['id'],
 				'audio'    => $audio['audio'],
 				'autoload' => true

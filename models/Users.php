@@ -99,6 +99,24 @@ class Users implements ModelInterface {
 			// num rows
 			unset($user['nums']);
 		}
+		if( ! is_mobile() ) {
+			$user = self::complete_web($user);
+		}
+		return $user;
+	}
+	/**
+	 * Completes the array $user, adding bars for the web
+	 * @param  array  $user The array to complete
+	 * @return array        Array with the bars
+	 */
+	private static function complete_web( array $user ) {
+		$has = function( $key ) use ( $user ) {
+			return array_key_exists($key, $user);
+		};
+		if( $has('user') ) {
+			$user['profile_url']    = url('audios/' .    $user['user']);
+			$user['favorites_url']  = url('favorites/' . $user['user']);
+		}
 		return $user;
 	}
 	/**
