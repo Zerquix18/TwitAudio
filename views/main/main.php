@@ -73,6 +73,10 @@ if( $is_logged ) {
 } else {
 	$bars['main']['logout_url']    = url('?logout=1');
 }
+if( View::is('home_unlogged') ) {
+	// don't add a return_to in the home page
+	$bars['main']['signin_url'] = url('signin');
+}
 
 // should we show... ?
 $bars['main']['show_sidebar'] = ! View::is('404', 'text', 'frame');
@@ -113,7 +117,7 @@ if( View::is('home_unlogged') && $is_logged && HTTP::get('logout') ) {
 }
 
 // info of the current user
-$bars['user']                         = array();
+$bars['user']                         = (array) $current_user;
 $bars['user']['is_logged']            = $is_logged;
 $bars['user']['is_premium']           = $is_premium;
 $bars['user']['file_upload_limit']    = $current_user->get_limit('file_upload');
@@ -128,7 +132,7 @@ $bars['sidebar']['show_ads'] = ! View::is('frame') or ! $is_premium;
 $bars['footer']                     = array();
 $bars['footer']['current_year']     = date('Y');
 $bars['footer']['show_ads']         = // ↓
-! View::is('home-unlogged', 'text', 'frame') or ! $is_premium;
+! View::is('home_unlogged', 'text', 'frame') or ! $is_premium;
 // note that it is 'or' instead of '||'
 
 $bars['footer']['show_page_footer'] = View::is('home_unlogged', 'text');

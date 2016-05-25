@@ -16,27 +16,42 @@ use \application\View,
 class SearchController {
 
 	public function __construct() {
-		$query = HTTP::get('q');
-		$type  = HTTP::get('t');
-		$order = HTTP::get('o');
-		
-		if( $query ) {
-			$content = Search::do_search( array(
-					'query'		=> $query,
-					'type'		=> $type,
-					'order'		=> $order,
-					'page'		=> 1
-				)
-			);
-		} else {
-			$content = array();
+		try {
+			$query = HTTP::get('q');
+			$type  = HTTP::get('t');
+			$order = HTTP::get('o');
+			
+			if( $query ) {
+				$results = Search::do_search( array(
+						'query'		=> $query,
+						'type'		=> $type,
+						'order'		=> $order,
+						'page'		=> 1
+					)
+				);
+			} else {
+				$results = array();
+			}
+			$bars = array(
+					'search' => array(
+						'query'		       => $query,
+						'query_urlencoded' => rawurlencode($query),
+
+						'is_audios' => 'a' == $results['type'],
+						'is_users'  => 'u' == $results['type'],
+
+						'by_date'   => 'd' == $results['order'],
+						'by_plays'  => 'p' == $results['order'],
+
+						'results' 	=> $results
+					)
+				);
+
+			View::set_page('search');
+			View::set_title('Search');
+			echo View::get_group_template('main/search', $bars);
+		} catch( \Exception $e ) {
+			
 		}
-		View::load_full_template('search', array(
-				'query'		=> $query,
-				'type'		=> $query ? $content['type']  : '',
-				'order' 	=> $query ? $content['order'] : '',
-				'content' 	=> $content
-			)
-		);
 	}
 }
