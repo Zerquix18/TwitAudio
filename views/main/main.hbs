@@ -349,8 +349,8 @@ var maxDuration     = "{{user.audio_duration_limit}}";
 {{/if}} {{! ./ show_main_footer }}
 {{#if user.is_logged }}
 	{{! load the modals for settings and footer }}
-	{{get_partial 'settings' this}}
-	{{get_partial 'premium'  this}}
+	{{{get_partial 'settings' this}}}
+	{{{get_partial 'premium'  this}}}
 {{/if}}
 {{#each footer.scripts}}
 	<script
