@@ -542,10 +542,10 @@ class Audios implements ModelInterface {
 				// duration:
 				! $is_reply ? $options['duration'] : '0',
 				// is_voice:
-				! $is_reply ? $options['is_voice'] : '0'
+				! $is_reply ? '1' : '0'
 			);
 		if( ! $result ) {
-			throw new \Exception('INSERT error: ' . db()->error);
+			throw new \Exception('INSERT error: ' . db()->error - ' [' . db()->query . ' ]');
 		}
 		$audio = self::get($audio_id);
 		// now proceed to tweet
@@ -564,7 +564,7 @@ class Audios implements ModelInterface {
 			**/
 			// here's the link, forget about www here
 			$link         = 'https://twitaudio.com/'. $audio_id;
-			$link_length  = strlen($tweet);
+			$link_length  = strlen($link);
 			$description  = $options['description'];
 			if( mb_strlen($description, 'utf-8') > (140-$link_length) ) {
 				// if the description is longer than (140 - the link length)
