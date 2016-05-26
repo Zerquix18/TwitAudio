@@ -2,7 +2,7 @@
 	The sidebar partial
 }}
 {{#if sidebar.show_ads}}
-<div class="box ads_box">
+<div class="box sidebar-ads">
 	<p class="title">Advertising</p>
 	<script
 	async
@@ -21,7 +21,7 @@
 </div>
 {{/if}}
 <div class="box">
-	<ul class="links">
+	<ul class="right-sidebar-links">
 		<li>
 			<a href="{{main.about_url}}">
 				About
@@ -52,7 +52,7 @@
 			 </a>
 		</li>
 	</ul>
-	<ul class='dropdown-content more'>
+	<ul class="dropdown-content" id="more">
 		<li>
 			<a target="_blank" href="//twitter.com/twit_audio">
 				Our Twitter

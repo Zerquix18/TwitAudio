@@ -5,7 +5,7 @@
 {{#if autoload}}
 <script>
 window.onLoadFunctions.push( function() {
-	$("#player_{{id}}").jPlayer({
+	$("#player-{{id}}").jPlayer({
 		ready: function(event) {
 			$(this).jPlayer("setMedia", {
 				mp3: "{{audio}}",
@@ -14,7 +14,7 @@ window.onLoadFunctions.push( function() {
 		play: function() {
 			$(".jp-jplayer").not(this).jPlayer("pause");
 		},
-		cssSelectorAncestor : '#container_{{id}}',
+		cssSelectorAncestor : '#container-{{id}}',
 		swfPath: swfPath,
 		supplied: "mp3",
 		wmode: "window",
@@ -28,14 +28,14 @@ window.onLoadFunctions.push( function() {
 });
 </script>
 {{/if}}
-<div id="player_{{id}}" class="jp-jplayer"></div>
-<div id="container_{{id}}" class="jp-audio sm">
+<div id="player-{{id}}" class="jp-jplayer"></div>
+<div id="container-{{id}}" class="jp-audio sm">
     <div class="jp-type-single">
         <div class="jp-gui jp-interface">
             <ul class="jp-controls">
                 <li>
                     <a href="javascript:;"
-                    class="jp-play plei"
+                    class="jp-play audio-action-play"
                     data-id="{{id}}"
                     tabindex="1">
                         <i class="fa fa-play control"></i>

@@ -10,7 +10,7 @@
 	min-height: 47px;
 	margin-bottom: 10px;
 }
-.audio a img {
+.audio-user-avatar {
 	float: left;
 	vertical-align: middle;
 }
@@ -26,8 +26,8 @@
 	color: #CCC;
 }
 .audio-date {
-	float:right;
-	font-size:15px;
+	float: right;
+	font-size: 15px;
 	color: #CCC;
 	vertical-align: top;
 }
@@ -42,26 +42,41 @@
 		font-size: 10px;
 	}
 }
+.reply-linked {
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-left: 5px;
+}
+.audio-description {
+	margin-top: 5px;
+	margin-left: 60px;
+	margin-bottom: 5px;
+}
+.audio-play {
+	margin-top: 5px;
+	margin-left: 60px;
+}
 .audio-footer {
 	vertical-align: bottom;
 	text-align: center;
 	margin-right: 10px;
 	margin-top: 20px;
 }
-.audio-btn {
+.audio-action {
 	margin-left: 5px;
 	text-decoration: none;
 	color: #CBCBCB;
 	font-size: 18px;
 }
-.audio-play {
-	margin-top: 5px;
-	margin-left: 60px;
+.audio-action-favorite {
+	cursor: pointer;
 }
-.audio-description {
-	margin-top: 5px;
-	margin-left: 60px;
-	margin-bottom: 5px;
+.audio-action-favorite:hover,
+.audio-is_favorited {
+	color: #ffc107;
+}
+.audio-action-delete:hover {
+	color: #FF0000;
 }
 /** Audio shown in the audio page **/
 .audio-big .audio-user-name {
@@ -106,31 +121,6 @@
 }
 .audio-big .audio-desc {
 	margin-left: 80px;
-}
-.laic {
-	cursor: pointer;
-}
-.laic:hover,
-.favorited {
-	color: #ffc107;
-}
-.delit:hover {
-	color: #FF0000;
-}
-.links {
-	text-align: center;
-}
-.links li {
-	display: inline-block;
-	margin-left: 5px;
-}
-.links a {
-	float: left;
-}
-.linked-reply {
-	font-weight: bold;
-	text-transform: uppercase;
-	margin-left: 5px;
 }
 /* CONTROLS OF THE PLAYER */
 .jp-interface {

@@ -10,11 +10,9 @@
 **/
 
 /**
- * Favorites an audio. Called laic because in the start they
- * were likes.
- * 
+ * Favorites an audio.
  */
-$(document).on('click', '.laic', function(e) {
+$(document).on('click', '.audio-action-favorite', function(e) {
 	var id = $(this).data('id');
 	var lastFavoriteId = $(this);
 	var params = {
@@ -33,11 +31,11 @@ $(document).on('click', '.laic', function(e) {
 			var attribute = lastFavoriteId.find('span'),
 				count     = parseInt( attribute.text() );
 
-			if( lastFavoriteId.hasClass('favorited') ) { // already faved?
-				lastFavoriteId.removeClass('favorited');
+			if( lastFavoriteId.hasClass('is-favorited') ) { // already faved?
+				lastFavoriteId.removeClass('is-favorited');
 				attribute.text( String(count - 1) );
 			}else{
-				lastFavoriteId.addClass('favorited');
+				lastFavoriteId.addClass('is-favorited');
 				attribute.text( String(count + 1) );
 			}
 		},
@@ -46,14 +44,14 @@ $(document).on('click', '.laic', function(e) {
 			var attribute = lastFavoriteId.find('span');
 			var count     = parseInt( attribute.text() );
 
-			if( lastFavoriteId.hasClass('favorited') ) {
-				lastFavoriteId.removeClass('favorited');
+			if( lastFavoriteId.hasClass('is-favorited') ) {
+				lastFavoriteId.removeClass('is-favorited');
 				attribute.text( String(count - 1) );
 				displayError(
 					'There was a problem while favoriting the audio...'
 				);
 			}else{
-				lastFavoriteId.addClass('favorited');
+				lastFavoriteId.addClass('is-favorited');
 				attribute.text( String(count + 1) );
 				displayError(
 					'There was a problem while unfavoriting the audio...'
@@ -68,12 +66,12 @@ $(document).on('click', '.laic', function(e) {
 				var attribute = lastFavoriteId.find('span');
 				var count     = parseInt( attribute.text() );
 
-				if( lastFavoriteId.hasClass('favorited') ) {
-					lastFavoriteId.removeClass('favorited');
+				if( lastFavoriteId.hasClass('is-favorited') ) {
+					lastFavoriteId.removeClass('is-favorited');
 					attribute.text( String(c - 1) );
 				}else{
 					attribute.text( String(c + 1) );
-					lastFavoriteId.addClass('favorited');
+					lastFavoriteId.addClass('is-favorited');
 				}
 
 				return displayError(result.response);
@@ -84,11 +82,13 @@ $(document).on('click', '.laic', function(e) {
 	});
 });
 
-/** play **/
+/**
+ * Registers a play
+ */
 
 window.playedAudios = [];
 
-$(document).on('click', '.plei', function(e) {
+$(document).on('click', '.audio-action-play', function(e) {
 	var id = $(this).data('id');
 	if( inArray( id, window.playedAudios ) ) {
 		// don't register it again
@@ -110,7 +110,7 @@ $(document).on('click', '.plei', function(e) {
 				return;
 			}
 			// add the play
-			$( '#plays_' + // the last one registered ↓
+			$( '.audio-plays-' + // the last one registered ↓
 				window.playedAudios[ window.playedAudios.length - 1 ]
 			).find('span').html( result.count );
 		}
@@ -120,7 +120,7 @@ $(document).on('click', '.plei', function(e) {
 
 /** delete **/
 
-$(document).on('click', '.delit', function(e) {
+$(document).on('click', '.audio-action-delete', function(e) {
 
 	if( true !== confirm('Are you sure you want to delete this audio?') )
 		return false;
@@ -150,7 +150,7 @@ $(document).on('click', '.delit', function(e) {
 				return window.location.replace('/');
 			}
 
-			$(".audio_" + result.id ).fadeOut(1000, function() {
+			$(".audio-" + result.id ).fadeOut(1000, function() {
 				$(this).remove();
 			});
 

@@ -70,7 +70,7 @@
 		<div class="input-field">
 			<input
 				type="text"
-				class="validate sidebar-search"
+				class="validate left-sidebar-search"
 				id="q"
 				name="q"
 				title="Type something to search"
@@ -178,7 +178,7 @@
 		</a>
 	{{/if}} {{! / show_sidebar}}
 		<div class="nav-wrapper">
-			<a href="{{main.home_url}}" class="brand-logo center logo">
+			<a href="{{main.home_url}}" class="brand-logo center navbar-logo">
 				TwitAudio
 			</a>
 		</div>
@@ -248,7 +248,7 @@ window.onLoadFunctions.push( function() {
 {{! now the footer }}
 
 {{#if footer.show_ads}}
-<div class="box ads-footer">
+<div class="box footer-ads">
 	<p class="title">Advertising</p>
 	<script
 	async

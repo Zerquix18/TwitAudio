@@ -6,8 +6,12 @@
 **/
 /** the search input */
 .left-sidebar-search {
-	padding-left: 5px;
-	padding-right: 5px;
+	/*
+		important because materialize overwrites it,
+		and places padding:0;
+		fuck em ._.
+	*/
+	padding: 0 5px !important;
 	color: #FFF;
 }
 /********* Sidebar *******/
@@ -42,4 +46,17 @@
 }
 .left-sidebar-open {
 	margin-left: 10px;
+}
+
+/** right sidebar */
+
+.right-sidebar-links {
+	text-align: center;
+}
+.right-sidebar-links li {
+	display: inline-block;
+	margin-left: 2px;
+}
+.right-sidebar-links a {
+	float: left;
 }

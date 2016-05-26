@@ -70,15 +70,15 @@ window.record = {
 						}
 					);
 				window.record.initialized = true;
-				$("div#waiting").hide();
+				$("#waiting-box").hide();
 				// now this initialized is true... 
 				window.record.start();
 			},
 
 			function() { // error:
 				window.record.initialized = false;
-				$("div#waiting").hide();
-				$("div#post").show();
+				$("#waiting-box").hide();
+				$("#post-box").show();
 				displayError(
 					'Microphone access is not allowed or was blocked.'
 				);
@@ -89,15 +89,15 @@ window.record = {
 	 */
 	start: function() {
 		if( ! this.initialized ) {
-			$("div#post").hide();
-			$("div#waiting").show();
+			$("#post-box").hide();
+			$("#waiting-box").show();
 			this.init();
 			return;
 		}
 
-		$("#post").hide();
-		$("#record_form").show();
-		$("#cleft").show();
+		$("#post-box").hide();
+		$("#record-box").show();
+		$("#record-countdown").show();
 		this.counterLeft();
 		unfinishedAudio('start');
 	},
@@ -124,7 +124,7 @@ window.record = {
 
 		window.uploadAudio( {isVoice:true} );
 		this.recorder.clear();
-		$("#count").html("0:00");
+		$("#record-count").html("0:00");
 	},
 	/**
 	 * Cancels recording
@@ -144,10 +144,10 @@ window.record = {
 		delete this.secondsLeftInterval;
 		delete this.recordingSecondsInterval;
 
-		$("#cleftn").html("3");
-		$("#count").html("0:00");
-		$("#record_form").hide();
-		$("div#post").show();
+		$("#record-countdown-number").html("3");
+		$("#record-count").html("0:00");
+		$("#record-form").hide();
+		$("#post-box").show();
 		unfinishedAudio('stop');
 	},
 
@@ -171,7 +171,7 @@ window.record = {
 
 		if( this.secondsLeft > 0 ) {
 			this.secondsLeft -= 1;
-			$("#cleftn").text( String(this.secondsLeft) );
+			$("#record-countdown-number").text( String(this.secondsLeft) );
 			return;
 		}
 		if( 0 === this.secondsLeft ) {
@@ -179,7 +179,7 @@ window.record = {
 			clearInterval(this.secondsLeftInterval);
 			delete this.secondsLeft;
 			delete this.secondsLeftInterval;
-			$("#cleft").hide();
+			$("#record-countdown").hide();
 			window.record.recorder.record(); // starts recording!
 			this.isRecording = true;
 			
@@ -217,7 +217,7 @@ window.record = {
 
 			result = String( firstNumber ) + ':' + String(secondNumber);
 
-			$("#count").text(result);
+			$("#record-count").text(result);
 			return;
 		}
 
@@ -234,12 +234,12 @@ window.record = {
 // don't call the functions directly
 // or 'this' will be overwritten
 
-$("#record").on('click', function() {
+$("#post-record")  .on('click', function() {
 	window.record.start();
 });
-$("#stop")  .on('click', function() {
+$("#record-stop")  .on('click', function() {
 	window.record.stop();
 });
-$("#cancel").on('click', function() {
+$("#record-cancel").on('click', function() {
 	window.record.cancel();
 });

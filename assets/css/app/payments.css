@@ -13,13 +13,13 @@
 .premium-text-enjoy {
 	font-family: Helvetica, 'Helvetica Neue', Arial, Serif, Times;
 }
-.premium-button-record {
+.premium-action-record {
 	text-align: center;
 	display: block;
 	margin: 0 auto;
 	margin-top: 40px;
 }
-.premium-button-record i {
+.premium-action-record i {
 	color: #FF0000;
 	font-size: 12px;
 }

@@ -6,24 +6,24 @@
 }}
 <div
 	{{#if big}}
-	class="audio {{id}} audio-big"
+	class="audio-{{id}} audio-big"
 	{{else}}
-	class="audio {{id}}"
+	class="audio-{{id}}"
 	{{/if}}
 	>
 	<div class="audio-header">
 		<a href="{{user.profile_url}}">
-			<img class="circle"
+			<img class="circle audio-user-avatar"
 			src="{{user.avatar}}"
 			onerror="{{{get_image 'unknown.png'}}}"
-		{{#if big}}
+			{{#if big}}
 			height="73"
 			width="73"
-		{{else}}
+			{{else}}
 			height="48"
 			width="48"
-		{{/if}}
-		>
+			{{/if}}
+			>
 		</a>
 		<span class="audio-user-name">
 			<a
@@ -51,7 +51,7 @@
 			</a>
 		</span>
 		{{#if is_linked}}
-		<div class="chip linked_reply">
+		<div class="chip reply-linked">
 			<i class="fa fa-link"></i>&nbsp;
 			Linked reply
 		</div>
@@ -71,7 +71,7 @@
 	<div class="audio-footer">
 	{{#if player}}{{! if it has a player }}
 		<a
-		class="audio-btn"
+		class="audio-action audio-plays-{{id}}"
 		id="{{id}}"
 		title="{{plays_count_text}}" {{! x people played this }}
 		>
@@ -81,12 +81,12 @@
 			</span>
 		</a>
 	{{/if}}
-		<a class="audio-btn
+		<a class="audio-action
 			{{#if user.can_favorite}}
-				laic
+				audio-action-favorite
 			{{/if}}
 			{{#if favorited}}
-				favorited
+				audio-is_favorited
 			{{/if}}"
 		data-id="{{id}}"
 		title="Mark as favorite">
@@ -96,7 +96,7 @@
 			</span>
 		</a>
 	{{#if player }}{{! if it has a player, it was an audio}}
-		<a class="audio-btn"
+		<a class="audio-action"
 		      href="{{audio_url}}?>#replies"
 		      title="Leave a reply"
 		      >
@@ -109,11 +109,12 @@
 	{{#if user.can_delete}}
 		<a
 		href="javascript:void(0);"
-		class="audio-btn delit"
+		class="audio-action audio-action-delete"
 		data-id="{{id}}"
 		title="Delete this audio"
 		>
-			<i class="fa fa-times"></i> Delete
+			<i class="fa fa-times"></i>
+			&nbsp;Delete
 		</a>
 	{{/if}}
 	</div> <!-- .audio-footer -->

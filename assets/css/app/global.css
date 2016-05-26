@@ -22,7 +22,7 @@ body {
 		 url('../fonts/coolvetica.ttf') format('truetype'),
 		 url('../fonts/coolvetica.svg#svgCoolvetica') format('svg');
 }
-.logo {
+.navbar-logo {
 	font-family: 'Coolvetica', Helvetica, Serif, Arial, Times;
 }
 
@@ -147,4 +147,9 @@ a.no-deco:active {
 .center {
 	display: block;
 	margin: 0 auto;
+}
+.signin {
+	display: block;
+	margin: 50px auto;
+	width: 158px;
 }

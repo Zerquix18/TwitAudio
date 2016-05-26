@@ -25,13 +25,13 @@ $(document).ready( function() {
 	$('ul.tabs').tabs();
 
 	if( ! window.record.canRecord() ) {
-		$("#or, #record").hide();
-		$("#upload").css('float', 'none');
+		$("#post-or, #post-record").hide();
+		$("#post-upload").css('float', 'none');
 		var value = readCookie('no_record_support');
 		if( null !== value && '' !== value ) {
 			return;
 		}
-		$("#norecordsupport").show();
+		$("#no-record-support").show();
 		document.cookie = 'no_record_support=1';
 	}
 

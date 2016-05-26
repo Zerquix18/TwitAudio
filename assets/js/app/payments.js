@@ -199,7 +199,7 @@ $("#premium-input-cvc").on('change', function() {
 * starts recording after clicking on
 * "start recording" from the premium modal
 **/
-$("#premium-button-record").on('click', function() {
+$("#premium-action-record").on('click', function() {
 	$('#payments').closeModal();
-	$("#record").trigger('click');
+	$("#post-record").trigger('click');
 });

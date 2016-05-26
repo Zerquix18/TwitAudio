@@ -13,7 +13,7 @@
 	text-align: center;
 	color: #FFF;
 }
-.not-found-text {
+.page-404 .not-found {
 	font-family: Roboto, Helvetica, Times, Serif, Arial;
 	font-weight: bold;
 	color: inherit;
@@ -41,7 +41,7 @@
 	.page_404 .container img {
 		width: 100%;
 	}
-	.not-found-text {
+	.page-404 .not-found {
 		font-size: 25px;
 	}
 }

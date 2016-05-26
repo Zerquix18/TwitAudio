@@ -70,7 +70,7 @@ window.effects = {
 					$(".choose_effect.effect_" + name)
 						.attr('data-url', file);
 
-					$("#effect_preview_" + name).jPlayer({
+					$("#effect-preview-" + name).jPlayer({
 						ready: function(event) {
 							window.effects.loadUrlHelper++;
 							// ^ now when this motherfucking function

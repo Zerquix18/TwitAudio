@@ -11,17 +11,17 @@
  * Uploads an audio
  * If options.isVoice = true then
  * it will upload the binary of the recorder
- * if not, it will upload the 'up_file' input
+ * if not, it will upload the 'upload-file' input
  *
  * @param {Object} options
  * 
 **/
 window.uploadAudio = function( options ) {
 		var isVoice = options.isVoice || false;
-		$("#record_form").hide();
-		$("#post").hide();
+		$("#record-form").hide();
+		$("#post-box").hide();
 		window.progressiveText.start(
-			'#whatsloading',
+			'#uploading-text',
 			[
 				'Uploading...',
 				'Getting prepared...',
@@ -36,31 +36,31 @@ window.uploadAudio = function( options ) {
 			],
 			3
 		);
-		$("#loading").show();
+		$("#uploading-box").show();
 		var uploadForm = {
 			beforeSend: function() {
-				$("#player_cut").jPlayer("destroy");
+				$("#player-cut").jPlayer("destroy");
 				window.effects.clean();
 			},
 			error: function( xhr ) {
 				displayError(
 					'There was an error while uploading your audio. ' + 
 					'Please check your Internet connection');
-				$("#loading").hide();
-				$("#up_progress").width(0);
-				$("#post").show();
-				window.progressiveText.stop('#whatsloading');
-				$("#up_form").trigger('reset');
+				$("#uploading-box").hide();
+				$("#uploading-progress").width(0);
+				$("#post-box").show();
+				window.progressiveText.stop('#uploading-text');
+				$("#upload-form").trigger('reset');
 			},
 			uploadProgress: function( event, position, total, percent ) {
-				$("#up_progress").animate({
+				$("#uploading-progress").animate({
 					width: percent + '%'
 				});
 			},
 			complete: function( xhr ) {
-				window.progressiveText.stop('#whatsloading');
-				$("#up_form").trigger('reset');
-				$("#up_progress").width("100%");
+				window.progressiveText.stop('#uploading-text');
+				$("#upload-form").trigger('reset');
+				$("#uploading-progress").width("100%");
 
 				var result = JSON.parse(xhr.responseText);
 				var tmpUrl = result.tmp_url || '';
@@ -70,9 +70,9 @@ window.uploadAudio = function( options ) {
 					if( ! tmpUrl ) {
 						// there was an error
 						// and it's not because it's too long
-						$("#loading").hide();
-						$("#up_progress").width(0);
-						$("#post").show();
+						$("#uploading-box").hide();
+						$("#uploading-progress").width(0);
+						$("#post-box").show();
 						displayError( result.response );
 						return;
 					}
@@ -80,14 +80,14 @@ window.uploadAudio = function( options ) {
 					unfinishedAudio('start');
 					window.tmpUrl = tmpUrl;
 					// make it global
-					$("#player_cut").jPlayer({
+					$("#player-cut").jPlayer({
 						ready: function(event) {
 							$(this).jPlayer("setMedia", {
 								// so this guy catches it
 								mp3: window.tmpUrl,
 							});
 						},
-						cssSelectorAncestor: '#cut_container',
+						cssSelectorAncestor: '#container-cut',
 						swfPath: "http://jplayer.org/latest/dist/jplayer",
 						supplied: "mp3",
 						wmode: "window",
@@ -98,10 +98,10 @@ window.uploadAudio = function( options ) {
 						remainingDuration: true,
 						toggleDuration: true
 					});
-					$("#loading").hide();
-					$("#up_progress").width(0);
-					$("#cut_form").show();
-					$("#audio_id").val( result.id );
+					$("#uploading-box").hide();
+					$("#uploading-progress").width(0);
+					$("#cut-form").show();
+					$("#cut-audio_id").val( result.id );
 					return;
 				}
 				$(".original").data('url', tmpUrl);
@@ -125,22 +125,22 @@ window.uploadAudio = function( options ) {
 					_fileReader.is_voice = '1';
 					_fileReader.bin      =  event.target.result;
 					uploadForm.data      = _fileReader;
-					$("#up_form").ajaxSubmit(uploadForm);
+					$("#upload-form").ajaxSubmit(uploadForm);
 				};
 				reader.readAsDataURL(blob);
 			});
 			return;
 		}
 		uploadForm.data = {is_voice: '0'};
-		$("#up_form").ajaxSubmit(uploadForm);
+		$("#upload-form").ajaxSubmit(uploadForm);
 };
 
 /**
  * Will execute when the user clicks on the upload icon
 **/
 
-$("#upload").on('click', function() {
-	$("#up_file").trigger('click');
+$("#post-upload").on('click', function() {
+	$("#upload-file").trigger('click');
 	$(this).blur();
 });
 
@@ -148,7 +148,7 @@ $("#upload").on('click', function() {
  * Will execute when the user tries to upload an audio
 **/
 
-$("#up_file").on('change', function() {
+$("#upload-file").on('change', function() {
 
 	var format   = $(this).val().split('.');
 	var fileSize = this.files[0].size / 1024 / 1024;
@@ -179,16 +179,16 @@ $("#up_file").on('change', function() {
  * The cut form
 **/
 
-$("#cut_form").ajaxForm({
+$("#cut-form").ajaxForm({
 	beforeSend: function() {
-		$("#player_preview").jPlayer('destroy');
-		$("#cut_form").hide();
-		$("#up_progress")
+		$("#player-preview").jPlayer('destroy');
+		$("#cut-form").hide();
+		$("#uploading-progress")
 			.removeClass('determinate')
 			.addClass('indeterminate');
 
 		window.progressiveText.start(
-			'#whatsloading',
+			'#uploading-box',
 			[
 				'Cutting...',
 				'Getting prepared',
@@ -201,41 +201,41 @@ $("#cut_form").ajaxForm({
 			],
 			5
 		);
-		$("#loading").show();
+		$("#uploading-box").show();
 		$.jPlayer.pause();
 		window.effects.clean();
 	},
 	error: function() {
-		progressiveText.stop('#whatsloading');
+		progressiveText.stop('#uploading-text');
 		displayError(
 			'There was a problem while cutting your audio. Please check your Internet connection',
 			10000
 		);
 		// get everything back
-		$("#loading").hide();
-		$("#up_progress")
+		$("#uploading-box").hide();
+		$("#uploading-progress")
 			.removeClass('indeterminate')
 			.addClass('determinate');
-		$("#cut_form").show();
+		$("#cut-form").show();
 	},
 	complete: function(xhr) {
 		var result = JSON.parse(xhr.responseText);
 		var tmpUrl = result.tmp_url;
 		var id     = result.id;
 
-		progressiveText.stop('#whatsloading');
-		$("#up_progress")
+		progressiveText.stop('#uploading-text');
+		$("#uploading-progress")
 			.removeClass('indeterminate')
 			.addClass('determinate');
 
 		if( ! result.success ) {
 			displayError(result.response);
-			$("#loading").hide();
-			$("#cut_form").show();
+			$("#uploading-box").hide();
+			$("#cut-form").show();
 			return;
 		}
 
-		$("#cut_form").trigger('reset');
+		$("#cut-form").trigger('reset');
 		$(".original").data('url', tmpUrl);
 
 		effects.load(id);
@@ -246,14 +246,14 @@ $("#cut_form").ajaxForm({
 });
 
 /**
- * Will validate the #cut_form inputs
+ * Will validate the #cut-form inputs
 **/
 
-$("#end, #start").on('keyup', function() {
+$("#cut-end, #cut-start").on('keyup', function() {
 
 	var numbers;
 	var diff;
-	var btn   = $("#cut_button");
+	var btn   = $("#cut-button");
 	var start = $("#start").val();
 	var end   = $("#end")  .val();
 	var isNumeric = function( value ) {
@@ -293,12 +293,12 @@ $("#end, #start").on('keyup', function() {
 	return btn.removeAttr('disabled');
 });
 
-$("#cut_cancel, #post_cancel").on('click', function() {
+$("#cut-cancel, #post-cancel").on('click', function() {
 	if( true !== confirm('Are you sure?') ) {
 		return false;
 	}
-	$("#cut_form, #post_form").hide();
-	$("#post").show();
+	$("#cut-form, #post-form").hide();
+	$("#post-box").show();
 	$.jPlayer.pause();
 	unfinishedAudio('stop');
 });
@@ -312,19 +312,19 @@ $("#cut_cancel, #post_cancel").on('click', function() {
  */
 window.preparePostForm = function( id, tmpUrl ) {
 
-	$("#a_id").val(id);
+	$("#post-audio_id").val(id);
 
 	window.tmpPostPreview = tmpUrl;
 	// made it global
 
-	$("#player_preview").jPlayer({
+	$("#player-preview").jPlayer({
 		ready: function(event) {
 			$(this).jPlayer("setMedia", {
 				mp3: window.tmpPostPreview,
 				// so this guys catches it
 			});
 		},
-		cssSelectorAncestor: '#preview_container',
+		cssSelectorAncestor: '#preview-container',
 		swfPath: "http://jplayer.org/latest/dist/jplayer",
 		supplied: "mp3",
 		wmode: "window",
@@ -336,12 +336,12 @@ window.preparePostForm = function( id, tmpUrl ) {
 		toggleDuration: true
 	});
 
-	$("#cutting, #loading").hide();
-	$("#post_form").show();
-	$("#up_progress").width(0);
+	$("#cutting, #uploading-box").hide();
+	$("#post-form").show();
+	$("#uploading-progress").width(0);
 };
 
-$("#post_form").ajaxForm({
+$("#post-form").ajaxForm({
 	beforeSend: function() {
 		$.jPlayer.pause();
 	},
@@ -351,16 +351,16 @@ $("#post_form").ajaxForm({
 		);
 	},
 	complete: function(xhr) {
-		$("#up_progress").width(0);
+		$("#uploading-progress").width(0);
 		var result = JSON.parse(xhr.responseText);
 		if( ! result.success ) {
 			return displayerror( result.response );
 		}
 
-		$("#desc").val("");
-		$("#audio_effect").val('original');
-		$("#loading, #post_form").hide();
-		$("#post").show();
+		$("#post-description").val("");
+		$("#post-audio_effect").val('original');
+		$("#uploading-box, #post-form").hide();
+		$("#post-box").show();
 		unfinishedAudio('stop');
 		return displayInfo(result.response);
 	},
@@ -368,26 +368,27 @@ $("#post_form").ajaxForm({
 
 /************************* REPLIES *************************/
 
-$("#form_reply").ajaxForm({
+$("#reply-form").ajaxForm({
 	beforeSend: function() {
-		$("#reply_box, #reply_options button")
+		$("#reply-input, #reply-submit")
 			.attr('disabled', 'disabled');
 	},
 	error: function() {
 		displayError('There was an error while adding your reply.');
-		$("#reply_box, #reply_options button").removeAttr('disabled');
+		$("#reply-input, #reply-submit").removeAttr('disabled');
 	},
 	complete: function( xhr ) {
-		$("#reply_box, #reply_options button").removeAttr('disabled');
+		$("#reply-input, #reply-submit").removeAttr('disabled');
 		var result = xhr.responseText;
 		if( isJson(result) ) {
 			result = JSON.parse(result);
 			return displayError(result.response);
 		}
 
-		$("#reply_box").val('');
-		$("#label_reply").removeClass('active');
-		$("#noreplies").remove();
+		$("#reply-input").val('');
+		$("#reply-input-label").removeClass('active');
+		// remove the 'there are not...' message
+		$("#replies div.alert").remove();
 
 		if( null === document.getElementById("load_more") ) {
 			$("#replies").prepend(result);
@@ -398,32 +399,32 @@ $("#form_reply").ajaxForm({
 	}
 });
 
-$("#replies_box").on('keyup keydown', function(e) {
+$("#reply-input").on('keyup keydown', function(e) {
 	var value = $(this).val();
 
 	if( $.trim(value).length > 0 ) {
-		$("#c_submit").removeAttr('disabled');
+		$("#reply-submit").removeAttr('disabled');
 	} else {
-		$("#c_submit").attr('disabled', 'disabled');
+		$("#reply-submit").attr('disabled', 'disabled');
 	}
 
 });
 
 /************************* SETTINGS *************************/
 
-$("#settings_form").ajaxForm({
+$("#settings-form").ajaxForm({
 	beforeSend: function() {
-		$("#settings_form button").attr('disabled', 'disabled');
+		$("#settings-form button").attr('disabled', 'disabled');
 	},
 	error: function() {
-		$("#settings_form button").removeAttr('disabled');
+		$("#settings-form button").removeAttr('disabled');
 		displayError(
 			'Could not update your settings.' + 
 			'Please check your Internet connection.'
 		);
 	},
 	complete : function(xhr) {
-		$("#settings_form button").removeAttr('disabled');
+		$("#settings-form button").removeAttr('disabled');
 
 		var result = JSON.parse(xhr.responseText);
 		if( result.success ) {
@@ -434,12 +435,12 @@ $("#settings_form").ajaxForm({
 	}
 });
 
-$("#search_type").on( 'change', function() {
+$("#search-type").on( 'change', function() {
 	if( $(this).val() == 'a' ) {
-		$("#search_sort").removeAttr('disabled');
-		$('#search_sort').material_select();
+		$("#search-sort").removeAttr('disabled');
+		$('#search-sort').material_select();
 	}else{
-		$('#search_sort').material_select('destroy');
-		$("#search_sort").attr('disabled', 'disabled');
+		$('#search-sort').material_select('destroy');
+		$("#search-sort").attr('disabled', 'disabled');
 	}
 });

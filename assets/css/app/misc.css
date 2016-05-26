@@ -8,11 +8,11 @@
 
 /** SEARCH FORM **/
 
-.search_options {
+.search-options {
 	height: 70px;
 	margin-bottom: 10px;
 }
-.search-btn {
+.search-submit {
 	margin-top: 15px;
 	display: block;
 	margin: 0 auto;
@@ -43,18 +43,16 @@ ul.user .verified {
 	min-height: 50px;
 	padding-left: 10px;
 }
-.ads-footer {
+.audio-share-buttons {
+	text-align: right;
+}
+
+/** footer */
+
+.footer-ads {
 	max-width: 720px;
 	display: block;
 	margin: 10px auto 20px auto;
-}
-.signin {
-	display: block;
-	margin: 50px auto;
-	width: 158px;
-}
-.share_buttons {
-	text-align: right;
 }
 
 /** sidebar **/

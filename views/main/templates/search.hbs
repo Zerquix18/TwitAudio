@@ -10,10 +10,10 @@
 							&nbsp;Search...
 						</label>
 					</div>
-					<div class="search_options">
+					<div class="search-options">
 					{{! options can't have tabs or spaces :C }}
 						<div class="input-field col s3 left">
-							<select id="search_type" name="t">
+							<select id="search-type" name="t">
 								<option
 								value="a"
 								{{#if search.is_audios}}
@@ -30,7 +30,7 @@
 						</div>
 						<div class="input-field col s3 right">
 							<select
-							id="search_sort"
+							id="search-sort"
 							name="s"
 							{{#if search.is_users}}
 							{{! users aren't sort }}
@@ -55,7 +55,7 @@
 	  				</div>
 	  				<button
 	  				type="submit"
-	  				class="search-btn waves-effect waves-light btn blue lighten-1"
+	  				class="search-submit waves-effect waves-light btn blue lighten-1"
 	  				>
 	  					Search
 	  				</button>
