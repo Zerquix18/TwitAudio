@@ -163,14 +163,17 @@
 .jp-pause {
 	width: 30px;
 }
-.control {
+.jp-play  i,
+.jp-pause i  {
 	position: absolute;
 	left: 11px;
-	top: 3px;
+	/* em, so it's responsive */
+	top: 0.4em;
 	color: #393939;
 	font-size: 12px;
 }
-.vcontrol {
+.jp-mute   i,
+.jp-unmute i  {
 	position: absolute;
 	color: #393939;
 	right: 70px;
@@ -340,4 +343,8 @@ div.jp-play-bar {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #0077EF;
+}
+/* hide this cuz it always shows before the player to load */
+.jp-no-solution {
+	display: none;
 }

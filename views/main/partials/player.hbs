@@ -6,7 +6,7 @@
 <script>
 window.onLoadFunctions.push( function() {
 	$("#player-{{id}}").jPlayer({
-		ready: function(event) {
+		ready: function( event ) {
 			$(this).jPlayer("setMedia", {
 				mp3: "{{audio}}",
 			});
@@ -38,14 +38,14 @@ window.onLoadFunctions.push( function() {
                     class="jp-play audio-action-play"
                     data-id="{{id}}"
                     tabindex="1">
-                        <i class="fa fa-play control"></i>
+                        <i class="fa fa-play"></i>
                     </a>
                 </li>
                 <li>
                     <a href="javascript:;"
                     class="jp-pause"
                     tabindex="1">
-                        <i class="fa fa-pause control"></i>
+                        <i class="fa fa-pause"></i>
                     </a>
                 </li>
                 <li>
@@ -59,14 +59,14 @@ window.onLoadFunctions.push( function() {
                     <a href="javascript:;"
                     class="jp-mute"
                     tabindex="1" title="mute">
-                        <i class="fa fa-volume-up vcontrol"></i>
+                        <i class="fa fa-volume-up"></i>
                     </a>
                 </li>
                 <li>
                     <a href="javascript:;"
                     class="jp-unmute"
                     tabindex="1" title="unmute">
-                        <i class="fa fa-volume-down vcontrol"></i>
+                        <i class="fa fa-volume-down"></i>
                     </a>
                 </li>
                 <li>
