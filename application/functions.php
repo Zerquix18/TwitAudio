@@ -234,9 +234,11 @@ function minify_html( $output ) {
     		array_values($replace),
     		$output
     	);
-	return preg_replace(
-		array('/\>[^\S ]+/s','/[^\S ]+\</s','/(\s)+/s'),
-		array('>','<','\\1'),
-		$output
-	);
+    //remove optional ending tags
+    // (see http://www.w3.org/TR/html5/syntax.html#syntax-tag-omission )
+    $remove = array(
+        '</option>', '</li>', '</dt>', '</dd>', '</tr>', '</th>', '</td>'
+    );
+    $output = str_ireplace($remove, '', $output);
+	return $output;
 }
