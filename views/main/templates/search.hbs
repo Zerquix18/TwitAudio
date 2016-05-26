@@ -114,13 +114,13 @@ window.loadMore = {
 	// url
 	toLoad   : 'search',
 	// selector to insert
-	selector : 'search',
+	selector : '#search',
 	// data to send
 	data     : {
-		'query' : decodeURIComponent('{{search.query_urlencoded}}'),
-		'type'  : '{{search.results.type}}',
-		'sort'  : '{{search.results.sort}}',
-		'page'  : 1
+		q : decodeURIComponent('{{search.query_urlencoded}}'),
+		t : '{{search.results.type}}',
+		o : '{{search.results.sort}}',
+		p : 1
 	}
 };
 {{/if}}

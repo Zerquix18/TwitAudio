@@ -93,11 +93,11 @@
 <script type="text/javascript">
 window.loadMore = {
 	toLoad   : 'replies',
-	selector : 'replies',
+	selector : '#replies',
 	data: {
-		id     : {{audio.audio.id}},
-		page   : 1,
-		linked : {{audio.linked}}
+		id       : '{{audio.audio.id}}',
+		p        : 1,
+		reply_id : '{{audio.linked}}'
 	}
 };
 </script>

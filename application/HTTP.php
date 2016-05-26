@@ -108,7 +108,14 @@ class HTTP {
 			trigger_error('HTTP::result must have the key success');
 			exit(); // exit but with nothing
 		}
-		exit( json_encode($options) );
+		$result = json_encode(
+			$options,
+			JSON_UNESCAPED_UNICODE |
+			JSON_UNESCAPED_SLASHES |
+			JSON_UNESCAPED_UNICODE |
+			JSON_FORCE_OBJECT
+		);
+		exit($result);
 	}
 	/**
 	 * Performs an HTTP redirect

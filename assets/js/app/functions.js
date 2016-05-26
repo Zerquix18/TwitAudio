@@ -158,3 +158,15 @@ function updateDates() {
 		$(this).text(date);
 	});
 }
+/** 
+ * Calls the functions of window.onLoadFunctions which
+ * is an array with functions to call after the body loaded.
+ * I don't use $(document).ready because jQuery loads in the footer
+ * and I don't use window.onload because it only supports 1 function.
+ * 
+ */
+function callOnLoadFunctions() {
+	for( var i = 0; i < window.onLoadFunctions.length; i++ ) {
+		window.onLoadFunctions[i].call(null);
+	}
+}

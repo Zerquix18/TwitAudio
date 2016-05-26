@@ -80,17 +80,17 @@
 		</div>
 	</div>
 </div>
-{{#if profile.audios.audios}}
+{{#if profile.audios.load_more}}
 <script type="text/javascript">
 window.loadMore = {
 	// url
-	toLoad   : 'profile',
+	toLoad   : '{{profile.page}}',
 	// selector to insert
-	selector : '{{profile.page}}',
+	selector : '#{{profile.page}}',
 	// data to send
 	data     : {
-		'user' : '{{user.user}}',
-		'page' : 1
+		user  : '{{user.user}}',
+		p     : 1
 	}
 };
 </script>

@@ -225,8 +225,7 @@ class MobileAJAXController {
 				'require_login' => false
 			)
 		);
-		$param = 'mob' == $this->via ? 'user' : 'q';
-		$user  = HTTP::get($param);
+		$user  = HTTP::get('user');
 		if( ! $user && 'mob' == $this->via ) {
 			$current_user = Users::get_current_user();
 			$user = $current_user->id;
@@ -242,24 +241,30 @@ class MobileAJAXController {
 			);
 		}
 
-		$info = Users::get( $user, array('id') );
+		$user = Users::get( $user, array('id') );
 
-		if( ! $info ) {
+		if( ! $user ) {
 			throw new MobileAJAXException('User does not exist');
 		}
 
-		$user_id = $info['id'];
-		$result  = Audios::get_audios($user_id, $page);
+		$result  = Audios::get_audios($user['id'], $page);
 		// Mobile side:
-		if( 'mob' == $this->via )
-			HTTP::result(array('success' => true) + $result);
+		if( 'mob' == $this->via ) {
+			HTTP::result( array('success' => true) + $result );
+		}
 		// AJAX side:
+		$response = '';
 		while( list(,$audio) = each($result['audios']) ) {
-			View::display_audio($audio);
+			$response .= View::get_partial('audio', $audio);
 		}
-		if( $result['load_more'] ) {
-			View::load_more('audios', $result['page'] + 1);
-		}
+		$response  = minify_html($response);
+		$load_more = $result['load_more'];
+		HTTP::result( array(
+					'success'   => true,
+					'response'  => $response,
+					'load_more' => $result['load_more']
+				)
+			);
 
 		// blow the roof of the place!
 	}
@@ -642,8 +647,7 @@ class MobileAJAXController {
 			)
 		);
 		$current_user = Users::get_current_user();
-		$param        = 'mob' == $this->via ? 'user' : 'q';
-		$user         = HTTP::get($param);
+		$user         = HTTP::get('user');
 
 		if( ! $user && 'mob' == $this->via ) {
 			$user = $current_user->id;
@@ -659,34 +663,37 @@ class MobileAJAXController {
 				);
 		}
 
-		$info = Users::get($user, array('id', 'favs_public') );
+		$user = Users::get($user, array('id', 'favs_public') );
 
-		if( ! $info ) {
+		if( ! $user ) {
 			throw new MobileAJAXException('The user does not exist');
 		}
 
-		if(	   ! $info['favs_public']
+		if(	   ! $user['favs_public']
 			|| ! is_logged()
-			|| $current_user->id !== $info['id']
+			|| $current_user->id !== $user['id']
 		) {
 			throw new MobileAJAXException(
 					'The favorites of this user are private'
 				);
 		}
-
-		$user_id = $info['id'];
-		$result  = Audios::get_favorites($user_id, $page);
+		$result  = Audios::get_favorites($user['id'], $page);
 		// Mobile side:
 		if( 'mob' == $this->via ) {
 			HTTP::result( array('success' => true) + $result );
 		}
 		// AJAX side:
+		$response = '';
 		while( list(,$audio) = each($result['audios']) ) {
-			View::display_audio( $audio );
+			$response .= View::get_partial('audio', $audio);
 		}
-		if( $result['load_more'] ) {
-			View::load_more('audios', $result['page'] + 1 );
-		}
+		$response = minify_html($response);
+		HTTP::result( array(
+				'success'   => true,
+				'response'  => $response,
+				'load_more' => $result['load_more']
+			)
+		);
 	}
 	/**
 	* It will return the data for the home page
@@ -906,8 +913,7 @@ class MobileAJAXController {
 				'require_login' => false,
 			)
 		);
-		$param        = 'mob' == $this->via ? 'id' : 'q';
-		$audio_id     =  HTTP::get($param);
+		$audio_id     =  HTTP::get('id');
 		$page         =  HTTP::get('p');
 		$page         =  HTTP::sanitize_page_number($page) ?: 1;
 		$current_user = Users::get_current_user();
@@ -966,16 +972,24 @@ class MobileAJAXController {
 			}
 		}
 		/** / LINKED REPLIES **/
+
 		// Mobile side:
-		if( 'mob' == $this->via )
+		if( 'mob' == $this->via ) {
 			HTTP::result( array('success' => true) + $replies );
+		}
 		// AJAX side:
+		$response = '';
 		while( list(,$audio) = each($replies['audios']) ) {
-			View::display_audio($audio);
+			$response .= View::get_partial('audio', $audio);
 		}
-		if( $replies['load_more'] ) {
-			View::load_more('replies', $replies['page'] + 1 );
-		}
+		$response = minify_html($response);
+
+		HTTP::result( array(
+				'success'   => true,
+				'response'  => $response,
+				'load_more' => $replies['load_more']
+			)
+		);
 	}
 
 	/**
@@ -1080,7 +1094,7 @@ class MobileAJAXController {
 		$type  = HTTP::get('t');
 		$order = HTTP::get('o');
 		$page  = HTTP::get('p');
-		$page = HTTP::sanitize_page_number($page) ?: 1;
+		$page  = HTTP::sanitize_page_number($page) ?: 1;
 
 		if( ! $query )
 			throw new MobileAJAXException(
@@ -1095,19 +1109,26 @@ class MobileAJAXController {
 				'page' 		=>  $page
 			)
 		);
-		if( 'mob' == $this->via )
-			HTTP::result(array('success' => true ) + $result);
+		//Mobile Side:
+		if( 'mob' == $this->via ) {
+			HTTP::result( array('success' => true) + $result);
+		}
+		//AJAX Side:
 
-		$function_to_call =
-  			$result['type'] == 'a' ? 'display_audio' : 'display_user';
+		$response = '';
+		$partial  = $result['type'] == 'a' ? 'audio' : 'user';
 
   		while( list(,$audio) = each($result['audios']) ) {
-  			View::$function_to_call($audio);
+  			$response .= View::get_partial($partial, $audio);
   		}
+  		$response = minify_html($response);
 
-  		if( $result['load_more'] ) {
-  			View::load_more('search', $page + 1);
-  		}
+  		HTTP::result( array(
+  				'success'   => true,
+  				'response'  => $response,
+  				'load_more' => $result['load_more']
+  			)
+  		);
 	}
 	/**
 	* Updates the settings
