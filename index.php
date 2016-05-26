@@ -30,19 +30,9 @@ try {
 
 if( \Config::get('is_production') ) {
 	error_reporting(0);
-	/** minify HTML **/
-	ob_start( function($output) {
-		return preg_replace(
-			['/\>[^\S ]+/s','/[^\S ]+\</s','/(\s)+/s'],
-			['>','<','\\1'],
-			$output
-		);
-	});
 } else {
 	error_reporting(E_ALL);
-	ob_start();
 }
-
 /** database connection **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/zerdb.php';
 try {
@@ -72,6 +62,8 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 /** twitaudio dependencies **/
 require $_SERVER['DOCUMENT_ROOT'] . '/application/functions.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/application/sessions.php';
+
+ob_start('minify_html');
 
 spl_autoload_register( function ( $name ) {
 	$file = str_replace('\\', '/', $name);
