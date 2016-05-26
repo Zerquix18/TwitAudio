@@ -18,7 +18,7 @@
 **/
 window.uploadAudio = function( options ) {
 		var isVoice = options.isVoice || false;
-		$("#record-form").hide();
+		$("#record-box").hide();
 		$("#post-box").hide();
 		window.progressiveText.start(
 			'#uploading-text',
@@ -62,9 +62,10 @@ window.uploadAudio = function( options ) {
 				$("#upload-form").trigger('reset');
 				$("#uploading-progress").width("100%");
 
-				var result = JSON.parse(xhr.responseText);
-				var tmpUrl = result.tmp_url || '';
-				var id     = result.id || '';
+				var result  = JSON.parse(xhr.responseText);
+				var tmpUrl  = result.tmp_url || '';
+				var id      = result.id      || '';
+				var effects = result.effects || '';
 
 				if( false === result.success ) {
 					if( ! tmpUrl ) {
@@ -104,7 +105,7 @@ window.uploadAudio = function( options ) {
 					$("#cut-audio_id").val( result.id );
 					return;
 				}
-				$(".original").data('url', tmpUrl);
+				$(".effect-original").data('url', tmpUrl);
 
 				unfinishedAudio('start');
 
@@ -188,7 +189,7 @@ $("#cut-form").ajaxForm({
 			.addClass('indeterminate');
 
 		window.progressiveText.start(
-			'#uploading-box',
+			'#uploading-text',
 			[
 				'Cutting...',
 				'Getting prepared',
@@ -324,7 +325,7 @@ window.preparePostForm = function( id, tmpUrl ) {
 				// so this guys catches it
 			});
 		},
-		cssSelectorAncestor: '#preview-container',
+		cssSelectorAncestor: '#container-preview',
 		swfPath: "http://jplayer.org/latest/dist/jplayer",
 		supplied: "mp3",
 		wmode: "window",
@@ -336,9 +337,9 @@ window.preparePostForm = function( id, tmpUrl ) {
 		toggleDuration: true
 	});
 
-	$("#cutting, #uploading-box").hide();
-	$("#post-form").show();
+	$("#uploading-box").hide();
 	$("#uploading-progress").width(0);
+	$("#post-form").show();
 };
 
 $("#post-form").ajaxForm({
@@ -354,10 +355,10 @@ $("#post-form").ajaxForm({
 		$("#uploading-progress").width(0);
 		var result = JSON.parse(xhr.responseText);
 		if( ! result.success ) {
-			return displayerror( result.response );
+			return displayError( result.response );
 		}
 
-		$("#post-description").val("");
+		$("#post-input-description").val("");
 		$("#post-audio_effect").val('original');
 		$("#uploading-box, #post-form").hide();
 		$("#post-box").show();

@@ -130,6 +130,9 @@ window.record = {
 	 * Cancels recording
 	 */
 	cancel: function() {
+		if( true !== confirm('Are you sure?') ) {
+			return;
+		}
 		this.recorder.clear();
 
 		if( 'undefined' !== typeof this.secondsLeftInterval ) {
@@ -144,9 +147,9 @@ window.record = {
 		delete this.secondsLeftInterval;
 		delete this.recordingSecondsInterval;
 
-		$("#record-countdown-number").html("3");
+		$("#record-countdown_number").html("3");
 		$("#record-count").html("0:00");
-		$("#record-form").hide();
+		$("#record-box").hide();
 		$("#post-box").show();
 		unfinishedAudio('stop');
 	},
@@ -171,7 +174,7 @@ window.record = {
 
 		if( this.secondsLeft > 0 ) {
 			this.secondsLeft -= 1;
-			$("#record-countdown-number").text( String(this.secondsLeft) );
+			$("#record-countdown_number").text( String(this.secondsLeft) );
 			return;
 		}
 		if( 0 === this.secondsLeft ) {
@@ -180,6 +183,7 @@ window.record = {
 			delete this.secondsLeft;
 			delete this.secondsLeftInterval;
 			$("#record-countdown").hide();
+			$("#record-countdown_number").text("3");
 			window.record.recorder.record(); // starts recording!
 			this.isRecording = true;
 			

@@ -81,7 +81,7 @@
 .post-description-box {
 	margin: 30px 0 0 10px;
 }
-.send_to_twitter-box {
+.post-send_to_twitter-box {
 	margin-left: 10px;
 }
 .post-buttons {
@@ -99,7 +99,7 @@
 .effects {
 	max-width: 500px;
 }
-.effect-choose {
+.effect-action-choose {
 	margin: 25px auto;
 	display: block;
 }

@@ -40,7 +40,7 @@ class FrontController {
 					'autoload' => false, 
 				);
 			$effects_player = array(
-					'id'       => 'effect_none',
+					'id'       => 'effect-none',
 					'autoload' => false,
 				);
 

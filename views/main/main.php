@@ -123,6 +123,8 @@ $bars['user']['is_premium']           = $is_premium;
 $bars['user']['file_upload_limit']    = $current_user->get_limit('file_upload');
 $bars['user']['audio_duration_limit'] = // ↓
 $current_user->get_limit('audio_duration');
+$bars['user']['audio_duration_minutes_limit'] =
+$current_user->get_limit('audio_duration') / 60;
 
 // sidebar
 // please note that the operator here is 'or' instead of '||'

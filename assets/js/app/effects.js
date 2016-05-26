@@ -8,7 +8,7 @@ window.effects = {
 
 	allEffectsLoaded: true,
 
-	loadInterval: false,
+	loadInterval: 0,
 
 	loadedEffects: [],
 
@@ -22,11 +22,13 @@ window.effects = {
 	 */
 	load: function( audioId ) {
 		if( ! this.allEffectsLoaded ) {
+			console.log('ia se cargan to2');
 			return;
 		}
-		if( null === this.loadInterval ) {
+		if( 0 === this.loadInterval ) {
+			console.log('esperando pal siguiente');
 			this.loadInterval = setInterval(
-					this.load,
+					this.load.bind(this),
 					3000,
 					audioId
 				);
@@ -67,10 +69,10 @@ window.effects = {
 
 					window.effects.loadedUrls.push(file);
 
-					$(".choose_effect.effect_" + name)
+					$(".effect-action-choose.effect-" + name)
 						.attr('data-url', file);
 
-					$("#effect-preview-" + name).jPlayer({
+					$("#player-effect-" + name).jPlayer({
 						ready: function(event) {
 							window.effects.loadUrlHelper++;
 							// ^ now when this motherfucking function
@@ -86,7 +88,7 @@ window.effects = {
 							$(".jp-jplayer").not(this).jPlayer("pause");
 						},
 
-						cssSelectorAncestor : '#container_' + name,
+						cssSelectorAncestor : '#container-effect-' + name,
 						swfPath: "http://jplayer.org/latest/dist/jplayer",
 						supplied: "mp3",
 						wmode: "window",
@@ -98,10 +100,12 @@ window.effects = {
 						toggleDuration: true
 	    				});
 					// now, after it's loaded, show it.
-					$("#effect_" + name + " > .loading").hide();
-					$("#effect_" + name + " > .preview").show();
+					$("#effect-" + name + " > .effect-loading").hide();
+					$("#effect-" + name + " > .effect-preview").show();
 				}
 				if( areAllLoaded ) {
+					console.log(result.are_all_loaded);
+					console.log('all loaded!');
 					clearInterval(window.effects.loadInterval);
 					window.effects.allEffectsLoaded  = true;
 					window.effects.loadedEffects     = [];
@@ -113,7 +117,7 @@ window.effects = {
 	/**
 	 * Prepares all the effects before they are loaded
 	 * So the page shows that they are loading
-	 * @param  {Objecto} effects The effects to load.
+	 * @param  {Object} effects The effects to load.
 	 */
 	showLoading: function( effects ) {
 		/**
@@ -124,54 +128,36 @@ window.effects = {
 		for( var i = 0; i < effects.length; i++ ) {
 			var effectName        = effects[i].name;
 			var effectNamePublic  = effects[i].name_public;
-			var effectSelector    = 'effect_' + effects[i].name;
+			var effectSelector    = 'effect-' + effects[i].name;
 
-			$("#effect_none")
+			$("#effect-none")
 				.clone()
 				.attr('id', effectSelector)
-				.appendTo('#effects_modal > .modal-content');
+				.appendTo('#effects > .modal-content');
 
 			// change the title
 			$("#" + effectSelector + " h5")
 				.text(effectNamePublic);
 
 			// now the atts
-			$("#" + effectSelector + ' .preview .jp-jplayer')
-				.attr('id', 'effect_preview_' + effectName);
+			$("#" + effectSelector + ' .effect-preview .jp-jplayer')
+				.attr('id', 'player-effect-' + effectName);
 
 			$("#" + effectSelector + ' .jp-audio')
-				.attr('id', 'container_' + effectName);
+				.attr('id', 'container-effect-' + effectName);
 
 			// the choose button
-			$("#" + effectSelector + ' .preview button')
+			$("#" + effectSelector + ' .effect-preview button')
 				.attr('data-choose', effectName)
-				.removeClass('effect_none').addClass(effectSelector)
-				.on('click', function() {
-
-					if( undefined === $(this).data('url') ) {
-						// no urls loaded
-						return;
-					}
-
-					$.jPlayer.pause();
-					$("#player_preview").jPlayer('setMedia', {
-						'mp3' : $(this).data('url')
-					});
-					$("#effects_modal").closeModal();
-					$("#audio_effect").val( $(this).data('choose') );
-
-					if( 'original' == $(this).data('choose') ) {
-						displayInfo('OK. Got it.');
-					} else {
-						displayInfo('Effect added!');
-					}
-
-				});
+				.removeClass('effect-none').addClass(effectSelector)
+				.on('click', this.effectChooseListener);
 
 				// now it is ready to be loaded by `this.load` :)
 
-				$("#" + effectSelector).show();
-			}
+			$("#" + effectSelector).show();
+		}
+		// finally, add listener to the original button
+		$('.effect-original').on('click', this.effectChooseListener);
 	},
 	/**
 	 * Cleans all the temporary effects after the audio is canceled
@@ -179,7 +165,32 @@ window.effects = {
 	 */
 	clean: function() {
 		// arrivederchi!
-		$(".effect_preview").not('#effect_none').remove();
+		$(".effect-preview-box").not('#effect-none').remove();
+		// in case they all did not load
+		clearInterval(window.effects.loadInterval);
+	},
+
+	/**
+	 * The listener to be executed when someone clicks '.effect-action-choose'
+	 */
+	effectChooseListener: function() {
+
+		if( undefined === $(this).data('url') ) {
+			// no urls loaded
+			return;
+		}
+		// in case any player is still playing
+		$.jPlayer.pause();
+		$("#player-preview").jPlayer('setMedia', {
+				'mp3' : $(this).data('url')
+			});
+		$("#effects").closeModal();
+		$("#post-audio_effect").val( $(this).data('choose') );
+
+		if( 'original' == $(this).data('choose') ) {
+			displayInfo('OK. Got it.');
+		} else {
+			displayInfo('Effect added!');
+		}
 	}
-	
 };

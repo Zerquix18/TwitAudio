@@ -74,7 +74,7 @@
 					<div>
 						You can record up to
 						<span id="record-max-limit">
-							{{user.upload_max_limit}}
+							{{user.audio_duration_minutes_limit}}
 						</span>
 						minutes.
 					</div>
@@ -188,12 +188,12 @@
 					<input type="hidden" name="effect" id="post-audio_effect"
 					value="original">
 
-					<div class="input-field" class="post-description-box">
+					<div class="input-field post-description-box">
 						<textarea
 						maxlength="200"
-						id="post-description-input"
-						name="description"
-						class="materialize-textarea"></textarea>
+						id="post-input-description"
+						class="materialize-textarea post-input-description"
+						name="description"></textarea>
 						<label for="post-description-input">
 							<i class="fa fa-pencil"></i>
 							&nbsp;Type a description
@@ -202,7 +202,7 @@
 
 					<div class="post-footer">
 
-						<div class="send_to_twitter-box left">
+						<div class="post-send_to_twitter-box left">
 							<input type="hidden" name="s_twitter" value="0">
 							<input
 							type="checkbox" class="filled-in"
@@ -247,17 +247,17 @@
 					<h4>Add Effects</h4>
 					<div class="divider"></div>
 					<!-- copy and edit this in order to display the effects -->
-					<div id="effect-none" class="effect-preview" style="display:none">
+					<div id="effect-none" class="effect-preview-box" style="display:none">
 						<h5>Effect None</h5>
 						<div class="effect-loading">
 							<i class="fa fa-spinner fa-spin"></i>&nbsp;
 							Loading effect...
 						</div>
-						<div class="effect-preview-player" style="display:none">
+						<div class="effect-preview" style="display:none">
 							{{{get_partial 'player' home.effects_player}}}
 			    			<button
 			    			type="button"
-			    			class="btn effect-choose-button choose-effect effect-none"
+			    			class="btn effect-action-choose effect-none"
 			    			data-choose="effect-none"
 			    			>
 			    				Choose
@@ -269,7 +269,7 @@
 					<a
 					href="javascript:void(0)"
 					class="modal-action modal-close waves-effect waves-blue
-					btn-flat choose-effect original"
+					btn-flat effect-action-choose effect-original"
 					data-choose="original">
 				      	Use the original
 					</a>

@@ -857,7 +857,7 @@ class MobileAJAXController {
 				'audio'           => $new_name,
 				'description'     => $description,
 				'duration'        => $_SESSION[$id]['duration'],
-				'is_voice'        => !! $_SESSION[$id]['is_voice'],
+				'is_voice'        => $_SESSION[$id]['is_voice'],
 				'send_to_twitter' => ( '1' === $send_to_twitter ),
 			)
 		);
