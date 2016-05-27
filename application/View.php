@@ -427,6 +427,14 @@ class View {
 		echo self::get_group_template("{$group}/404");
 		exit;
 	}
+	public static function exit_500() {
+		ob_end_clean();
+		$result = file_get_contents(
+			$_SERVER['DOCUMENT_ROOT'] . '/application/html/error-500.html'
+		);
+		echo $result;
+		exit;
+	}
 
 	/* functions with HTML */
 

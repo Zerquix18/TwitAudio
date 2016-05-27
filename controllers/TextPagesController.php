@@ -21,7 +21,7 @@ class TextPagesController {
 	public function __construct( $page ) {
 		try {
 			$file = $_SERVER['DOCUMENT_ROOT'] .
-			'/templates/html/' . $page . '.html';
+			'/application/html/text/' . $page . '.html';
 			
 			if( ! is_readable($file) ) {
 				View::exit_404();
@@ -53,10 +53,10 @@ class TextPagesController {
 		} catch ( \Exception $e ) {
 			// database error or template error :c
 			if( \Config::get('is_production') ) {
-				View::exit_404();
+				View::exit_500();
 			} else {
 				echo $e->getMessage(), PHP_EOL;
-			}
-		}
-	}
-}
+			}//if
+		}//catch
+	}//__construct
+}//class

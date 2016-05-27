@@ -52,7 +52,12 @@ class SearchController {
 			View::set_title($title);
 			echo View::get_group_template('main/search', $bars);
 		} catch( \Exception $e ) {
-			
-		}
-	}
-}
+			// database error or template error :c
+			if( \Config::get('is_production') ) {
+				View::exit_500();
+			} else {
+				echo $e->getMessage(), PHP_EOL;
+			}//if
+		}//catch
+	}//__construct
+}//class

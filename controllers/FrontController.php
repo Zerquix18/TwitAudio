@@ -72,7 +72,7 @@ class FrontController {
 		} catch( \Exception $e ) {
 			// database error or template error :c
 			if( \Config::get('is_production') ) {
-				echo file_get_contents('assets/templates/error-500.html');
+				View::exit_500();
 			} else {
 				echo $e->getMessage(), PHP_EOL;
 			}
