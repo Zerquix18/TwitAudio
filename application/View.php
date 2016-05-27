@@ -8,8 +8,7 @@
 **/
 namespace application;
 use \application\HTTP,
-	\LightnCandy\LightnCandy,
-	\Exception as Exception;
+	\LightnCandy\LightnCandy;
 
 class View {
 	/**
@@ -113,6 +112,14 @@ class View {
 	 * @return array
 	 */
 	public static function get_template_options() {
+		$is_production = \Config::get('is_production');
+		if( $is_production ) {
+			$templates_dir    = $_SERVER['DOCUMENT_ROOT'] . '/views_compiled/';
+			$templates_format = 'php';
+		} else {
+			$templates_dir    = $_SERVER['DOCUMENT_ROOT'] . '/views/';
+			$templates_format = 'hbs';
+		}
 		$global_helpers = array(
 				'get_image'   => '\application\View::get_image',
 				'get_style'   => '\application\View::get_style',
@@ -130,8 +137,15 @@ class View {
 				'current_group' => 'main',
 				/*
 				 * The dir to load the templates
+				 * In production they'll be compiled
 				 */
-				'templates_dir' => $_SERVER['DOCUMENT_ROOT'] . '/views/',
+				'templates_dir' => $templates_dir,
+				/**
+				 * The format of the templates
+				 * In production they'll be compiled (php)
+				 * but in testing they'll be .hbs
+				 */
+				'templates_format' => $templates_format,
 				/*
 				 * LightnCandy flags for groups.
 				 */
@@ -196,14 +210,9 @@ class View {
 	 *                         Ex: main/404, main/home, main/profile
 	 * @param  array  $bars    The list of bars that the template
 	 *                         will parse.
-	 * @param  array  $lightncandy_options
 	 * @return string          Everything ready to be print.
 	 */
-	public static function get_group_template(
-										$group,
-										$bars                = array(),
-										$lightncandy_options = array()
-									) {
+	public static function get_group_template( $group, $bars = array() ) {
 		//group/template
 		$group_template = explode('/', $group);
 		if( 2 !== count($group_template) ) {
@@ -232,7 +241,8 @@ class View {
 			trigger_error('Could not load templates dir ' . $templates_dir);
 			return;
 		}
-		$template_file = $template_dir . $group . '.hbs';
+		$template_file = // ↓
+		$template_dir . $group . '.' . $options['templates_format'];
 		if( ! file_exists($template_file) ) {
 			/**
 			* if the template does not exist...
@@ -254,14 +264,16 @@ class View {
 		/**
 		* Let's load our group template
 		**/
-		$template_php = LightnCandy::compile(
+		if( \Config::get('is_production') ) {
+			// if it's in production is already compiled
+			$renderer = include $template_file;
+		} else {
+			$template_php = LightnCandy::compile(
 				file_get_contents($template_file),
-				array_merge_recursive(
-					$options['group_options'],
-					$lightncandy_options
-				)
+				$options['group_options']
 			);
-		$renderer = LightnCandy::prepare($template_php);
+			$renderer = LightnCandy::prepare($template_php);
+		}
 		return $renderer(
 			array(
 				'body' => $template
@@ -279,43 +291,39 @@ class View {
 	 *                                 calling it directly.
 	 *                                 Ex:   {{load_subtemplate 'test' this}}
 	 *                                 Ex 2: load_subtemplate('test', array())
-	 * @param array $options           If you're calling it directly,
-	 *                                 you can pass options for the LightnCandy
-	 *                                 (like helpers or flags).
 	 * @return string
 	**/
-	public static function get_template(
-										$template,
-										$bars                = array(),
-										$lightncandy_options = array()
-									) {
+	public static function get_template( $template, $bars = array() ) {
 		// all the methods here have to have its namespace
 		$options       = \application\View::get_template_options();
 		$template_file = sprintf(
 					//ex: {...}views/main/templates/home.hbs
-					'%s/%s/templates/%s.hbs',
+					'%s/%s/templates/%s.%s',
 					$options['templates_dir'],
 					$options['current_group'],
-					$template
+					$template,
+					$options['templates_format']
 				);
 		if( ! file_exists($template_file) ) {
 			trigger_error('Template does not exist: ' . $template_file);
 			return '';
 		}
 		try {
-			$template_php  = \LightnCandy\LightnCandy::compile(
-				file_get_contents($template_file),
-				array_merge_recursive(
-					$options['template_options'],
-					$lightncandy_options
-				)
-			);
+			if( \Config::get('is_production') ) {
+				// if its in production it's already compiled
+				$renderer = include($template_file);
+			}else {
+				$template_php  = \LightnCandy\LightnCandy::compile(
+					file_get_contents($template_file),
+					$options['template_options']
+				);
+				$renderer = \LightnCandy\LightnCandy::prepare($template_php);
+			}
 		} catch( \Exception $e ) {
 			ob_end_clean();
 			echo $e->getMessage();
 			exit;
 		}
-		$renderer = \LightnCandy\LightnCandy::prepare($template_php);
 		return $renderer($bars, $options['renderer_options']);
 	}
 	/**
@@ -335,11 +343,7 @@ class View {
 	 *                        just use this. Ex: {{get_partial "lol" this}}
 	 * @return string
 	**/
-	public static function get_partial(
-										$partial,
-										$bars                = array(),
-										$lightncandy_options = array()
-									) {
+	public static function get_partial( $partial, $bars = array() ) {
 		/**
 		* If the partial was called INSIDE a loop
 		* then take the pair key=>value
@@ -348,29 +352,34 @@ class View {
 			$bars = $bars['_this'];
 		}
 		$options = \application\View::get_template_options();
-						// namespace is obligatory
-		try {
-		$template_php = \LightnCandy\LightnCandy::compile(
-				/** partial to compile **/
-				file_get_contents(
-					sprintf(
-						'%s/%s/partials/%s.hbs',
+
+		$template_file = sprintf(
+						'%s/%s/partials/%s.%s',
 						$options['templates_dir'],
 						$options['current_group'],
-						$partial
-					)
-				),
-				array_merge_recursive(
-					$options['partial_options'],
-					$lightncandy_options
-				)
-			);
+						$partial,
+						$options['templates_format']
+					);
+		if( ! file_exists($template_file) ) {
+			trigger_error('Partial does not exist: ' . $template_file);
+			return '';
+		}
+		try {
+			if( \Config::get('is_production') ) {
+				$renderer = include($template_file);
+			} else {
+				// namespace is obligatory
+				$template_php = \LightnCandy\LightnCandy::compile(
+					file_get_contents($template_file),
+					$options['partial_options']
+				);
+				$renderer = \LightnCandy\LightnCandy::prepare($template_php);
+			}
 		} catch ( \Exception $e ) {
 			ob_end_clean();
 			echo $e->getMessage();
 			exit;
 		}
-		$renderer = \LightnCandy\LightnCandy::prepare($template_php);
 		// go ahead!
 		return $renderer($bars, $options['renderer_options']);
 	}
@@ -395,7 +404,7 @@ class View {
 			$result['header']['robots'] = self::$robots;
 		}
 		$file    = sprintf(
-					'%s/%s/%s.php',
+					'%s/%s/%s-bars.php',
 					$options['templates_dir'],
 					$group,
 					$group
