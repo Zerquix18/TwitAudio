@@ -113,7 +113,7 @@ class Audios implements ModelInterface {
 			// is_logged() returns the user ID
 			$is_logged = is_logged();
 			$audio['user']['can_delete']   =
-			$is_logged && $is_logged == $current_user->id;
+			$is_logged && $audio['user']['id'] == $current_user->id;
 		}
 		if( $has('plays') ) {
 			$audio['plays_count'] = format_number($audio['plays']);
