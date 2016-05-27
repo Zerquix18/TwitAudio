@@ -285,7 +285,7 @@
 					{{#each home.recent_audios}}
 						{{{get_partial 'audio'}}}
 					{{else}}
-						{{alert_info error.no_recent}}
+						{{{alert_info 'You have no recent audios ¯\_(ツ)_/¯'}}}
 					{{/each}}
 					</div>
 				</div>
@@ -297,7 +297,9 @@
 					{{#each home.recent_popular}}
 						{{{get_partial 'audio'}}}
 					{{else}}
-						{{alert_info 'ups'}}
+						{{{alert_info
+							'There are not popular audios right now. ¯\_(ツ)_/¯'
+						}}}
 					{{/each}}
 					</div>
 				</div>
