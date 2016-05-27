@@ -46,9 +46,10 @@ class SearchController {
 						'results' 	=> $results
 					)
 				);
+			$title = $query . ' Search';
 
 			View::set_page('search');
-			View::set_title('Search');
+			View::set_title($title);
 			echo View::get_group_template('main/search', $bars);
 		} catch( \Exception $e ) {
 			

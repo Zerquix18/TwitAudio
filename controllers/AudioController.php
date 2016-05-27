@@ -70,20 +70,48 @@ class AudioController {
 				}
 			} /** / LINKED REPLIES **/
 
-			$twitter_share_url = '';
+			/*                   window title              */
+
+			$user               = $audio['user']['user'];
+			$title              = $user . ': ';
+			$description_length = mb_strlen($audio['description'], 'utf-8');
+			if( 0 === $description_length ) {
+				// no text, then nothing
+				$title = sprintf("%s's audio", $user);
+			} elseif( $description_len > 15 ) {
+				$title .= substr($audio['description'], 0, 10) . '...';
+			} elseif( $description_len < 15 ) {
+				$title .= $audio['description'];
+			}
+
+			$robots = $audio['user']['audios_public'];
+
+			$twitter_share_url  = 'https://twitter.com/intent/tweet?';
+			$twitter_share_url .= // ↓
+			http_build_query( array(
+					'text'    => sprintf(
+								"Listen to @%s's audio",
+								$user
+							),
+					'via'     => 'twit_audio',
+					'related' => 'twit_audio,zerquix18,superjd10_,chusen'
+				)
+			);
 
 			$bars = array(
 				'audio' => array(
-						'audio'		  => $audio,
-						'replies'	  => $replies,
-						'linked'      => isset($linked) ? $linked : '',
+						'audio'		        => $audio,
+						'replies'	        => $replies,
+						'linked'            => isset($linked) ? $linked : '',
+						'twitter_share_url' => $twitter_share_url,
 					)
 				);
-			View::set_title('Audio');
+			View::set_title($title);
+			View::set_robots($robots);
 			View::set_page('audio');
 			echo View::get_group_template('main/audio', $bars);
 		} catch( \Exception $e ) {
-
+			
 		}
 	}
 }
