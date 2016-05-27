@@ -17,7 +17,7 @@ $(document).on('click', '.audio-action-favorite', function(e) {
 	var lastFavoriteId = $(this);
 	var params = {
 			id: id,
-			action: $(this).hasClass('favorited') ? // faved already?
+			action: $(this).hasClass('audio-is_favorited') ? // faved already?
 				'unfav' : 'fav'
 		};
 
@@ -31,11 +31,11 @@ $(document).on('click', '.audio-action-favorite', function(e) {
 			var attribute = lastFavoriteId.find('span'),
 				count     = parseInt( attribute.text() );
 
-			if( lastFavoriteId.hasClass('is-favorited') ) { // already faved?
-				lastFavoriteId.removeClass('is-favorited');
+			if( lastFavoriteId.hasClass('audio-is_favorited') ) { // already faved?
+				lastFavoriteId.removeClass('audio-is_favorited');
 				attribute.text( String(count - 1) );
 			}else{
-				lastFavoriteId.addClass('is-favorited');
+				lastFavoriteId.addClass('audio-is_favorited');
 				attribute.text( String(count + 1) );
 			}
 		},
@@ -44,14 +44,14 @@ $(document).on('click', '.audio-action-favorite', function(e) {
 			var attribute = lastFavoriteId.find('span');
 			var count     = parseInt( attribute.text() );
 
-			if( lastFavoriteId.hasClass('is-favorited') ) {
-				lastFavoriteId.removeClass('is-favorited');
+			if( lastFavoriteId.hasClass('audio-is_favorited') ) {
+				lastFavoriteId.removeClass('audio-is_favorited');
 				attribute.text( String(count - 1) );
 				displayError(
 					'There was a problem while favoriting the audio...'
 				);
 			}else{
-				lastFavoriteId.addClass('is-favorited');
+				lastFavoriteId.addClass('audio-is_favorited');
 				attribute.text( String(count + 1) );
 				displayError(
 					'There was a problem while unfavoriting the audio...'
@@ -66,12 +66,12 @@ $(document).on('click', '.audio-action-favorite', function(e) {
 				var attribute = lastFavoriteId.find('span');
 				var count     = parseInt( attribute.text() );
 
-				if( lastFavoriteId.hasClass('is-favorited') ) {
-					lastFavoriteId.removeClass('is-favorited');
+				if( lastFavoriteId.hasClass('audio-is_favorited') ) {
+					lastFavoriteId.removeClass('audio-is_favorited');
 					attribute.text( String(c - 1) );
 				}else{
 					attribute.text( String(c + 1) );
-					lastFavoriteId.addClass('is-favorited');
+					lastFavoriteId.addClass('audio-is_favorited');
 				}
 
 				return displayError(result.response);
