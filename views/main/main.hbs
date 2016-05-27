@@ -13,14 +13,9 @@
 	</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta
-	name="robots"
-	{{#if header.robots}}
-		content="index,follow"
-	{{else}}
-		content="noindex,nofollow"
-	{{/if}}
-	>
+	{{#unless header.robots}}
+	<meta name="robots" content="noindex,nofollow">
+	{{/unless}}
 	{{#each header.styles}}
 		<link
 		rel="stylesheet"
