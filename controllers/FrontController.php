@@ -69,7 +69,6 @@ class FrontController {
 			View::set_title('Home');
 			View::set_page('home_logged');
 			echo View::get_group_template('main/home-logged', $bars);
-			
 		} catch( \Exception $e ) {
 			// database error or template error :c
 			if( \Config::get('is_production') ) {
