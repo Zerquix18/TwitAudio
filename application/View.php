@@ -257,7 +257,7 @@ class View {
 		* and other stuff.
 		**/
 		$default_bars  = self::get_default_bars($group);
-		$bars          = array_merge($default_bars, $bars);
+		$bars          = array_merge_recursive($default_bars, $bars);
 		/**
 		* This is global info for the templates
 		**/
