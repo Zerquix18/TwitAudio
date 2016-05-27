@@ -96,6 +96,10 @@ make_cssfile_from_dir() {
 
 make_cssfile_from_dir 'vendor'
 make_cssfile_from_dir 'app'
+
+# Compile the templates
+
+php application/compile_templates.php
    
 cd "../$home_dir"
 
