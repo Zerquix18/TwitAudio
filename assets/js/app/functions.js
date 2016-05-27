@@ -35,14 +35,6 @@ function displayInfo( info, duration ) {
 	Materialize.toast(text, duration, 'rounded');
 }
 /**
- * Checks if a string is a JSON string
- * @param  {String}  str The string to check
- * @return {Boolean}
- */
-function isJson( str ) {
-	return (/^[\],:{}\s]*$/.test(str.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')));
-}
-/**
  * Reads a cookie and returns its result
  * @param  {String} name The cookie to be read
  * @return {String}      The cookie content or an empty string
