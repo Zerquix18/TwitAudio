@@ -9,7 +9,7 @@
 **/
 
 /** configuration **/
-$config_file = './config.ini';
+$config_file = dirname(__FILE__) . '/config.ini';
 try {
 	if( ! is_readable($config_file) ) {
 		throw new \Exception("Can't read $config_file or it does not exist");
