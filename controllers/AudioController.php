@@ -99,7 +99,15 @@ class AudioController {
 			);
 
 			$bars = array(
-				'audio' => array(
+				/** twitter cardss **/
+				'header' => array(
+					'twitter' => array(
+							'player' => url('frame/'. $audio['id']),
+							'url'    => url($audio['id']),
+							'title'  => sprintf('%s on TwitAudio', $user),
+						)
+					),
+				'audio'  => array(
 						'audio'		        => $audio,
 						'replies'	        => $replies,
 						'linked'            => isset($linked) ? $linked : '',
