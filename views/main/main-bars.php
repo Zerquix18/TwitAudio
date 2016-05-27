@@ -68,9 +68,8 @@ $bars['main']['faq_url']     = url('faq');
 $bars['main']['ajax_url']    = url('ajax/');
 $bars['main']['swf_path']    = url('assets/swf/');
 if( $is_logged ) {
-	$bars['main']['profile_url']   = url('audios/' . $current_user->user);
+	$bars['main']['profile_url']   = url('audios/'    . $current_user->user);
 	$bars['main']['favorites_url'] = url('favorites/' . $current_user->user);
-} else {
 	$bars['main']['logout_url']    = url('?logout=1');
 }
 if( View::is('home_unlogged') ) {
