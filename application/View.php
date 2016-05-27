@@ -413,7 +413,7 @@ class View {
 			return array();
 		}
 		require $file;
-		return $bars;
+		return array_merge_recursive($result, $bars);
 	}
 	/**
 	 * Exits the 404 page. It may be called from anywhere.
