@@ -381,8 +381,8 @@ $("#reply-form").ajaxForm({
 	complete: function( xhr ) {
 		$("#reply-input, #reply-submit").removeAttr('disabled');
 		var result = xhr.responseText;
-		if( isJson(result) ) {
 			result = JSON.parse(result);
+		if( ! result.success ) {
 			return displayError(result.response);
 		}
 
@@ -391,12 +391,8 @@ $("#reply-form").ajaxForm({
 		// remove the 'there are not...' message
 		$("#replies div.alert").remove();
 
-		if( null === document.getElementById("load_more") ) {
-			$("#replies").prepend(result);
-		} else {
-			$("#load_more").before(result);
-		}
-
+		// add the result
+		$("#replies").prepend(result.response);
 	}
 });
 

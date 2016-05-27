@@ -1065,11 +1065,18 @@ class MobileAJAXController {
 				'tw_id'           => $audio['tw_id']
 			)
 		);
-
-		if( 'mob' == $this->via )
+		// Mobile SIDE:
+		if( 'mob' == $this->via ) {
 			HTTP::result(array('success' => true) + $reply);
-		else
-			View::display_audio($reply);
+		}
+		// AJAX side:
+		$response = View::get_partial('audio', $reply);
+		$response = minify_html($response);
+		HTTP::result( array(
+				'success'  => true,
+				'response' => $response
+			)
+		);
 	}
 
 	/**

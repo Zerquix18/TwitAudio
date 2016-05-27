@@ -154,7 +154,11 @@ class Audios implements ModelInterface {
 			}
 		}
 
-		if( $has('id') && $has('audio') && '' !== trim($audio['audio']) ) {
+		if(    $has('id')
+			&& $has('audio')
+			&& $has('reply_to')
+			&& '0' == $audio['reply_to']
+			) {
 			$audio['player'] = array(
 				'id'       => $audio['id'],
 				'audio'    => $audio['audio'],

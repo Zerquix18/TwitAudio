@@ -33,7 +33,7 @@
 					<div class="input-field">
    						<textarea
    						class="materialize-textarea"
-   						name="reply-input"
+   						name="reply"
    						maxlength="200"
    						id="reply-input"
    						required="required"></textarea>
@@ -56,6 +56,9 @@
 						<button
 						type="submit"
 						class="btn right waves-effect waves-light reply-submit"
+						id="reply-submit"
+						{{! disabled until they type something }}
+						disabled="disabled"
 						>
 							Reply&nbsp;
 							<i class="fa fa-send"></i>
