@@ -102,8 +102,8 @@ $(document).on('click', '.audio-action-play', function(e) {
 		cache: false,
 		url: ajaxUrl + 'post/play',
 		data: {id: id},
+		dataType: 'json',
 		success: function( result ) {
-			result = JSON.parse(result);
 			if( ! result.success ) {
 				// we should not throw an error
 				// because we could not count a play

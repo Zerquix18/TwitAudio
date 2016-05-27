@@ -141,15 +141,17 @@ class Audios implements ModelInterface {
 			$audio['description'] = HTTP::sanitize($audio['description']);
 		}
 
-		if( $audio['reply_to'] != '0' ) {
-			/*
-				If it's a reply, then add a link to the original audio
-				But with this reply appearing first
-			 */
-			$audio['audio_url'] =
-			url() . $audio['reply_to'] .'?reply_id=' . $audio['id'];
-		} else {
-			$audio['audio_url'] = url() . $audio['id'];
+		if( $has('id') ) {
+			if( $has('reply_to') && $audio['reply_to'] != '0' ) {
+				/*
+					If it's a reply, then add a link to the original audio
+					But with this reply appearing first
+				 */
+				$audio['audio_url'] =
+				url() . $audio['reply_to'] .'?reply_id=' . $audio['id'];
+			} else {
+				$audio['audio_url'] = url() . $audio['id'];
+			}
 		}
 
 		if( $has('id') && $has('audio') && '' !== trim($audio['audio']) ) {
