@@ -94,7 +94,7 @@ if( View::is('text') ) {
 if(    ! View::is('404', 'text', 'home_unlogged')
 	&& isset($_SESSION['first_time']) ) {
 	unset($_SESSION['first_time']);
-	$bars['main']['after_login']           = true;
+	$bars['main']['after_login']           = array();
 	$bars['main']['after_login']['status'] = // ↓
 	!! $current_user->audios_public ? 'public' : 'private';
 }
