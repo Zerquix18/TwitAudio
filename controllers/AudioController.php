@@ -78,9 +78,9 @@ class AudioController {
 			if( 0 === $description_length ) {
 				// no text, then nothing
 				$title = sprintf("%s's audio", $user);
-			} elseif( $description_len > 15 ) {
+			} elseif( $description_length > 15 ) {
 				$title .= substr($audio['description'], 0, 10) . '...';
-			} elseif( $description_len < 15 ) {
+			} elseif( $description_length < 15 ) {
 				$title .= $audio['description'];
 			}
 
