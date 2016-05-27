@@ -109,11 +109,7 @@ class Audios implements ModelInterface {
 		$current_user = Users::get_current_user();
 
 		if( $has('user') ) {
-			$audio['user']['profile_url']  =
-			url('audios/'. $audio['user']['user']);
-
 			$audio['user']['can_favorite'] = is_logged();
-
 			// is_logged() returns the user ID
 			$is_logged = is_logged();
 			$audio['user']['can_delete']   =
