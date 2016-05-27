@@ -111,13 +111,13 @@ function getDateDifferences( fromDate ) {
 	if( seconds < 60 ) {
 		return seconds + ' seconds';
 	}
-	if( 60 == seconds ) {
+	if( 60 == seconds && seconds < 120 ) {
 		return '1 minute';
 	}
 	if( minutes < 60 ) {
 		return minutes + ' minutes';
 	}
-	if( 60 == minutes ) {
+	if( 60 == minutes && minutes < 120 ) {
 		return '1 hour';
 	}
 	if( hours < 24 ) {
@@ -130,7 +130,7 @@ function getDateDifferences( fromDate ) {
 		// it is not yesterday
 		return days + ' days';
 	}
-	if( 7 == days ) {
+	if( 7 == days && days < 14 ) {
 		return '1 week';
 	}
 	// cuz I'm too lazy to display full dates :)
