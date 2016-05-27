@@ -134,7 +134,7 @@ $bars['sidebar']['show_ads'] = ! View::is('frame') or ! $is_premium;
 $bars['footer']                     = array();
 $bars['footer']['current_year']     = date('Y');
 $bars['footer']['show_ads']         = // ↓
-! View::is('home_unlogged', 'text', 'frame') or ! $is_premium;
+! View::is('home_unlogged', 'text', 'frame', '404') or ! $is_premium;
 // note that it is 'or' instead of '||'
 
 $bars['footer']['show_page_footer'] = View::is('home_unlogged', 'text');
