@@ -105,8 +105,8 @@ function isCardValid( card ) {
 * Prepares the form 
 *
 **/
-$('#form-premium').on('submit', function(event) {
-	$('#submit-premium').attr('disabled', 'disabled');
+$('#premium-form').on('submit', function(event) {
+	$('#premium-submit').attr('disabled', 'disabled');
 	// Request a token from Stripe:
 	Stripe.card.createToken($(this), stripeTokenResponse);
 	// Prevent the form from being submitted:
