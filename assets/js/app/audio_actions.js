@@ -143,7 +143,7 @@ $(document).on('click', '.audio-action-delete', function(e) {
 			// redirect to home if the deleted audio
 			// was in the audio page AND
 			// was not a reply
-			// audioId is defined in templates/audio.phtml
+			// audioId is defined in views/templates/audio.phtml
 			if( typeof audioId !== 'undefined' &&
 				result.response == audioId
 				) {

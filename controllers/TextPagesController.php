@@ -20,7 +20,7 @@ class TextPagesController {
 	
 	public function __construct( $page ) {
 		try {
-			$file = $_SERVER['DOCUMENT_ROOT'] .
+			$file = DOCUMENT_ROOT .
 			'/application/html/text/' . $page . '.html';
 			
 			if( ! is_readable($file) ) {

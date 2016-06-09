@@ -2,31 +2,55 @@
 /**
  * This class has 2 static methods
  * To get and set config in runtime
- * The global $_CONFIG is set in index.php
+ * And it loads the config from the config file
  *
  * @author Zerquix18 <zerquix18@outlook.com>
  * @copyright 2016 Luis A. Martínez
 **/
 class Config {
 	/**
-	 * Returns $key from $_CONFIG
-	 * @param  string $key
-	 * @return mixed  The key of $_CONFIG or NULL if it does not exist.
-	**/
-	public static function get( $key ) {
-		global $_CONFIG;
-		if( ! array_key_exists($key, $_CONFIG) ) {
-			return null;
+	 * Stores the config
+	 * @var array
+	 */
+	private static $config;
+	/**
+	 * Loads the config if it was not loaded
+	 */
+	public static function load_config() {
+		if( null !== self::$config ) {
+			return;
 		}
-		return $_CONFIG[$key];
+		$config_file = DOCUMENT_ROOT . '/config.ini';
+		if( ! is_readable($config_file) ) {
+			throw new \ProgrammerException(
+					"Can't read $config_file or it does not exist"
+				);
+		}
+		self::$config = parse_ini_file($config_file);
 	}
 	/**
-	 * Sets $key and $value to $_CONFIG
+	 * Returns $key from self::config
+	 * @param  string $key
+	 * @return mixed  The key of self::$config or NULL if it does not exist.
+	**/
+	public static function get( $key ) {
+		if( null === self::$config ) {
+			self::load_config();
+		}
+		if( ! array_key_exists($key, self::$config) ) {
+			return null;
+		}
+		return self::$config[$key];
+	}
+	/**
+	 * Sets $key and $value to self::$config
 	 * @param string $key
 	 * @param mixed  $value
 	**/
 	public static function set( $key, $value ) {
-		global $_CONFIG;
-		$_CONFIG[$key] = $value;
+		if( null == self::config ) {
+			self::load_config();
+		}
+		self::$config[$key] = $value;
 	}
 }

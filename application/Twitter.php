@@ -47,16 +47,24 @@ class Twitter {
 		if( null === $this->tw ) {
 			return '';
 		}
-		$request_token = $this->tw->oauth(
-			'oauth/request_token',
-			array('oauth_callback' => $this->callback)
-		);
+		try {
+			$request_token = $this->tw->oauth(
+				'oauth/request_token',
+				array('oauth_callback' => $this->callback)
+			);
+			$url = $this->tw->url(
+				'oauth/authorize',
+				array('oauth_token' => $request_token['oauth_token'])
+			);
+		} catch ( \TwitterOAuthException $e ) {
+			throw new \VendorException(
+					'TwitterOAuth',
+					$e->getMessage()
+				);
+		}
 		$_SESSION['oauth_token'] 		= $request_token['oauth_token'];
 		$_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
-		return $this->tw->url(
-			'oauth/authorize',
-			array('oauth_token' => $request_token['oauth_token'])
-		);
+		return $url;
 	}
 	/**
 	 * Posts a tweet a returns the ID
@@ -66,6 +74,7 @@ class Twitter {
 	 * @param string  $reply_to If the tweet is replying to another tweet,
 	 *                         this param will tell Twitter.
 	 * @return string
+	 * @throws  TwitterOAuthException
 	 *
 	**/
 	public function tweet( $tweet, $reply_to = '' ) {

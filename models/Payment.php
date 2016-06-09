@@ -36,10 +36,11 @@ class Payment {
 	 * @param string $payment_method Must be stripe|paypal
 	 * @param string $user_id        The ID of the user that is making
 	 *                               the payment.
+	 * @throws  ProgrammerException
 	 */
 	public function __construct( $payment_method, $user_id ) {
 		if( ! in_array($payment_method, array('paypal', 'stripe') ) ) {
-			trigger_error('Payment method is wrong');
+			throw new \ProgrammerException('Payment method is wrong');
 		}
 		$this->payment_method = $payment_method;
 		$this->user_id        = $user_id;
@@ -75,11 +76,11 @@ class Payment {
 		$insert     = db()->query(
 				'INSERT INTO payments
 				 SET
-				 	user_id    = ?,
-				 	method     = ?,
-				 	user_agent = ?,
-				 	ip         = ?,
-				 	`time`     = ?
+				 	user_id        = ?,
+				 	method         = ?,
+				 	user_agent     = ?,
+				 	user_ip        = ?,
+				 	date_added     = ?
 				',
 				$this->user_id,
 				$this->payment_method,
@@ -88,23 +89,32 @@ class Payment {
 				time()
 			);
 		if( ! $insert ) {
-			throw new \Exception('INSERT error: ' . db()->error);
+			throw new \DBException('INSERT payment error');
+			/**
+			 * @todo  mail me because the charge was made
+			 * but it did not insert
+			 */
 		}
 		$premium_until = $this->get_next_month();
 		$update = db()->query(
 				'UPDATE users
 				 SET
-				 	upload_seconds_limit = ?,
-				 	premium_until        = ?
+				 	upload_limit  = 300,
+				 	premium_until = ?
 				 WHERE
-				 	id                   = ?
+				 	id            = ?
 				',
-				'300',
 				$premium_until,
 				$this->user_id	
 			);
 		if( ! $update ) {
-			throw new \Exception('UPDATE error: ' . db()->error);
+			throw new \DBException('UPDATE user [payments] error');
+			/**
+			 * @todo mail me
+			 * because the payment was made
+			 * but it did not became premium 
+			 * 
+			 */
 		}
 		$result = array(
 				'premium_until' => $premium_until
@@ -166,8 +176,6 @@ class Payment {
 		} catch (\Stripe\Error\ApiConnection $e) {
 			$this->error = 'We apologize we had an internal error';
 		} catch (\Stripe\Error\Base $e) {
-			$this->error = 'We apologize we had an internal error';
-		} catch (\Exception $e) {
 			$this->error = 'We apologize we had an internal error';
 		}
 		// if it's empty, then there was no error, and it will return true

@@ -48,7 +48,7 @@ class ProfileController {
 
 			} elseif( 'favorites' == $profile_page ) {
 
-				if(    $user['favs_public']
+				if(    'public' == $user['favs_privacy']
 					|| (
 						is_logged() && ($current_user->id == $user['id'])
 					)
@@ -91,15 +91,13 @@ class ProfileController {
 					'is_forbidden'    => $is_forbidden,
 					'is_audios'       => 'audios'    == $profile_page,
 					'is_favorites'    => 'favorites' == $profile_page,
-					'audios_url'      => url('audios/' . $user['user']),
-					'favorites_url'   => url('favorites/' . $user['user'])
 				)
 			);
 
 			if( 'audios' === $profile_page ) {
-				$title = sprintf('%s audios',    $user['user']);
+				$title = sprintf('%s audios',    $user['username']);
 			} else {
-				$title = sprintf('%s favorites', $user['user']);
+				$title = sprintf('%s favorites', $user['username']);
 			}
 			View::set_title($title);
 			View::set_page('profile');

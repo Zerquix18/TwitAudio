@@ -3,6 +3,70 @@
 * Functions file
 *
 **/
+/** init functions **/
+function db_init() {
+	global $db;
+	$db = new zerdb(
+		\Config::get('host'),
+		\Config::get('user'),
+		\Config::get('password'),
+		\Config::get('database')
+	);
+	if( ! $db->ready ) {
+		throw new \DBError('Error while connecting to the database');
+	}
+}
+function session_init() {
+
+	$cookie_name = 'ta_session';
+
+	session_name($cookie_name);
+	//id of the logged user:
+	$user_id = 0;
+	$cookie_exists   = isset($_COOKIE['ta_session']);
+	$is_cookie_valid = $cookie_exists && preg_match(
+							"/^(ta-)[\w]{29}+$/",
+							$_COOKIE[ $cookie_name ]
+						);
+
+	if( ! is_mobile() ) {
+		/*
+		 * Don't set the cookies for sessions in the mobile side
+		 * They are not used.
+		 */
+		if( ! $cookie_exists ) {
+			/*
+			 * If the cookie does not exist,
+			 * generate a new ID.
+			 */
+			session_id( generate_id('session') );
+			$user_id = 0;
+		}
+
+		if( ! $cookie_exists || $is_cookie_valid ) {
+			/*
+			 * if cookie isn't valid,
+			 * PHP will throw a unavoidable warning
+			 * when calling session_start();
+			 */
+			session_start();
+			$user_id = 0;
+		}
+		if( $cookie_exists && $is_cookie_valid ) {
+			$session = db()->query(
+				"SELECT user_id FROM sessions
+				 WHERE id = ? AND is_mobile = '0'",
+				session_id()
+			);
+			$user_id = $session->nums > 0 ? (int) $session->user_id : 0;
+		}
+	} else {
+		$user_id = 0;
+	}
+	// for a future use:
+	// it only detects the one in the web, so use is_logged() instead
+	define('IS_LOGGED', $user_id);
+}
 /**
  * Formats a number, making it smaller and easy to read.
  * @param  string|int $count
@@ -26,13 +90,12 @@ function generate_id( $for ) {
 	$chars = 
 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890';
 	if( ! in_array($for, array('session', 'audio') ) ) {
-		trigger_error(
+		throw new \ProgrammerException(
 			"generate_id only accepts 'session' and 'audio'"
 		);
 		return '';
 	}
 	$table  = 'session' == $for ? 'sessions' : 'audios';
-	$column = 'session' == $for ? 'sess_id'  : 'id';
 	$id     = '';
 	while( true ) {
 		if( 'session' == $for ) {
@@ -42,10 +105,10 @@ function generate_id( $for ) {
 		}
 		$result = db()->query(
 				"SELECT COUNT(*) AS size FROM {$table}
-				 WHERE {$column} = '{$id}'"
+				 WHERE id = '{$id}'"
 			);
 		if( ! $result ) {
-			throw new \Exception('SELECT error: ' . db()->error);
+			throw new \DBException('SELECT session error');
 		}
 		if( 0 === (int) $result->size )
 			break;
@@ -137,16 +200,20 @@ function get_date_differences( $old_time ) {
  * Returns the current IP address of the user.
  * @return string
 **/
-function get_ip() {
+function get_ip( $long = true ) {
 	if( ! empty($_SERVER['HTTP_CLIENT_IP']) ) {
-		return $_SERVER['HTTP_CLIENT_IP'];
+		$ip = $_SERVER['HTTP_CLIENT_IP'];
 	}
 
 	if( ! empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
-		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 	}
 	
-	return $_SERVER['REMOTE_ADDR'];
+	$ip = $_SERVER['REMOTE_ADDR'];
+	if( $long ) {
+		return ip2long($ip);
+	}
+	return $ip;
 }
 /**
  * PHP "strict standards" does not let me to do this

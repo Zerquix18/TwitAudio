@@ -18,31 +18,22 @@ class FrameController {
 	 * @param string $audio_id
 	 */
 	public function __construct( $audio_id ) {
-		try {
-			$audio  = Audios::get($audio_id);
+		$audio  = Audios::get($audio_id);
 			
-			if( empty($audio) ) {
-				View::exit_404();
-			}
+		if( empty($audio) ) {
+			View::exit_404();
+		}
 
-			$user = $audio['user'];
+		$user = $audio['user'];
 
-			if( ! $user['audios_public'] ) {
-				View::exit_404();
-			}
-			$bars = array('frame'  =>
-					array('player' => $audio['player'])
-				);
+		if( 'public' !== $user['audios_privacy'] ) {
+			View::exit_404();
+		}
+		$bars = array('frame'  =>
+				array('player' => $audio['player'])
+			);
 
-			View::set_page('frame');
-			echo View::get_group_template('main/frame', $bars);
-		} catch( \Exception $e ) {
-			// database error or template error :c
-			if( \Config::get('is_production') ) {
-				View::exit_500();
-			} else {
-				echo $e->getMessage(), PHP_EOL;
-			}//if
-		}//catch
+		View::set_page('frame');
+		echo View::get_group_template('main/frame', $bars);
 	}//__construct
 }//class

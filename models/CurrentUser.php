@@ -40,9 +40,9 @@ class CurrentUser {
 			return true;
 		}
 
-		$user = Users::get( $id, array('audios_public') );
+		$user = Users::get( $id, array('audios_privacy') );
 
-		if( $user['audios_public'] ) {
+		if( 'public' == $user['audios_privacy'] ) {
 			return true;
 		}
 
@@ -52,7 +52,7 @@ class CurrentUser {
 
 		// not public. check if cached ...
 		db()->query( // cleans
-			"DELETE FROM following_cache WHERE `time` < ?",
+			"DELETE FROM following_cache WHERE date_added < ?",
 			time() - 1800 // (60*30) half hour
 		);
 
@@ -96,10 +96,10 @@ class CurrentUser {
 		db()->query(
 				'INSERT INTO following_cache
 				 SET
-				 	user_id   = ?,
-				 	following = ?,
-				 	`time`    = ?,
-				 	result    = ?
+				 	user_id    = ?,
+				 	following  = ?,
+				 	date_added = ?,
+				 	result     = ?
 				',
 				$this->id,
 				$id,
@@ -120,7 +120,7 @@ class CurrentUser {
 		if( ! property_exists($this, 'id') ) {
 			return 0;
 		}
-		$duration = (int) $this->upload_seconds_limit;
+		$duration = (int) $this->upload_limit;
 		switch( $limit ) {
 			case 'file_upload':
 				$duration = (string) ( $duration / 60 );
@@ -175,14 +175,14 @@ class CurrentUser {
 			// not logged
 			return false;
 		}
-		$duration      = (int) $this->upload_seconds_limit;
+		$duration      = (int) $this->upload_limit;
 		$premium_until = (int) $this->premium_until;
 		return ($duration > 120) && (time() < $premium_until);
 	}
 	/**
 	 * Updates the settings of the logged user
 	 * @param  array  $settings The settings, must be keys of the database
-	 * @throws \Exception
+	 * @throws \DBException
 	 * @return bool
 	 */
 	public function update_settings( array $settings ) {
@@ -212,7 +212,7 @@ class CurrentUser {
 				$params
 			);
 		if( ! $result ) {
-			throw new \Exception('UPDATE error: ' . db()->error);
+			throw new \DBException('UPDATE user settings error');
 		}
 		return $result;
 	}

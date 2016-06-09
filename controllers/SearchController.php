@@ -16,48 +16,39 @@ use \application\View,
 class SearchController {
 
 	public function __construct() {
-		try {
-			$query = HTTP::get('q');
-			$type  = HTTP::get('t');
-			$order = HTTP::get('o');
+		$query = HTTP::get('q');
+		$type  = HTTP::get('t');
+		$order = HTTP::get('o');
 			
-			if( $query ) {
-				$results = Search::do_search( array(
-						'query'		=> $query,
-						'type'		=> $type,
-						'order'		=> $order,
-						'page'		=> 1
-					)
-				);
-			} else {
-				$results = array();
-			}
-			$bars = array(
-					'search' => array(
-						'query'		       => $query,
-						'query_urlencoded' => rawurlencode($query),
+		if( $query ) {
+			$results = Search::do_search( array(
+					'query'		=> $query,
+					'type'		=> $type,
+					'order'		=> $order,
+					'page'		=> 1
+				)
+			);
+		} else {
+			$results = array();
+		}
+		$bars = array(
+				'search' => array(
+					'query'		       => $query,
+					'query_urlencoded' => rawurlencode($query),
 
-						'is_audios' => 'a' == $results['type'],
-						'is_users'  => 'u' == $results['type'],
+					'is_audios' => 'a' == $results['type'],
+					'is_users'  => 'u' == $results['type'],
 
-						'by_date'   => 'd' == $results['order'],
-						'by_plays'  => 'p' == $results['order'],
+					'by_date'   => 'd' == $results['order'],
+					'by_plays'  => 'p' == $results['order'],
 
-						'results' 	=> $results
-					)
-				);
-			$title = $query . ' Search';
+					'results' 	=> $results
+				)
+			);
+		$title = $query . ' Search';
 
-			View::set_page('search');
-			View::set_title($title);
-			echo View::get_group_template('main/search', $bars);
-		} catch( \Exception $e ) {
-			// database error or template error :c
-			if( \Config::get('is_production') ) {
-				View::exit_500();
-			} else {
-				echo $e->getMessage(), PHP_EOL;
-			}//if
-		}//catch
+		View::set_page('search');
+		View::set_title($title);
+		echo View::get_group_template('main/search', $bars);
 	}//__construct
 }//class

@@ -15,6 +15,21 @@ use \application\interfaces\ModelInterface,
 
 class Audios implements ModelInterface {
 	/**
+	 * The default columns to select from audios
+	 */
+	public static $columns = array(
+								'id',
+								'user_id',
+								'audio_url',
+								'reply_to',
+								'description',
+								'date_added',
+								'plays',
+								'favorites',
+								'duration'
+							);
+	public static $per_page = 10;
+	/**
 	 * Loads the user info, how many favorites
 	 * and how many replies, etc. the audio has.
 	 * And adds it to the array.
@@ -28,54 +43,47 @@ class Audios implements ModelInterface {
 		$has = function( $key ) use ( $audio ) {
 			return array_key_exists( $key, $audio );
 		};
-		
-		if( $has('status') ) {
-			unset($audio['status']);
-		}
 
-		if( $has('user') ) {
-			$audio['user'] = Users::get($audio['user']);
+		if( $has('user_id') ) {
+			$audio['user'] = Users::get($audio['user_id']);
+			unset($audio['user_id']);
 		}
 
 		if( $has('id') ) {
 
 			if( is_logged() ) {
 				$current_user = Users::get_current_user();
-				$favorited = db()->query(
+				$is_favorited = db()->query(
 					'SELECT COUNT(*) AS size FROM favorites
 					 WHERE audio_id = ? AND user_id = ?',
 					$audio['id'],
 					$current_user->id
 				);
-				$audio['favorited'] = !! $favorited->size;
+				$audio['is_favorited'] = !! $is_favorited->size;
 			} else {
-				$audio['favorited'] = false;
+				$audio['is_favorited'] = false;
 			}
 
-			$replies_count = db()->query(
-				'SELECT COUNT(*) AS size FROM audios
-				WHERE status = \'1\' AND reply_to = ?',
-				$audio['id']
-			);
-			$audio['replies_count'] = (int) $replies_count->size;
+			$audio['replies_count'] = self::get_replies_count($audio['id']);
 
 		}
 		if( $has('favorites') ) {
-			$audio['favorites'] = (int) $audio['favorites'];
+			$audio['favorites']  = (int) $audio['favorites'];
 		}
 		if( $has('plays') ) {
-			$audio['plays']     = (int) $audio['plays'];
+			$audio['plays']      = (int) $audio['plays'];
 		}
-		if( $has('time') ) {
-			$audio['time']      = (int) $audio['time'];
+		if( $has('date_added') ) {
+			$audio['date_added'] = (int) $audio['date_added'];
 		}
 		if( $has('duration') ) {
-			$audio['duration']  = (int) $audio['duration'];
+			$audio['duration']   = (int) $audio['duration'];
 		}
 		
-		if( ! empty($audio['audio']) ) {
-			$audio['original_name'] = $audio['audio'];
-			$audio['audio']         = url('assets/audios/' . $audio['audio']);
+		if( ! empty($audio['audio_url']) ) {
+			$audio['original_name'] = $audio['audio_url'];
+			$audio['audio_url']     = 
+			url('assets/audios/' . $audio['audio_url']);
 		}
 
 		/** remove **/
@@ -138,7 +146,7 @@ class Audios implements ModelInterface {
 		}
 
 		if( $has('id') ) {
-			if( $has('reply_to') && $audio['reply_to'] != '0' ) {
+			if( $has('reply_to') && $audio['reply_to'] ) {
 				/*
 					If it's a reply, then add a link to the original audio
 					But with this reply appearing first
@@ -151,14 +159,14 @@ class Audios implements ModelInterface {
 		}
 
 		if(    $has('id')
-			&& $has('audio')
+			&& $has('audio_url')
 			&& $has('reply_to')
-			&& '0' == $audio['reply_to']
+			&& ! $audio['reply_to']
 			) {
 			$audio['player'] = array(
-				'id'       => $audio['id'],
-				'audio'    => $audio['audio'],
-				'autoload' => true
+				'id'        => $audio['id'],
+				'audio_url' => $audio['audio_url'],
+				'autoload'  => true
 			);
 		}
 
@@ -170,7 +178,7 @@ class Audios implements ModelInterface {
 	 *
 	 * @param  string $id       The ID of the audio to load
 	 * @param  array $whichinfo The database columns
-	 * @throws \Exception 
+	 * @throws \DBException 
 	 * @return array
 	*
 	**/
@@ -181,28 +189,18 @@ class Audios implements ModelInterface {
 		}
 
 		if( array() === $which_columns ) {
-			// default columns
-			$which_columns = array(
-					'id',
-					'user',
-					'audio',
-					'reply_to',
-					'description',
-					'time',
-					'plays',
-					'favorites',
-					'duration'
-				);
+			$which_columns = self::$columns;
 		}
+
 		$columns = implode(',', $which_columns);
 
 		$audio   = db()->query(
 				"SELECT {$columns} FROM audios
-				 WHERE id = ? AND status = 1",
+				 WHERE id = ? AND status = '1'",
 				$id
 			);
 		if( ! $audio ) {
-			throw new \Exception('SELECT error: ' . db()->error);
+			throw new \DBException('SELECT audio error');
 		}
 
 		if( 0 === $audio->nums ) {
@@ -219,19 +217,22 @@ class Audios implements ModelInterface {
 	**/
 	public static function get_recent_audios() {
 		$result = array();
-		if( ! is_logged() ) {
-			return $result;
-		}
 		$current_user = Users::get_current_user();
+		$columns      = implode(',', self::$columns);
 		$recent_audios_by_user = db()->query(
-					'SELECT * FROM audios
-					 WHERE reply_to = \'0\'
-					 AND status = \'1\'
-					 AND user = ?
-					 ORDER BY `time` DESC
-					 LIMIT 3',
+					"SELECT
+						{$columns}
+					 FROM audios
+					 WHERE reply_to IS NULL
+					 AND   status  = '1'
+					 AND   user_id = ?
+					 ORDER BY date_added DESC
+					 LIMIT 3",
 					$current_user->id
 				);
+		if( ! $recent_audios_by_user ) {
+			throw new \DBException('SELECT recents error');
+		}
 		while( $audio = $recent_audios_by_user->r->fetch_assoc() ) {
 			$result[] = self::complete($audio);
 		}
@@ -244,32 +245,65 @@ class Audios implements ModelInterface {
 	 * @return array
 	**/
 	public static function get_popular_audios() {
-		$result          = array();
+		$columns = self::$columns;
 		/**
-		* @todo
-		* LEARN TO USE JOIN
-		**/
+		 * Here we do a JOIN, so before putting the columns,
+		 * place the 'A.' (for the Audios table) before every
+		 * column.
+		 * @var array
+		 */
+		$columns = array_map(
+				function( $value ) {
+					return 'A.' . $value;
+				},
+				$columns
+			);
+		$columns = implode(',', $columns);
 		$recents_popular = db()->query(
-			'SELECT * FROM audios
-			WHERE user NOT IN (
-					SELECT id
-					FROM users
-					WHERE audios_public = \'0\'
-					)
-			AND reply_to = \'0\'
-			AND status = \'1\'
-			AND `time` BETWEEN ? AND ?
-			ORDER BY plays DESC
-			LIMIT 3',
-			time() - strtotime('-30 days'),
-			time()
-		);
+				"SELECT DISTINCT
+					{$columns}
+				 FROM audios AS A
+				 INNER JOIN users AS U
+				 ON  A.user_id        = U.id
+				 AND U.audios_privacy = 'public'
+				 AND A.reply_to IS NULL
+				 AND A.status         = '1'
+				 AND A.date_added BETWEEN ? AND ?
+				 ORDER BY A.plays DESC
+				 LIMIT 3",
+				time() - strtotime('-30 days'),
+				time()
+			);
+		if( ! $recents_popular ) {
+			throw new \DBException('SELECT popular error: ' . db()->error);
+		}
+		$result = array();
 		while( $audio = $recents_popular->r->fetch_assoc() ) {
 			$result[] = self::complete($audio);
 		}
 		return $result;
 	}
-
+	/**
+	 * Get the count of audios of the user $id
+	 *
+	 * @param  string $id
+	 * @return integer
+	**/
+	public static function get_audios_count( $user_id ) {
+		$audios = db()->query(
+			"SELECT
+				COUNT(*) AS size
+			 FROM audios
+			 WHERE reply_to IS NULL
+			 AND user_id = ?
+			 AND status  = '1'",
+			$user_id
+		);
+		if( ! $audios ) {
+			throw new \DBException('SELECT COUNT audios error');
+		}
+		return (int) $audios->size;
+	}
 	/**
 	 * Returns an array with the last 10 audios of $user_id
 	 *
@@ -279,60 +313,75 @@ class Audios implements ModelInterface {
 	*
 	**/
 	public static function get_audios( $user_id, $page = 1 ) {
-		$query = "SELECT
-						id,
-						user,
-						audio,
-						reply_to,
-						description,
-						`time`,
-						plays,
-						favorites,
-						duration
-					FROM audios
-				  WHERE user   = ?
-				  AND reply_to = '0'
-				  AND status   = '1'
-				  ORDER BY `time` DESC";
-		$count = db()->query(
-				"SELECT COUNT(*) AS size FROM audios
-				 WHERE user = ? AND reply_to = '0'",
-				$user_id
-			);
-		$count = (int) $count->size;
+		$count  = self::get_audios_count($user_id);
+		// default result
+		$result = array(
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
+				);
+
 		if( 0 === $count ) {
-			return array(
-					'audios'	 => array(),
-					'load_more'  => false,
-					'page' 		 => $page,
-					'total'		 => $count
-				);
-		}
-		$total_pages = ceil( $count / 10 );
-		if( $page > $total_pages ) {
-			return array(
-					'audios'	 => array(),
-					'load_more'  => false,
-					'page' 		 => $page,
-					'total'		 => $count
-				);
+			return $result;
 		}
 
-		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$audios = db()->query($query, $user_id);
-		$result = array(
-				'audios' => array()
-			);
+		$total_pages = ceil( $count / self::$per_page );
+
+		if( $page > $total_pages ) {
+			return $result;
+		}
+
+		$columns = self::$columns;
+		$columns = implode(',', $columns);
+		$query   = sprintf(
+					"SELECT
+						%s
+					FROM audios
+					WHERE reply_to IS NULL
+					AND   status  = '1'
+					AND   user_id = ?
+					ORDER BY date_added DESC
+					LIMIT %d, %d",
+					$columns,
+					($page-1) * self::$per_page,
+					self::$per_page
+				);
+		$audios  = db()->query($query, $user_id);
+
+		if( ! $audios ) {
+			throw new \DBException('SELECT audios error:');
+		}
+
 		while( $audio = $audios->r->fetch_assoc() ) {
 			$result['audios'][] = self::complete($audio);
 		}
-	
+
 		$result['load_more'] = $page < $total_pages;
 		$result['page'] 	 = $page + 1;
 		$result['total'] 	 = $count;
 		return $result;
 	}
-
+	/**
+	 * Get the count of replies of the audio $id
+	 *
+	 * @param  string $id
+	 * @return integer
+	**/
+	public static function get_replies_count( $audio_id ) {
+		$audios = db()->query(
+			"SELECT
+				COUNT(*) AS size
+			 FROM audios
+			 WHERE reply_to = ?
+			 AND   status   = '1'",
+			$audio_id
+		);
+		if( ! $audios ) {
+			throw new \DBException('SELECT COUNT replies error');
+		}
+		return (int) $audios->size;
+	}
 	/**
 	 * Returns an array with the last 10 replies of $audio_id
 	 *
@@ -342,43 +391,45 @@ class Audios implements ModelInterface {
 	 *
 	**/
 	public static function get_replies( $audio_id, $page = 1 ) {
-		$query = "SELECT id,user,audio,reply_to,description,
-						 time,plays,favorites,duration
-					FROM audios
-				  WHERE reply_to = ?
-				  AND status = '1'
-				  ORDER BY time DESC";
-		$count = db()->query(
-				"SELECT COUNT(*) AS size FROM audios
-				 WHERE reply_to = ?",
-				 $audio_id
-				);
-		$count = (int) $count->size;
-
-		if( 0 == $count ) {
-			return array(
-					'audios'	 => array(),
-					'load_more'  => false,
-					'page' 		 => $page,
-					'total'		 => $count
-				);
-		}
-
-		$total_pages = ceil( $count / 10 );
-		if( $page > $total_pages ) {
-			return array(
-					'audios'	 => array(),
-					'load_more'  => false,
-					'page' 		 => $page,
-					'total'		 => $count
-				);
-		}
-
-		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$audios = db()->query($query, $audio_id);
+		$count  = self::get_replies_count($audio_id);
+		// default result
 		$result = array(
-				'audios'	=>	array()
-			);
+					'audios'	 => array(),
+					'load_more'  => false,
+					'page' 		 => $page,
+					'total'		 => $count
+				);
+
+		if( 0 === $count ) {
+			return $result;
+		}
+
+		$total_pages = ceil($count / self::$per_page);
+
+		if( $page > $total_pages ) {
+			return $result;
+		}
+
+		$columns = self::$columns;
+		$columns = implode(',', $columns);
+		$query   = sprintf(
+					"SELECT
+						%s
+					FROM audios
+					WHERE reply_to = ?
+					AND   status   = '1'
+					ORDER BY date_added DESC
+					LIMIT %d, %d",
+					$columns,
+					($page-1) * self::$per_page,
+					self::$per_page
+				);
+		$audios  = db()->query($query, $audio_id);
+
+		if( ! $audios ) {
+			throw new \DBException('SELECT replies error');
+		}
+
 		while( $audio = $audios->r->fetch_assoc() ) {
 			$result['audios'][] = self::complete($audio);
 		}
@@ -388,7 +439,27 @@ class Audios implements ModelInterface {
 		$result['total']     = $count;
 		return $result;
 	}
-
+	/**
+	 * Get the count of favorites of the $audio_id
+	 * @param  string $user_id
+	 * @return integer
+	**/
+	public static function get_favorites_count( $user_id ) {
+		$audios = db()->query(
+			'SELECT
+				COUNT(*) AS size
+			 FROM audios AS A
+			 INNER JOIN favorites AS F
+			 ON A.id       = F.audio_id
+			 AND F.user_id = ?
+			 AND A.status  = 1',
+			$user_id
+		);
+		if( ! $audios ) {
+			throw new \DBException('SELECT COUNT favorites error');
+		}
+		return (int) $audios->size;
+	}
 	/**
 	 * Returns an array with the last 10 favorites of $user_id
 	 *
@@ -398,42 +469,52 @@ class Audios implements ModelInterface {
 	 *
 	**/
 	public static function get_favorites( $user_id, $page = 1 ) {
-		$query = "SELECT DISTINCT A.* FROM audios
-					AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-					AND F.user_id = ? AND A.status = '1'
-					ORDER BY F.time DESC";
-		$count = db()->query(
-				"SELECT COUNT(*) AS size FROM audios
-				 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-				 AND F.user_id = ? AND A.status = '1'",
-				$user_id
-			);
-		$count = (int) $count->size;
-
-		if( 0 == $count ) {
-			return array(
+		$count  = self::get_favorites_count($user_id);
+		$result = array(
 					'audios'	 => array(),
 					'load_more'  => false,
 					'page' 		 => $page,
 					'total'		 => $count
 				);
+
+		if( 0 == $count ) {
+			return $result;
 		}
 
 		$total_pages = ceil( $count / 10 );
+
 		if( $page > $total_pages ) {
-			return array(
-					'audios'	 => array(),
-					'load_more'  => false,
-					'page' 		 => $page,
-					'total'		 => $count
-				);
+			return $result;
 		}
-			
-		$query .= ' LIMIT '. ($page-1) * 10 . ',10';
-		$audios = db()->query($query, $user_id);
-		$result = array(
-				'audios'	=>	array()
+
+		$columns = self::$columns;
+		$columns = array_map(
+				function( $value ) {
+					return 'A.' . $value;
+				},
+				$columns
 			);
+		$columns = implode(',', $columns);
+		$query   = sprintf(
+					"SELECT DISTINCT
+						%s
+					 FROM audios AS A
+					 INNER JOIN favorites AS F
+					 ON A.id       = F.audio_id
+					 AND F.user_id = ?
+					 AND A.status  = '1'
+					 ORDER BY F.date_added DESC
+					 LIMIT %d, %d",
+					$columns,
+					($page-1) * self::$per_page,
+					self::$per_page
+				);
+		$audios  = db()->query($query, $user_id);
+
+		if( ! $audios ) {
+			throw new \DBException('SELECT favorites error');
+		}
+
 		while( $audio = $audios->r->fetch_assoc() ) {
 			$result['audios'][] = self::complete($audio);
 		}
@@ -444,45 +525,19 @@ class Audios implements ModelInterface {
 		return $result;
 	}
 	/**
-	 * Get the count of audios of the user $id
-	 *
-	 * @param string $id
-	 * @return integer
-	**/
-	public static function get_audios_count( $id ) {
-		$audios = db()->query(
-			'SELECT COUNT(*) AS size FROM audios
-			WHERE reply_to = \'0\'
-			AND user = ?
-			AND status = \'1\'',
-			$id
-		);
-		return (int) $audios->size;
-	}
-	/**
-	 * Get the count of favorites of the user $id
-	 * @return integer
-	**/
-	public static function get_favorites_count( $id ) {
-		$favorites = db()->query(
-			'SELECT COUNT(*) AS size FROM audios
-			 AS A INNER JOIN favorites AS F ON A.id = F.audio_id
-			 AND F.user_id = ? AND A.status = 1',
-			$id
-		);
-		return (int) $favorites->size;
-	}
-	/**
 	 * Inserts an audio|reply in the database
 	 * @param  array  $options The keys to insert
 	 * @return array           An array with everything inserted so it can
 	 *                         be displayed in screen instantly.
+	 * @throws ProgrammerException
+	 * @throws DBException
 	 */
 	public static function insert( array $options ) {
-		if( empty($options['audio']) && empty($options['reply_to']) ) {
+		if( empty($options['audio_url']) && empty($options['reply_to']) ) {
 			// come on! need one of both
-			trigger_error('Missing option audios || reply');
-			return array();
+			throw new \ProgrammerException(
+					'Missing option audios_url || reply'
+				);
 		}
 		$is_reply = ! empty($options['reply_to']) && empty($options['audio']);
 		if( ! $is_reply ) {
@@ -490,12 +545,12 @@ class Audios implements ModelInterface {
 			$required_options = array(
 					'description', 'duration',
 					'is_voice', 'send_to_twitter',
-					'audio',
+					'audio_url',
 			);
 		} else {
 			$required_options = array(
 					'reply', 'send_to_twitter',
-					'reply_to', 'tw_id', 'user_id'
+					'reply_to', 'twitter_id', 'user_id'
 				);
 		}
 		if( 0 !== count(
@@ -503,8 +558,7 @@ class Audios implements ModelInterface {
 					)
 			) {
 			// ups
-			trigger_error('Missing required options');
-			return array();
+			throw new \ProgrammerException('Missing required options');
 		}
 		$audio_id     = generate_id('audio');
 		$current_user = Users::get_current_user();
@@ -512,14 +566,11 @@ class Audios implements ModelInterface {
 				'INSERT INTO audios
 				 SET
 				 	id          = ?,
-				 	user        = ?,
-				 	audio       = ?,
+				 	user_id     = ?,
+				 	audio_url   = ?,
 				 	reply_to    = ?,
 				 	description = ?,
-				 	tw_id       = ?,
-				 	`time`      = ?,
-				 	plays       = ?,
-				 	favorites   = ?,
+				 	date_added  = ?,
 				 	duration    = ?,
 				 	is_voice    = ?
 				',
@@ -528,26 +579,20 @@ class Audios implements ModelInterface {
 				//user:
 				$current_user->id,
 				//audio:
-				! $is_reply ? $options['audio']    : '0',
+				! $is_reply ? $options['audio_url'] : NULL,
 				//reply to:
-				$is_reply   ? $options['reply_to'] : '0',
+				$is_reply   ? $options['reply_to']  : NULL,
 				// description/reply:
 				! $is_reply ? $options['description'] : $options['reply'],
-				// twitter reply id:
-				'0',
 				// time:
 				time(),
-				//plays:
-				'0',
-				//favorites:
-				'0',
 				// duration:
 				! $is_reply ? $options['duration'] : '0',
 				// is_voice:
 				! $is_reply ? '1' : '0'
 			);
 		if( ! $result ) {
-			throw new \Exception('INSERT error: ' . db()->error - ' [' . db()->query . ' ]');
+			throw new \DBException('INSERT audio/reply error');
 		}
 		$audio = self::get($audio_id);
 		// now proceed to tweet
@@ -611,14 +656,15 @@ class Audios implements ModelInterface {
 			$result = db()->query(
 					'UPDATE audios
 					 SET
-					 	tw_id = ?
-					 WHERE id = ?
+					 	twitter_id = ?
+					 WHERE
+					 	id         = ?
 					',
 					$tweet_id,
 					$audio_id
 				);
 			if( ! $result ) {
-				throw new \Exception('UPDATE error: ' . db()->error);
+				throw new \DBException('UPDATE audios [twitter_id] error');
 			}
 		}
 		return $audio;
@@ -630,18 +676,33 @@ class Audios implements ModelInterface {
 	 * This function is BLIND
 	 * It will delete the audio without any
 	 * comprobation.
-	 * @return void
 	**/
-	public static function delete( array $audio ) {
-		$id = $audio['id'];
-		db()->query('DELETE FROM audios    WHERE id       = ?', $id);
-		db()->query('DELETE FROM audios    WHERE reply_to = ?', $id);
-		db()->query('DELETE FROM plays     WHERE audio_id = ?', $id);
-		db()->query('DELETE FROM favorites WHERE audio_id = ?', $id);
+	public static function delete( $id ) {
+		if( ! preg_match("/^[A-Za-z0-9]{6}$/", $id) ) {
+			return;
+		}
+		$audio        = self::get($id, array('audio_url') );
+		$delete_audio = db()->query(
+				"DELETE FROM audios WHERE id = '{$id}'"
+			);
 
-		if( ! empty($audio['audio']) ) {
+		if( ! $delete_audio ) {
+			throw new \DBException('DELETE audio error');
+		}
+		/*
+			I tried making only one query but it generated a lot of
+			warnings and did not delete the audio :(
+		 */
+		$delete_replies = db()->query(
+				"DELETE FROM audios WHERE reply_to = '{$id}'"
+			);
+		if( ! $delete_replies ) {
+			throw new \DBException('DELETE audio [replies] error');
+		}
+
+		if( $audio['audio_url'] ) {
 			@unlink(
-				$_SERVER['DOCUMENT_ROOT'] .
+				DOCUMENT_ROOT .
 				'/assets/audios/' . $audio['original_name']
 			);
 		}
@@ -658,7 +719,7 @@ class Audios implements ModelInterface {
 				$audio_id
 			);
 		if( ! $update ) {
-			throw new \Exception('UPDATE error: ' . db()->error);
+			throw new \DBException('UPDATE audios [favorites] error');
 		}
 
 		$current_user = Users::get_current_user();
@@ -666,16 +727,16 @@ class Audios implements ModelInterface {
 		$insert = db()->query(
 				'INSERT INTO favorites
 				 SET
-				 	user_id  = ?,
-				 	audio_id = ?,
-				 	`time`   = ?
+				 	user_id    = ?,
+				 	audio_id   = ?,
+				 	date_added = ?
 				',
 				$current_user->id,
 				$audio_id,
 				time()
 			);
 		if( ! $insert ) {
-			throw new \Exception('INSERT error: ' . db()->error);
+			throw new \DBException('INSERT favorite error');
 		}
 	}
 	/**
@@ -690,7 +751,7 @@ class Audios implements ModelInterface {
 				$audio_id
 			);
 		if( ! $update ) {
-			throw new \Exception('UPDATE error: ' . db()->error);
+			throw new \DBException('UPDATE favorites error');
 		}
 		$current_user = Users::get_current_user();
 		$delete = db()->query(
@@ -702,7 +763,7 @@ class Audios implements ModelInterface {
 			$current_user->id
 		);
 		if( ! $delete ) {
-			throw new \Exception('DELETE error: '. db()->error);
+			throw new \DBEXception('DELETE favorite error');
 		}
 	}
 	/**
@@ -721,6 +782,9 @@ class Audios implements ModelInterface {
 				$user_ip,
 				$audio_id
 			);
+		if( ! $was_played ) {
+			throw new \DBException('SELECT COUNT plays error');
+		}
 		$was_played  = (int) $was_played->size;
 		if( $was_played ) {
 			return false;
@@ -731,21 +795,21 @@ class Audios implements ModelInterface {
 			$audio_id
 		);
 		if( ! $insert ) {
-			throw new \Exception('UPDATE error: ' . db()->error);
+			throw new \DBException('UPDATE audio [plays] error');
 		}
 		$update = db()->query(
 			'INSERT INTO plays
 			SET
-				user_ip  = ?,
-				audio_id = ?,
-				`time`   = ?
+				user_ip    = ?,
+				audio_id   = ?,
+				date_added = ?
 			',
 			$user_ip,
 			$audio_id,
 			time()
 		);
 		if( ! $update ) {
-			throw new \Exception('INSERT error: ' . db()->error);
+			throw new \DBException('INSERT play error');
 		}
 		return true;
 	}

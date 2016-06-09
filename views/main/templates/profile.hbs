@@ -8,15 +8,15 @@
 				<img
 				src="{{profile.user.avatar_big}}"
 				class="circle z-depth-3 materialboxed profile-picture"
-				data-caption="{{profile.user.user}} profile picture"
+				data-caption="{{profile.user.username}} profile picture"
 				onerror="this.src='{{get_image 'unknown.png'}}'; $(this).removeClass('materialboxed')"
 				>
 				<h5 class="profile-name">
 					{{profile.user.name}}
-					{{{show_verified_badge profile.user.verified}}}
+					{{{show_verified_badge profile.user.is_verified}}}
 				</h5>
 				<p class="grey-text lighten-2-text profile-user">
-					@{{profile.user.user}}
+					@{{profile.user.username}}
 				</p>
 				<div class="profile-bio">
 					{{profile.user.bio}}
@@ -89,7 +89,7 @@ window.loadMore = {
 	selector : '#{{profile.page}}',
 	// data to send
 	data     : {
-		user  : '{{user.user}}',
+		user  : '{{user.username}}',
 		p     : 1
 	}
 };

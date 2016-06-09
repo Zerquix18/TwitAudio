@@ -20,10 +20,11 @@ interface ModelInterface {
 	/**
 	 * Deletes something, like an audio or a user.
 	 * 
-	 * @param  array $parameters
+	 * @param  array $id
 	 * @throws \Exception if there was a query error
+	 * @return bool
 	 */
-	public static function delete(  array $parameters );
+	public static function delete( $id );
 	/**
 	 * Inserts something in the database.
 	 * 

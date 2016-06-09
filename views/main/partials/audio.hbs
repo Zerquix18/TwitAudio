@@ -31,6 +31,7 @@
 			href="{{{user.profile_url}}}"
 			>
 				{{user.name}}
+				{{show_verified_badge is_verified}}
 			</a>
 		</span>
 		<span class="audio-user-user">
@@ -38,7 +39,7 @@
 			class="no-deco"
 			href="{{user.profile_url}}"
 			>
-				@{{user.user}}
+				@{{user.username}}
 			</a>
 		</span>
 		<span class="audio-date">
@@ -46,7 +47,7 @@
 			<a
 			href="{{audio_url}}"
 			class="datetime"
-			data-timestamp="{{time}}">
+			data-timestamp="{{date_added}}">
 				{{! date will be placed here with javascript }}
 			</a>
 		</span>
@@ -85,7 +86,7 @@
 			{{#if user.can_favorite}}
 				audio-action-favorite
 			{{/if}}
-			{{#if favorited}}
+			{{#if is_favorited}}
 				audio-is_favorited
 			{{/if}}"
 		data-id="{{id}}"

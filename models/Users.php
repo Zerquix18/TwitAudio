@@ -72,20 +72,12 @@ class Users implements ModelInterface {
 
 		/** force types **/
 
-		if( $has('favs_public') ) {
-			$user['favs_public']   = !! $user['favs_public'];
+		if( $has('is_verified') ) {
+			$user['is_verified']   = !! $user['is_verified'];
 		}
 
-		if( $has('audios_public') ) {
-			$user['audios_public'] = !! $user['audios_public'];
-		}
-
-		if( $has('verified') ) {
-			$user['verified']      = !! $user['verified'];
-		}
-
-		if( $has('time') ) {
-			$user['time']          = (int) $user['time'];
+		if( $has('date_added') ) {
+			$user['date_added']    = (int) $user['date_added'];
 		}
 
 		/** remove **/
@@ -113,10 +105,12 @@ class Users implements ModelInterface {
 		$has = function( $key ) use ( $user ) {
 			return array_key_exists($key, $user);
 		};
-		if( $has('user') ) {
-			$user['profile_url']    = url('audios/' .    $user['user']);
-			$user['favorites_url']  = url('favorites/' . $user['user']);
+
+		if( $has('username') ) {
+			$user['profile_url']    = url('audios/' .    $user['username']);
+			$user['favorites_url']  = url('favorites/' . $user['username']);
 		}
+
 		return $user;
 	}
 	/**
@@ -131,18 +125,18 @@ class Users implements ModelInterface {
 		if( array() === $which_columns ) {
 			// default
 			$which_columns = array(
-				'id',
-				'user',
-				'name',
-				'avatar',
-				'bio',
-				'verified',
-				'favs_public',
-				'audios_public'
+					'id',
+					'username',
+					'name',
+					'avatar',
+					'bio',
+					'is_verified',
+					'favs_privacy',
+					'audios_privacy'
 			);
 		}
 		$id_or_user   = (string) $id_or_user;
-		$column       = ctype_digit( $id_or_user ) ? 'id' : 'user';
+		$column       = ctype_digit( $id_or_user ) ? 'id' : 'username';
 		$current_user = self::get_current_user();
 		if( is_logged() && $id_or_user == $current_user->$column ) {
 			// if it's the same user, don't do extra queries
@@ -159,7 +153,9 @@ class Users implements ModelInterface {
 				"SELECT {$columns} FROM users WHERE {$column} = ?",
 				$id_or_user
 			);
-
+		if( ! $user ) {
+			throw new \DBException('SELECT user error');
+		}
 		if( 0 === $user->nums ) {
 			return array();
 		}
@@ -170,7 +166,7 @@ class Users implements ModelInterface {
 	 * Registers an user in the database if it does not
 	 * exist. If it does exist, then it re-updates its info.
 	 * @param  array $options An array with the access tokens
-	 * @throws \Exception
+	 * @throws ProgrammerException
 	 * @return array The user data
 	**/
 	public static function insert( array $options = array() ) {
@@ -180,8 +176,7 @@ class Users implements ModelInterface {
 				)
 			) {
 			// ups
-			trigger_error('Missing required options');
-			return array();
+			throw new \ProgrammerException('Missing required options');
 		}
 		$twitter = new Twitter(
 						$options['access_token'],
@@ -190,19 +185,20 @@ class Users implements ModelInterface {
 		$details = $twitter->tw->get('account/verify_credentials');
 
 		if( ! is_object($details) || ! property_exists($details, 'id') ) {
-			throw new \Exception(
+			throw new \VendorException(
 				'Twitter did not return anything: ' . print_r($details, true)
 			);
 		}
 
-		$id         = $details->id;
-		$user       = $details->screen_name;
-		$name       = $details->name;
-		$bio        = $details->description;
-		$avatar     = $details->profile_image_url_https;
-		$verified   = (string) (int) $details->verified;
-		$access_token = $options['access_token'];
+		$id                  = $details->id;
+		$username            = $details->screen_name;
+		$name                = $details->name;
+		$bio                 = $details->description;
+		$avatar              = $details->profile_image_url_https;
+		$is_verified         = (string) (int) $details->verified;
+		$access_token        = $options['access_token'];
 		$access_token_secret = $options['access_token_secret'];
+
 		$first_time = db()->query(
 				'SELECT COUNT(*) AS size FROM users
 				 WHERE id = ?',
@@ -215,15 +211,15 @@ class Users implements ModelInterface {
 			$update_user = db()->query(
 					'UPDATE users
 					 SET
-					 	user                = ?,
+					 	username            = ?,
 					 	name                = ?,
 					 	avatar              = ?,
 					 	bio                 = ?,
-					 	verified            = ?,
+					 	is_verified         = ?,
 					 	access_token        = ?,
 					 	access_token_secret = ?
 					 WHERE id = ?',
-					$user,
+					$username,
 					$name,
 					$avatar,
 					$bio,
@@ -233,45 +229,43 @@ class Users implements ModelInterface {
 					$id
 				);
 			if( ! $update_user ) {
-				throw new \Exception('UPDATE error: ' . db()->error);
+				throw new \DBException('UPDATE user error');
 			}
 		} else {
 			// welcome, new user!
-			$favs_public   = //↓
-			$audios_public = (int) ! $details->protected;
-			$time          = time();
-			$lang          = $details->lang;
-			$register_user = db()->query(
+			$favs_privacy   = //↓
+			$audios_privacy = $details->protected ? 'private' : 'public';
+			$date_added     = time();
+			$register_ip    = get_ip();
+			$register_user  = db()->query(
 					'INSERT INTO users
 					 SET
 					 	id                  = ?,
-					 	user                = ?,
+					 	username            = ?,
 					 	name                = ?,
 					 	avatar              = ?,
 					 	bio                 = ?,
-					 	verified            = ?,
+					 	is_verified         = ?,
 					 	access_token        = ?,
 					 	access_token_secret = ?,
-					 	favs_public         = ?,
-					 	audios_public       = ?,
-					 	`time`              = ?,
-					 	lang                = ?
+					 	favs_privacy        = ?,
+					 	audios_privacy      = ?,
+					 	date_added          = ?
 					',
 					$id,
-					$user,
+					$username,
 					$name,
 					$avatar,
 					$bio,
-					$verified,
+					$is_verified,
 					$access_token,
 					$access_token_secret,
-					$favs_public,
-					$audios_public,
-					$time,
-					$lang
+					$favs_privacy,
+					$audios_privacy,
+					$date_added
 				);
 			if( ! $register_user ) {
-				throw new \Exception('Insert user error: ' . db()->error);
+				throw new \DBException('Insert user error: ');
 			}
 		}
 
@@ -282,28 +276,28 @@ class Users implements ModelInterface {
 		$register_session = db()->query(
 				'INSERT INTO sessions
 				 SET
+				 	id         = ?,
 				 	user_id    = ?,
-				 	sess_id    = ?,
-				 	`time`     = ?,
-				 	ip         = ?,
+				 	date_added = ?,
+				 	user_ip    = ?,
 				 	is_mobile  = ?',
-				$id,
 				$sess_id,
+				$id,
 				$sess_time,
 				$ip,
 				is_mobile() ? '1' : '0'
 			);
 		if( ! $register_session ) {
-			throw new \Exception('Insert session error: ' . db()->error);
+			throw new \DBException('Insert session error');
 		}
 		return array(
-				'id'		 => !! $id,
-				'user'		 => $user,
-				'name'		 => $name,
-				'avatar'	 => $avatar,
-				'verified'	 => !! $verified,
-				'sess_id'	 => $sess_id,
-				'first_time' => $first_time
+				'id'          =>    $id,
+				'username'    =>    $user,
+				'name'        =>    $name,
+				'avatar'	  =>    $avatar,
+				'is_verified' => !! $is_verified,
+				'sess_id'     =>    $sess_id,
+				'first_time'  =>    $first_time
 			);
 	}
 	/**
@@ -313,5 +307,5 @@ class Users implements ModelInterface {
 	/**
 	* @todo
 	**/
-	public static function delete( array $user ) {}
+	public static function delete( $id ) {}
 }

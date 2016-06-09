@@ -5,57 +5,12 @@
  * @copyright 2016 Luis A. Martínez
 **/
 
-session_name('ta_session');
-
-if( ! is_mobile() ) {
-	/*
-	 * Don't set the cookies for sessions in the mobile side
-	 * They are not used.
-	 */
-	if( ! isset($_COOKIE['ta_session']) ) {
-		/*
-		 * If the cookie does not exist,
-		 * generate a new ID.
-		 */
-		session_id( generate_id('session') );
-	}
-
-	if(		! isset($_COOKIE['ta_session'])
-		||  preg_match(
-				"/^(ta-)[\w]{29}+$/",
-				$_COOKIE['ta_session']
-			)
-		) {
-		/*
-		 * if cookie isn't valid,
-		 * PHP will throw a unavoidable warning
-		 * when calling session_start();
-		 */
-		session_start();
-	}
-}
-/**
- * Returns the user ID
- * @return boolean
-**/
-function _is_logged() {
-	if( ! isset($_COOKIE['ta_session']) ) {
-		return 0;
-	}
-	$session = db()->query(
-		"SELECT user_id FROM sessions
-		 WHERE sess_id = ? AND is_mobile = '0'",
-		session_id()
-	);
-	return $session->nums > 0 ? (int) $session->user_id : 0;
-}
-
-$just_1_query = _is_logged();
-
 /**
  * Returns if the user is logged or not.
  * The constant IS_LOGGED_MOBILE is set by
- * check_authorization
+ * check_authorization()
+ * The constant IS_LOGGED is set by
+ * session_init()
  *
  * @see  _is_logged for the global+
  * @see  check_authorization for the constant
@@ -65,7 +20,7 @@ function is_logged() {
 	if( defined('IS_LOGGED_MOBILE') ) {
 		return constant('IS_LOGGED_MOBILE');
 	}
-	return $GLOBALS['just_1_query']; // such a pro, thats me
+	return constant('IS_LOGGED');
 }
 
 /**
@@ -92,8 +47,8 @@ function check_authorization() {
 		);
 	}
 	$session = db()->query(
-			'SELECT user_id FROM sessions
-			 WHERE sess_id = ? AND is_mobile = \'1\'',
+			"SELECT user_id FROM sessions
+			 WHERE id = ? AND is_mobile = '1'",
 			$authorization
 	);
 	if( $session->nums === 0 ) {
@@ -119,10 +74,13 @@ function check_authorization() {
  * Logouts the user
  */
 function session_logout() {
-	db()->query(
-		'DELETE FROM sessions WHERE sess_id = ?',
-		session_id()
-	);
+	$delete = db()->query(
+				'DELETE FROM sessions WHERE id = ?',
+				session_id()
+			);
+	if( ! $delete ) {
+		throw new \DBException('DELETE session error');
+	}
 	session_destroy();
 	setcookie('ta_session', '', time() - 3600);
 }

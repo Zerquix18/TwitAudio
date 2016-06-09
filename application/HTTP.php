@@ -100,13 +100,15 @@ class HTTP {
 	 * MUST contain the key "success".
 	 * 
 	 * @param array $options The list of keys to be exit as JSON
+	 * @throws ProgammerError
 	**/
 	public static function result( array $options ) {
 		if(    ! array_key_exists('success', $options)
 			|| ! is_bool($options['success'])
 			) {
-			trigger_error('HTTP::result must have the key success');
-			exit(); // exit but with nothing
+			throw new ProgrammerError(
+					'HTTP::result must have the key success'
+				);
 		}
 		$result = json_encode(
 			$options,

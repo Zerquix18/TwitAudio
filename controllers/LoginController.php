@@ -19,21 +19,38 @@ class LoginController {
 	private $redirect_to = '';
 
 	public function __construct( $action ) {
+		$is_production = \Config::get('is_production');
 		try {
+
 			if( ! isset($_COOKIE['ta_session']) ) {
-				throw new \Exception('Cookies are needed to sign in');
+				throw new \ValidationException(
+						'Cookies are needed to sign in'
+					);
 			}
+
 			$this->$action();
-		} catch ( \Exception $e ) {
-			// A database error, Abraham library... who knows?!
-			if( \Config::get('is_production') ) {
-				$_SESSION['login_error'] =
-				'There was a problem while login you in. Please, try again.';
-			} else {
-				$_SESSION['login_error'] = $e->getMessage();
+
+		} catch ( \ProgrammerException $e ) {
+			$message  =  $e->getMessage();
+		} catch ( \VendorException $e ) {
+			$message  = 'Error with ' . $e->vendor . ': ' . $e->getMessage();
+		} catch ( \DBException $e ) {
+			$message  = $e->getMessage() . ': '; // <- must say it where
+			$message .= db()->error ? db()->error : '';
+		} catch ( \ValidationException $e ) {
+			$message  = $e->getMessage();
+		} finally {
+			if( isset($message) ) {
+				if( $is_production ) {
+					$_SESSION['login_error'] =
+					'There was a problem while singing you in.' .
+					' Please, try again.';
+				} else {
+					$_SESSION['login_error'] = $message;
+				}
 			}
+			HTTP::redirect( $this->redirect_to ?: url() );
 		}
-		HTTP::redirect( $this->redirect_to ?: url() );
 	}
 
 	private function signin() {
@@ -56,10 +73,6 @@ class LoginController {
 
 		$login_url = $twitter->get_login_url();
 
-		if( ! $login_url ) {
-			throw new \Exception('Could not get login URL');
-		}
-
 		$this->redirect_to = $login_url;
 	}
 	/**
@@ -78,13 +91,13 @@ class LoginController {
 				$_SESSION['oauth_token'],
 				$_SESSION['oauth_token_secret'])
 			) {
-			throw new \Exception('No tokens were stored');
+			throw new \ValidationException('No tokens were stored');
 		}
 
 		$denied = HTTP::get('denied');
 
 		if( false === empty($denied) && $denied == $_SESSION['oauth_token'] ) {
-			throw new \Exception('Request was denied');
+			throw new \ValidationException('Request was denied');
 		}
 
 		$oauth_token 	= HTTP::get('oauth_token');
@@ -93,7 +106,7 @@ class LoginController {
 		if(    ! ( $oauth_token && $oauth_verifier )
 			|| $_SESSION['oauth_token'] != $oauth_token
 		) {
-			throw new \Exception('Oauth tokens does not match');
+			throw new \ValidationException('Oauth tokens does not match');
 		}
 
 		$twitter = new Twitter(
@@ -115,10 +128,6 @@ class LoginController {
 				'access_token_secret' => $tokens['oauth_token_secret']
 			)
 		);
-
-		if( ! $create_user ) {
-			throw new \Exception('Internal error while registering user');
-		}
 
 		if( $create_user['first_time'] ) {
 			$_SESSION['first_time'] = true;

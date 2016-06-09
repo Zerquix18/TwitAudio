@@ -224,11 +224,15 @@ class zerdb {
 			// ^ replaces everything that by: ? :)
 			if( preg_match_all("!\?!", $query) !== count($args) )
 				return false;
-			foreach($args as $a) {
-				$a = is_string($a) ? "'$a'" : $a;
-				// if it's string it will pass it like an string eh...
-				// be careful.
-				$query = preg_replace("/\?/", $a, $query, 1);
+			foreach($args as $value) {
+				if( is_string($value) ) {
+					$value = "'$value'";
+				} elseif( null === $value ) {
+					$value = 'NULL';
+				} else {
+					$value = (string) $value;
+				}
+				$query = preg_replace("/\?/", $value, $query, 1);
 				// Replaces all the ? by args in order...
 				// that's why the count have to be the same
 			}
@@ -254,7 +258,7 @@ class zerdb {
 		}
 		$this->id = $this->mysqli->insert_id; // dw if it's null...
 		$this->nums = (int) $this->mysqli->affected_rows;
-		if( preg_match('/^(select)/i', $this->query) ) {
+		if( preg_match('/^(\n|\t|\r|\s)*?(select)/i', $this->query) ) {
 			$result = new stdClass();
 			$this->nums = $result->nums = $query->num_rows;
 			$result->r = $query;

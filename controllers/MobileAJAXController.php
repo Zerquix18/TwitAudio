@@ -16,7 +16,6 @@
 namespace controllers;
 use \application\HTTP,
 	\application\View,
-	\application\exceptions\MobileAJAXException,
 	\models\Users,
 	\models\Audios,
 	\models\Search,
@@ -51,76 +50,48 @@ class MobileAJAXController {
 			View::exit_404();
 		}
 
-		$this->method = $method;
-		$this->via    = $via;
-		$this->action = $action;
+		$this->method  = $method;
+		$this->via     = $via;
+		$this->action  = $action;
+		$is_production = \Config::get('is_production');
 
 		try {
 			$this->$action();
-		} catch ( MobileAJAXException $e ) {
+		} catch ( \ValidationException $e ) {
 			$message     = $e->getMessage();
 			$code        = $e->getCode();
 			$options     = $e->options;
-			$show_in_web = $options['show_in_web'];
-
-			/**
-			* This was thrown due a request error
-			*
-			**/
-			if( 'mob' == $this->via ) {
-				// always send them to mobile
-				HTTP::result( array(
-						'success'    => false,
-						'response'   => $message,
-						'error_code' => $code
-					)
-				);
-			} elseif( 'ajax' == $this->via && $show_in_web ) {
-				// if it's an error that the user can see
-				HTTP::result( array(
-						'success'  => false,
-						'response' => $message,
-					)
-				);
-			} elseif(  'ajax' == $this->via
-					&& ! \Config::get('is_production')
-				) {
-				// if we're not in production
-				// it will be useful for testing purposes
-				HTTP::result( array(
-						'success'  => false,
-						'response' => $message,
-					)
-				);
+		} catch( \DBException $e ) {
+			$message     = $e->getMessage() . ': ';
+			$message    .= db()->error;
+			$message    .= db()->query ? ' [ ' . db()->query . ' ]' : '';
+			$code        = $e->getCode();
+		} catch ( \VendorException $e ) {
+			$message     = 'Error with ' . $e->vendor . ': ';
+			$message    .= $e->getMessage();
+			$code        = $e->getCode();
+		} catch( \ProgrammerException $e ) {
+			// because sometimes
+			// one fucks it up
+			$message     = $e->getMessage();
+			$message    .= nl2br($e->getTraceAsString());
+			$code        = $e->getCode();
+		} finally {
+			// if it was an error with the validation
+			// and it can be shown to the user:
+			$show_in_web = isset($options) &&
+						   isset($options['show_in_web']) &&
+						   $options['show_in_web'];
+			if( ! $show_in_web && $is_production ) {
+				// rewrite the message if it can't be shown to the user
+				$message = 'There was a problem while processing your ' .
+							'request.';
 			}
-			// nothing else?
-			// then this:
-			HTTP::result( array(
-					'success'  => false,
-					'response' => //↓
-					'There was a problem while processing your request1',
-				)
-			);
-		} catch ( \Exception $e ) {
-			/**
-			* Something else like TwitterOAuth
-			* or a DB query
-			**/
-			if( ! \Config::get('is_production') ) {
-				// if we're not in production
-				HTTP::result( array(
-						'success'  => false,
-						'response' => $e->getMessage()
-					)
-				);
-			}else{
-				HTTP::result( array(
-						'success'  => false,
-						'response' => //↓
-						'There was a problem while processing your request',
-					)
-				);
+			$result = array('success' => false, 'response' => $message);
+			if( 0 != $code ) {
+				$result['code'] = $code;
 			}
+			HTTP::result($result);
 		}
 	}
 	/**
@@ -235,7 +206,7 @@ class MobileAJAXController {
 		$page = HTTP::sanitize_page_number($page) ?: 1;
 
 		if( ! $user ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 				'Missing or wrong parameters',
 				array('error_code' => 7)
 			);
@@ -244,7 +215,7 @@ class MobileAJAXController {
 		$user = Users::get( $user, array('id') );
 
 		if( ! $user ) {
-			throw new MobileAJAXException('User does not exist');
+			throw new \ValidationException('User does not exist');
 		}
 
 		$result  = Audios::get_audios($user['id'], $page);
@@ -282,7 +253,7 @@ class MobileAJAXController {
 		$current_user = Users::get_current_user();
 
 		if( ! $id ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
@@ -291,13 +262,13 @@ class MobileAJAXController {
 		$audio = Audios::get($id);
 
 		if( ! $audio ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'This audio does not exist or is no longer available.'
 				);
 		}
 
 		if( ! $current_user->can_listen($audio['user']['id']) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'You cannot listen to the audios of this user.'
 				);
 		}
@@ -319,26 +290,26 @@ class MobileAJAXController {
 		$method       = HTTP::post('method');
 		$current_user = Users::get_current_user();
 		if( $current_user->is_premium() ) {
-			throw new MobileAJAXException('You are already premium.');
+			throw new \ValidationException('You are already premium.');
 		}
 		switch( $method ) {
 			case "card":
 				$token = HTTP::post('token');
 				if( ! $token )
-					throw new MobileAJAXException(
+					throw new \ValidationException(
 							'No token was specified'
 						);
 				$payment = new Payment('stripe', $current_user->id);
 				$charge  = $payment->charge($token);
 				if( ! $charge ) {
-					throw new MobileAJAXException( $payment->error );
+					throw new \ValidationException( $payment->error );
 				}
 				break;
 			case "paypal":
-				throw new MobileAJAXException('Paypal is not supported yet');
+				throw new \ValidationException('Paypal is not supported yet');
 				break;
 			default:
-				throw new MobileAJAXException(
+				throw new \ValidationException(
 						'No right method was specified'
 					);
 		}
@@ -367,13 +338,13 @@ class MobileAJAXController {
 		$id = HTTP::get('id');
 
 		if( ! $id ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
 		}
 		if( ! isset($_SESSION[ $id ] ) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Invalid ID'
 				);
 		}
@@ -393,7 +364,7 @@ class MobileAJAXController {
 			* a full path for front-end. I mean https://...
 			**/
 			$loaded_effects[$i]['file'] = str_replace(
-					$_SERVER['DOCUMENT_ROOT'] . '/',
+					DOCUMENT_ROOT . '/',
 					url(),
 					$loaded_effects[$i]['file']
 				);
@@ -431,10 +402,10 @@ class MobileAJAXController {
 		$current_user = Users::get_current_user();
 
 		if( ! ($id && $start && $end ) ) {
-			throw new MobileAJAXException('Missing parameters');
+			throw new \ValidationException('Missing parameters');
 		}
 		if( ! isset($_SESSION[ $id ] ) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Invalid ID'
 				);
 		}
@@ -444,7 +415,7 @@ class MobileAJAXController {
 			$start = (int) $start;
 		}else{ // if not a number, translate it to a number
 			if( ! preg_match('/^([0-9]{1,2}):([0-9]{1,2})$/', $start) ) {
-				throw new MobileAJAXException('Start has a wrong format');
+				throw new \ValidationException('Start has a wrong format');
 			}
 			// 0 = mins, 1 = seconds
 			$min_sec = explode(":", $start);
@@ -455,7 +426,7 @@ class MobileAJAXController {
 			$end = (int) $end;
 		}else{
 			if( ! preg_match('/^([0-9]{1,2}):([0-9]{1,2})$/', $end) ) {
-				throw new MobileAJAXException('End has a wrong format');
+				throw new \ValidationException('End has a wrong format');
 			}
 			// 0 = mins, 1 = seconds
 			$min_sec = explode(":", $end);
@@ -465,17 +436,17 @@ class MobileAJAXController {
 		$difference = $end-$start;
 
 		if( $start >= $end ) {
-			throw new MobileAJAXException("Start can't be higher than end");
+			throw new \ValidationException("Start can't be higher than end");
 		}
 		if( $difference > $current_user->get_limit('audio_duration') ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The difference between start and end is' .
 					' higher than your current limit\'s.',
 					array('show_in_web' => true)
 				);
 		}
 		if( $difference < 1 ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The difference must be longer than 1 second',
 					array('show_in_web' => true)
 				);
@@ -547,28 +518,28 @@ class MobileAJAXController {
 		$current_user = Users::get_current_user();
 
 		if( ! $id ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
 		}
 
-		$audio = Audios::get($id, array('id', 'user', 'audio') );
+		$audio = Audios::get($id, array('id', 'user_id', 'audio_url') );
 
 		if( ! $audio ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The audio you tried to delete does not exist or is no longer available.',
 					array('show_in_web' => true)
 				);
 		}
 
 		if( $audio['user']['id'] !== $current_user->id ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'You are not the author of this audio'
 				);
 		}
 
-		$delete = Audios::delete($audio);
+		$delete = Audios::delete($id);
 
 		HTTP::result( array(
 				'success'   => true,
@@ -594,14 +565,14 @@ class MobileAJAXController {
 		$id 	= HTTP::post('id');
 		$action = HTTP::post('action');
 		if( ! ($id && $action) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 1)
 				);
 		}
-		$audio = Audios::get($id, array('id', 'user', 'favorites') );
+		$audio = Audios::get($id, array('id', 'user_id', 'favorites') );
 		if( ! $audio ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The audio you tried to favorite does not exist or is no longer available.',
 					array('show_in_web' => true)
 				);
@@ -610,7 +581,7 @@ class MobileAJAXController {
 		$current_user = Users::get_current_user();
 
 		if( ! $current_user->can_listen($audio['user']['id']) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The audios of this users are private',
 					array('show_in_web' => true)
 				);
@@ -657,23 +628,23 @@ class MobileAJAXController {
 		$page = HTTP::sanitize_page_number($page) ?: 1;
 
 		if( ! $user ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
 		}
 
-		$user = Users::get($user, array('id', 'favs_public') );
+		$user = Users::get($user, array('id', 'favs_privacy') );
 
 		if( ! $user ) {
-			throw new MobileAJAXException('The user does not exist');
+			throw new \ValidationException('The user does not exist');
 		}
 
-		if(	   ! $user['favs_public']
+		if(	   'public' !== $user['favs_privacy']
 			|| ! is_logged()
 			|| $current_user->id !== $user['id']
 		) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The favorites of this user are private'
 				);
 		}
@@ -748,7 +719,7 @@ class MobileAJAXController {
 		$id = HTTP::post('id');
 
 		if( ! $id ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
@@ -756,12 +727,12 @@ class MobileAJAXController {
 
 		$audio  = Audios::get($id, array('plays', 'reply_to') );
 		if( ! $audio ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The audio does not exist'
 				);
 		}
-		if( 0 != $audio['reply_to'] ) {
-			throw new MobileAJAXException(
+		if( $audio['reply_to'] ) {
+			throw new \ValidationException(
 					'Cannot register a play in a reply'
 				);
 		}
@@ -803,26 +774,26 @@ class MobileAJAXController {
 		$current_user    = Users::get_current_user();
 
 		if( ! ($id && $effect) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
 		}
 
 		if( ! isset($_SESSION[ $id ] ) ) {
-			throw new MobileAJAXException('Invalid ID');
+			throw new \ValidationException('Invalid ID');
 		}
 
 		if( $_SESSION[$id]['duration'] >
 							$current_user->get_limit('audio_duration') ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					"The duration of the audio is longer" .
 					" than your current limit's"
 				);
 		}
 
 		if( mb_strlen( $description, 'utf-8' ) > 200 ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Description can\'t be longer than 200 characters',
 					array('show_in_web' => true)
 				);
@@ -836,7 +807,7 @@ class MobileAJAXController {
 		}
 
 		while( file_exists(
-			$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' .
+			DOCUMENT_ROOT . '/assets/audios/' .
 			$new_name = substr( md5( uniqid() . rand(1,100) ), 0, 26 ) . '.mp3'
 			)
 		);
@@ -850,11 +821,11 @@ class MobileAJAXController {
 
 		rename(
 			$tmp_url,
-			$_SERVER['DOCUMENT_ROOT'] . '/assets/audios/' . $new_name
+			DOCUMENT_ROOT . '/assets/audios/' . $new_name
 		);
 
 		Audios::insert( array(
-				'audio'           => $new_name,
+				'audio_url'       => $new_name,
 				'description'     => $description,
 				'duration'        => $_SESSION[$id]['duration'],
 				'is_voice'        => $_SESSION[$id]['is_voice'],
@@ -894,7 +865,7 @@ class MobileAJAXController {
 		$user_info = Users::get($user);
 
 		if( ! $user_info ) {
-			throw new MobileAJAXException('Requested user does not exist');
+			throw new \ValidationException('Requested user does not exist');
 		}
 
 		HTTP::result(array('success' => true) + $user_info);
@@ -919,25 +890,25 @@ class MobileAJAXController {
 		$current_user = Users::get_current_user();
 
 		if( ! $audio_id ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
 		}
-		$audio = Audios::get( $audio_id, array('reply_to', 'user', 'id') );
+		$audio = Audios::get( $audio_id, array('reply_to', 'user_id', 'id') );
 		if( ! $audio ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The audio you request does not exist or is no longer available',
 					array('show_in_web' => true)
 				);
 		}
-		if( $audio['reply_to'] != '0' ) {
-			throw new MobileAJAXException(
+		if( $audio['reply_to'] ) {
+			throw new \ValidationException(
 					'Replies does not have replies'
 				);
 		}
 		if( ! $current_user->can_listen($audio['user']['id']) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					"You cannot listen to the audios of this user",
 					array('show_in_web')
 				);
@@ -1015,29 +986,29 @@ class MobileAJAXController {
 		$current_user    = Users::get_current_user();
 
 		if( ! ($audio_id && $reply) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
 		}
 		$audio = Audios::get(
 				$audio_id,
-				array('reply_to', 'tw_id', 'user')
+				array('reply_to', 'twitter_id', 'user_id')
 			);
 		if( ! $audio ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The audio you try to reply does not exist or is no longer available',
 					array('show_in_web' => true)
 				);
 		}
-		if( $audio['reply_to'] != '0' ) {
-			throw new MobileAJAXException(
+		if( $audio['reply_to'] ) {
+			throw new \ValidationException(
 					'You cannot reply a reply'
 				);
 		}
 
-		if( ! $current_user->can_listen($audio['user']['user']) ) {
-			throw new MobileAJAXException(
+		if( ! $current_user->can_listen($audio['user']['id']) ) {
+			throw new \ValidationException(
 					'You cannot listen to the audios of this user'
 				);
 		}
@@ -1045,13 +1016,13 @@ class MobileAJAXController {
 		$reply_length = mb_strlen($reply, 'utf-8');
 
 		if( 0 === $reply_length ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'The reply cannot be empty',
 					array('show_in_web' => true)
 				);
 		}
 		if( $reply_length > 200 ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Reply cannot be longer than 200 characters',
 					array('show_in_web' => true)
 				);
@@ -1062,7 +1033,7 @@ class MobileAJAXController {
 				'reply'           => $reply,
 				'send_to_twitter' => '1' === $send_to_twitter,
 				'user_id'         => $audio['user']['id'],
-				'tw_id'           => $audio['tw_id']
+				'twitter_id'      => $audio['twitter_id']
 			)
 		);
 		// Mobile SIDE:
@@ -1104,7 +1075,7 @@ class MobileAJAXController {
 		$page  = HTTP::sanitize_page_number($page) ?: 1;
 
 		if( ! $query )
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
@@ -1154,33 +1125,33 @@ class MobileAJAXController {
 		if( 'GET' == $this->method ) {
 			// to get the settings:
 			HTTP::result( array(
-					'success'       => true,
-					'audios_public' => $current_user->audios_public,
-					'favs_public'   => $current_user->favs_public,
-					'time'          => $current_user->time
+					'success'        => true,
+					'audios_privacy' => $current_user->audios_privacy,
+					'favs_privacy'   => $current_user->favs_privacy,
+					'date_added'     => $current_user->date_added
 				)
 			);
 		}
 
 		// to update the settings:
 
-		$favs_public	= HTTP::post('favs_public');
-		$audios_public	= HTTP::post('audios_public');
+		$favs_privacy   = HTTP::post('favs_privacy');
+		$audios_privacy = HTTP::post('audios_privacy');
 		
 
-		if( ! in_array( $favs_public, array('1','0') ) ) {
-			throw new MobileAJAXException(
-					'favs public must be 1 or 0'
+		if( ! in_array( $favs_privacy, array('public','private') ) ) {
+			throw new \ValidationException(
+					'favs privacy must be public or private'
 				);
 		}
-		if( ! in_array( $audios_public, array('1','0') ) ) {
-			throw new MobileAJAXException(
-					'audios public must be 1 or 0'
+		if( ! in_array( $audios_privacy, array('public','private') ) ) {
+			throw new \ValidationException(
+					'audios privacy must be public or private'
 				);
 		}
 		$result = $current_user->update_settings( array(
-				'audios_public'     => $audios_public,
-				'favs_public'       => $favs_public
+				'audios_privacy'     => $audios_privacy,
+				'favs_privacy'       => $favs_privacy
 			)
 		);
 
@@ -1208,7 +1179,7 @@ class MobileAJAXController {
 		$access_token_secret    = HTTP::post('access_token_secret');
 
 		if( ! ($access_token && $access_token) ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Missing parameters',
 					array('error_code' => 7)
 				);
@@ -1220,7 +1191,7 @@ class MobileAJAXController {
 		);
 
 		if( ! $create_user ) {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'Error while logging you in'
 				);
 		}
@@ -1256,7 +1227,7 @@ class MobileAJAXController {
 
 		if( isset($_POST['bin']) && ! empty($_FILES['up_file']['name']) ) {
 			/** someone is tryna trick**/
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'You cannot send both bin and up_file!'
 				);
 		}
@@ -1275,7 +1246,7 @@ class MobileAJAXController {
 			/** validates uploaded file **/
 			if( empty( $_FILES['up_file'] )
 			 || is_array( $_FILES['up_file']['name'] ) ) {
-				throw new MobileAJAXException(
+				throw new \ValidationException(
 						'Missing parameters',
 						array('error_code' => 7)
 					);
@@ -1283,7 +1254,7 @@ class MobileAJAXController {
 
 			if( isset($_FILES['up_file']["error"] )
 			 		&& $_FILES['up_file']["error"] != 0 ) {
-				throw new MobileAJAXException(
+				throw new \ValidationException(
 						'Error code: ' . $_FILES['up_file']['error']
 					);
 			}
@@ -1299,7 +1270,7 @@ class MobileAJAXController {
 				* the real way to know the format
 				* is by checking the content inside
 				*/
-				throw new MobileAJAXException(
+				throw new \ValidationException(
 						'The format of the uploaded audio is not allowed',
 						array('show_in_web' => true)
 					);
@@ -1308,7 +1279,7 @@ class MobileAJAXController {
 			$file_size = ( ( $_FILES['up_file']['size'] / 1024) / 1024);
 
 			if( $file_size > $file_limit ) {
-	 			throw new MobileAJAXException(
+	 			throw new \ValidationException(
 	 					sprintf(
 	 						"The file size is greater than your current limit's, %d mb",
 	 						$file_limit
@@ -1318,11 +1289,11 @@ class MobileAJAXController {
 			}
 			$move = move_uploaded_file(
 					$_FILES['up_file']['tmp_name'],
-					$file = $_SERVER['DOCUMENT_ROOT'] . // <- it's a point!
+					$file = DOCUMENT_ROOT . // <- it's a point!
 					'/assets/tmp/' . uniqid() . '.' . $format
 				);
 			if( ! $move ) {
-				throw new MobileAJAXException(
+				throw new \ValidationException(
 						'Could not move file'
 					);
 			}
@@ -1332,19 +1303,19 @@ class MobileAJAXController {
 			$binary = substr($binary, strpos($binary, ",") + 1);
 
 			if( ! ( $binary = base64_decode($binary, true ) ) ) {
-				throw new MobileAJAXException(
+				throw new \ValidationException(
 						'Binary is corrupt'
 					);		
 			}
 			file_put_contents(
-				$file = $_SERVER['DOCUMENT_ROOT'] .
+				$file = DOCUMENT_ROOT .
 					'/assets/tmp/' . uniqid() . '.mp3',
 				$binary
 			);
 			$file_size = ( filesize($file) / 1024 ) / 1024;
 			if( $file_size > $file_limit ) {
 				/** someone could upload a b64 with a very high filesize */
-	 			throw new MobileAJAXException(
+	 			throw new \ValidationException(
 	 					sprintf(
 	 						"The file size is greater than your current limit's, %d mb",
 	 						$file_limit
@@ -1352,7 +1323,7 @@ class MobileAJAXController {
 	 				);
 			}
 		} else {
-			throw new MobileAJAXException(
+			throw new \ValidationException(
 					'jah this must never happen'
 				);
 		}
@@ -1367,7 +1338,7 @@ class MobileAJAXController {
 		);
 		// 3 is the error code when audio needs to be cut.
 		if( $audio->error && $audio->error_code != 3 ) {
-			throw new MobileAJAXException($audio->error);
+			throw new \ValidationException($audio->error);
 		}
 		
 		$id = uniqid();

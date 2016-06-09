@@ -393,6 +393,7 @@ $("#reply-form").ajaxForm({
 
 		// add the result
 		$("#replies").prepend(result.response);
+		updateDates();
 	}
 });
 

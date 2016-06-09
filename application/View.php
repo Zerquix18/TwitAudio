@@ -114,10 +114,10 @@ class View {
 	public static function get_template_options() {
 		$is_production = \Config::get('is_production');
 		if( $is_production ) {
-			$templates_dir    = $_SERVER['DOCUMENT_ROOT'] . '/views_compiled/';
+			$templates_dir    = DOCUMENT_ROOT . '/views_compiled/';
 			$templates_format = 'php';
 		} else {
-			$templates_dir    = $_SERVER['DOCUMENT_ROOT'] . '/views/';
+			$templates_dir    = DOCUMENT_ROOT . '/views/';
 			$templates_format = 'hbs';
 		}
 		$global_helpers = array(
@@ -211,15 +211,15 @@ class View {
 	 * @param  array  $bars    The list of bars that the template
 	 *                         will parse.
 	 * @return string          Everything ready to be print.
+	 * @throws ProgrammerException
 	 */
 	public static function get_group_template( $group, $bars = array() ) {
 		//group/template
 		$group_template = explode('/', $group);
 		if( 2 !== count($group_template) ) {
-			trigger_error(
+			throw new \ProgrammerException(
 					'Load template sintax must be "group/template"'
 				);
-			return '';
 		}
 		$group         = $group_template[0];
 		$template      = $group_template[1];
@@ -238,8 +238,9 @@ class View {
 			* etc.
 			* If there's no dir, then we have nothing to look at there.
 			**/
-			trigger_error('Could not load templates dir ' . $templates_dir);
-			return;
+			throw new \ProgrammerException(
+						'Could not load templates dir ' . $templates_dir
+					);
 		}
 		$template_file = // ↓
 		$template_dir . $group . '.' . $options['templates_format'];
@@ -247,7 +248,9 @@ class View {
 			/**
 			* if the template does not exist...
 			**/
-			trigger_error('Template does not exist: ' . $template_file);
+			throw new \ProgrammerException(
+						'Template does not exist: ' . $template_file
+					);
 			return;
 		}
 		/**
@@ -268,10 +271,14 @@ class View {
 			// if it's in production is already compiled
 			$renderer = include $template_file;
 		} else {
-			$template_php = LightnCandy::compile(
-				file_get_contents($template_file),
-				$options['group_options']
-			);
+			try {
+				$template_php = LightnCandy::compile(
+					file_get_contents($template_file),
+					$options['group_options']
+				);
+			} catch ( \Exception $e ) {
+				throw new \VendorException('LightnCandy', $e->getMessage());
+			}
 			$renderer = LightnCandy::prepare($template_php);
 		}
 		return $renderer(
@@ -305,24 +312,23 @@ class View {
 					$options['templates_format']
 				);
 		if( ! file_exists($template_file) ) {
-			trigger_error('Template does not exist: ' . $template_file);
-			return '';
+			throw new \ProgrammerException(
+					'Template does not exist: ' . $template_file
+				);
 		}
-		try {
-			if( \Config::get('is_production') ) {
-				// if its in production it's already compiled
-				$renderer = include($template_file);
-			}else {
+		if( \Config::get('is_production') ) {
+			// if its in production it's already compiled
+			$renderer = include($template_file);
+		}else {
+			try {
 				$template_php  = \LightnCandy\LightnCandy::compile(
 					file_get_contents($template_file),
 					$options['template_options']
 				);
 				$renderer = \LightnCandy\LightnCandy::prepare($template_php);
+			} catch( \Exception $e ) {
+				throw new \VendorException('LightnCandy', $e->getMessage());
 			}
-		} catch( \Exception $e ) {
-			ob_end_clean();
-			echo $e->getMessage();
-			exit;
 		}
 		return $renderer($bars, $options['renderer_options']);
 	}
@@ -361,24 +367,23 @@ class View {
 						$options['templates_format']
 					);
 		if( ! file_exists($template_file) ) {
-			trigger_error('Partial does not exist: ' . $template_file);
-			return '';
+			throw new \ProgrammerException(
+						'Partial does not exist: ' . $template_file
+					);
 		}
-		try {
-			if( \Config::get('is_production') ) {
-				$renderer = include($template_file);
-			} else {
+		if( \Config::get('is_production') ) {
+			$renderer = include($template_file);
+		} else {
+			try {
 				// namespace is obligatory
 				$template_php = \LightnCandy\LightnCandy::compile(
 					file_get_contents($template_file),
 					$options['partial_options']
 				);
 				$renderer = \LightnCandy\LightnCandy::prepare($template_php);
+			} catch ( \Exception $e ) {
+				throw new \VendorException('LightnCandy', $e->getMessage());
 			}
-		} catch ( \Exception $e ) {
-			ob_end_clean();
-			echo $e->getMessage();
-			exit;
 		}
 		// go ahead!
 		return $renderer($bars, $options['renderer_options']);

@@ -34,7 +34,7 @@ if( \Config::get('is_production') ) {
 	// all the styles are in this JSON. In the live website, this JSON
 	// is read and they all are minified, resulting in vendor.css and app.css
 	$styles = file_get_contents(
-			$_SERVER['DOCUMENT_ROOT'] . '/assets/css/styles.json'
+			DOCUMENT_ROOT . '/assets/css/styles.json'
 		);
 	$styles = json_decode($styles, true);
 	while( list($directory,$all_styles) = each($styles) ) {
@@ -68,8 +68,6 @@ $bars['main']['faq_url']     = url('faq');
 $bars['main']['ajax_url']    = url('ajax/');
 $bars['main']['swf_path']    = url('assets/swf/');
 if( $is_logged ) {
-	$bars['main']['profile_url']   = url('audios/'    . $current_user->user);
-	$bars['main']['favorites_url'] = url('favorites/' . $current_user->user);
 	$bars['main']['logout_url']    = url('?logout=1');
 }
 if( View::is('home_unlogged') ) {
@@ -95,8 +93,7 @@ if(    ! View::is('404', 'text', 'home_unlogged')
 	&& isset($_SESSION['first_time']) ) {
 	unset($_SESSION['first_time']);
 	$bars['main']['after_login']           = array();
-	$bars['main']['after_login']['status'] = // ↓
-	!! $current_user->audios_public ? 'public' : 'private';
+	$bars['main']['after_login']['status'] = $current_user->audios_privacy;
 }
 
 // after login but with error
@@ -122,12 +119,21 @@ $bars['user']['is_premium']           = $is_premium;
 $bars['user']['file_upload_limit']    = $current_user->get_limit('file_upload');
 $bars['user']['audio_duration_limit'] = // ↓
 $current_user->get_limit('audio_duration');
+
 $bars['user']['audio_duration_minutes_limit'] =
 $current_user->get_limit('audio_duration') / 60;
 
 // sidebar
 // please note that the operator here is 'or' instead of '||'
 $bars['sidebar']['show_ads'] = ! View::is('frame') or ! $is_premium;
+// settings
+if( $is_logged ) {
+	$bars['settings']['are_audios_public'] =
+	'public' === $current_user->audios_privacy;
+
+	$bars['settings']['are_favs_public']   =
+	'public' === $current_user->favs_privacy;
+}
 
 // 
 $bars['footer']                     = array();
@@ -147,7 +153,7 @@ if( \Config::get('is_production') ) {
 	// all the script are in this JSON. In the live website, this JSON
 	// is read and they all are minified, resulting in vendor.css and app.css
 	$scripts = file_get_contents(
-			$_SERVER['DOCUMENT_ROOT'] . '/assets/js/scripts.json'
+			DOCUMENT_ROOT . '/assets/js/scripts.json'
 		);
 	$scripts = json_decode($scripts, true);
 	while( list($directory,$all_styles) = each($scripts) ) {
