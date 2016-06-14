@@ -29,7 +29,7 @@
 						{{else}}
 						class="blue-text"
 						{{/if}}
-						href="{{profile.audios_url}}"
+						href="{{profile.user.profile_url}}"
 						>
 						Audios&nbsp;
 						{{#if profile.audios}}
@@ -46,7 +46,7 @@
 						{{else}}
 						class="blue-text"
 						{{/if}}
-						href="{{profile.favorites_url}}">
+						href="{{profile.user.favorites_url}}">
 						Favorites&nbsp;
 						{{#if profile.audios}}
 							<span class="_badge yellow darken-2">
