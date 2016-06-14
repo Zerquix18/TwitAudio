@@ -82,7 +82,7 @@ class Audios implements ModelInterface {
 		
 		if( ! empty($audio['audio_url']) ) {
 			$audio['original_name'] = $audio['audio_url'];
-			$audio['audio_url']     = 
+			$audio['audio']         = 
 			url('assets/audios/' . $audio['audio_url']);
 		}
 
@@ -159,13 +159,13 @@ class Audios implements ModelInterface {
 		}
 
 		if(    $has('id')
-			&& $has('audio_url')
+			&& $has('audio')
 			&& $has('reply_to')
 			&& ! $audio['reply_to']
 			) {
 			$audio['player'] = array(
 				'id'        => $audio['id'],
-				'audio_url' => $audio['audio_url'],
+				'audio'     => $audio['audio'],
 				'autoload'  => true
 			);
 		}
