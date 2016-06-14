@@ -13,73 +13,75 @@
  * Favorites an audio.
  */
 $(document).on('click', '.audio-action-favorite', function(e) {
-	var id = $(this).data('id');
-	var lastFavoriteId = $(this);
-	var params = {
-			id: id,
-			action: $(this).hasClass('audio-is_favorited') ? // faved already?
-				'unfav' : 'fav'
-		};
+  var id              = $(this).data('id');
+  var $lastFavoriteId = $(this);
+  var params          = {
+                        id: id,
+                        // was it faved already?
+                        action: $(this).hasClass('audio-is_favorited') ?
+                          'unfav' : 'fav'
+                      };
 
-	$.ajax({
-		type: "POST",
-		cache: false,
-		url: ajaxUrl + 'post/favorite',
-		data: params,
-		beforeSend: function() {
-			// FAKE AJAX
-			var attribute = lastFavoriteId.find('span'),
-				count     = parseInt( attribute.text() );
+  $.ajax({
+    type: "POST",
+    cache: false,
+    url: ajaxUrl + 'post/favorite',
+    data: params,
+    beforeSend: function() {
+      // FAKE AJAX
+      var $attribute = $lastFavoriteId.find('span'),
+          count      = parseInt($attribute.text());
 
-			if( lastFavoriteId.hasClass('audio-is_favorited') ) { // already faved?
-				lastFavoriteId.removeClass('audio-is_favorited');
-				attribute.text( String(count - 1) );
-			}else{
-				lastFavoriteId.addClass('audio-is_favorited');
-				attribute.text( String(count + 1) );
-			}
-		},
-		error: function() {
-			// get everything back
-			var attribute = lastFavoriteId.find('span');
-			var count     = parseInt( attribute.text() );
+      if ($lastFavoriteId.hasClass('audio-is_favorited')) {
+        // already faved?
+        $lastFavoriteId.removeClass('audio-is_favorited');
+        $attribute.text(String(count - 1));
+      } else {
+        $lastFavoriteId.addClass('audio-is_favorited');
+        $attribute.text(String(count + 1));
+      }
+    },
+    error: function() {
+      // get everything back
+      var $attribute = $lastFavoriteId.find('span');
+      var count      = parseInt($attribute.text());
 
-			if( lastFavoriteId.hasClass('audio-is_favorited') ) {
-				lastFavoriteId.removeClass('audio-is_favorited');
-				attribute.text( String(count - 1) );
-				displayError(
-					'There was a problem while favoriting the audio...'
-				);
-			}else{
-				lastFavoriteId.addClass('audio-is_favorited');
-				attribute.text( String(count + 1) );
-				displayError(
-					'There was a problem while unfavoriting the audio...'
-				);
-			}
-		},
-		success: function(result) {
-			result = JSON.parse(result);
+      if ($lastFavoriteId.hasClass('audio-is_favorited')) {
+        $lastFavoriteId.removeClass('audio-is_favorited');
+        $attribute.text(String(count - 1));
+        displayError(
+          'There was a problem while favoriting the audio...'
+        );
+      } else {
+        $lastFavoriteId.addClass('audio-is_favorited');
+        $attribute.text(String(count + 1));
+        displayError(
+          'There was a problem while unfavoriting the audio...'
+        );
+      }
+    },
+    success: function(result) {
+      result = JSON.parse(result);
 
-			if( ! result.success ) {
+      if (!result.success) {
 
-				var attribute = lastFavoriteId.find('span');
-				var count     = parseInt( attribute.text() );
+        var $attribute = $lastFavoriteId.find('span');
+        var count      = parseInt($attribute.text());
 
-				if( lastFavoriteId.hasClass('audio-is_favorited') ) {
-					lastFavoriteId.removeClass('audio-is_favorited');
-					attribute.text( String(c - 1) );
-				}else{
-					attribute.text( String(c + 1) );
-					lastFavoriteId.addClass('audio-is_favorited');
-				}
+        if ($lastFavoriteId.hasClass('audio-is_favorited')) {
+          $lastFavoriteId.removeClass('audio-is_favorited');
+          $attribute.text(String(c - 1));
+        }else{
+          $attribute.text(String(c + 1));
+          $lastFavoriteId.addClass('audio-is_favorited');
+        }
 
-				return displayError(result.response);
-			}
+        return displayError(result.response);
+      }
 
-			lastFavoriteId.find('span').html(result.count);
-		}
-	});
+      $lastFavoriteId.find('span').html(result.count);
+    }
+  });
 });
 
 /**
@@ -89,32 +91,32 @@ $(document).on('click', '.audio-action-favorite', function(e) {
 window.playedAudios = [];
 
 $(document).on('click', '.audio-action-play', function(e) {
-	var id = $(this).data('id');
-	if( inArray( id, window.playedAudios ) ) {
-		// don't register it again
-		return;
-	}
+  var id = $(this).data('id');
+  if (inArray(id, window.playedAudios)) {
+    // don't register it again
+    return;
+  }
 
-	window.playedAudios.push(id);
+  window.playedAudios.push(id);
 
-	$.ajax({
-		type: "POST",
-		cache: false,
-		url: ajaxUrl + 'post/play',
-		data: {id: id},
-		dataType: 'json',
-		success: function( result ) {
-			if( ! result.success ) {
-				// we should not throw an error
-				// because we could not count a play
-				return;
-			}
-			// add the play
-			$( '.audio-plays-' + // the last one registered ↓
-				window.playedAudios[ window.playedAudios.length - 1 ]
-			).find('span').html( result.count );
-		}
-	});
+  $.ajax({
+    type: "POST",
+    cache: false,
+    url: ajaxUrl + 'post/play',
+    data: { id: id },
+    dataType: 'json',
+    success: function(result) {
+      if (!result.success) {
+        // we should not throw an error
+        // because we could not count a play
+        return;
+      }
+      // add the play
+      $('.audio-plays-' + // the last one registered ↓
+        window.playedAudios[ window.playedAudios.length - 1 ]
+      ).find('span').html(result.count);
+    }
+  });
 
 });
 
@@ -122,38 +124,40 @@ $(document).on('click', '.audio-action-play', function(e) {
 
 $(document).on('click', '.audio-action-delete', function(e) {
 
-	if( true !== confirm('Are you sure you want to delete this audio?') )
-		return false;
+  if (true !== confirm('Are you sure you want to delete this audio?')) {
+    return false;
+  }
 
-	var id = $(this).data('id');
-	$.ajax({
-		type: "POST",
-		cache: false,
-		url: ajaxUrl + 'post/delete',
-		data: {id: id},
-		error: function() {
-			displayError('There was an error while deleting your audio');
-		},
-		success: function(result) {
-			result = JSON.parse(result);
-			if( ! result.success ) {
-				return displayError(result.response);
-			}
+  var id = $(this).data('id');
+  $.ajax({
+    type: "POST",
+    cache: false,
+    url: ajaxUrl + 'post/delete',
+    data: { id: id },
+    error: function() {
+      displayError('There was an error while deleting your audio');
+    },
+    success: function(result) {
+      result = JSON.parse(result);
+      if (!result.success) {
+        return displayError(result.response);
+      }
 
-			// redirect to home if the deleted audio
-			// was in the audio page AND
-			// was not a reply
-			// audioId is defined in views/templates/audio.phtml
-			if( typeof audioId !== 'undefined' &&
-				result.response == audioId
-				) {
-				return window.location.replace('/');
-			}
+      // redirect to home if the deleted audio
+      // was in the audio page AND
+      // was not a reply
+      // audioId is defined in views/templates/audio.phtml
+      if (typeof audioId !== 'undefined' && result.response === audioId) {
+        return window.location.replace('/');
+      }
 
-			$(".audio-" + result.id ).fadeOut(1000, function() {
-				$(this).remove();
-			});
-
-		}
-	});
+      $(".audio-" + result.id)
+      .fadeOut(
+        1000,
+        function() {
+          $(this).remove();
+        }
+      );
+    }
+  });
 });
