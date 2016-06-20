@@ -7,4 +7,7 @@
  * @copyright  Luis A. Martínez 2016
  * 
  */
-class ProgrammerException extends \Exception {}
+class ProgrammerException extends \Exception
+{
+
+}

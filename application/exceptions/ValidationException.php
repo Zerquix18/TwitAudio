@@ -10,24 +10,22 @@
 *
 **/
 
-class ValidationException extends \Exception {
-	/**
-	 * Saves the options
-	 * @var array
-	 */
-	public $options;
+class ValidationException extends \Exception
+{
+    /**
+     * Saves the options
+     * @var array
+     */
+    public $options;
+    /**
+     * @param string $message The exception message
+     * @param array  $options  Options for behavior of the catch block
+     */
+    public function __construct($message = '', array $options = [])
+    {
+        $default_options = array('code' => 0);
+        $this->options   = array_merge($default_options, $options);
 
-	/**
-	 * @param string $message The exception message
-	 * @param array  $options  Options for behavior of the catch block
-	 */
-	public function __construct( $message = '', array $options = array() ) {
-
-		$default_options = array(
-				'code'	=> 0
-			);
-		$this->options   = array_merge($default_options, $options);
-
-		parent::__construct($message, $this->options['code'], null);
-	}
+        parent::__construct($message, $this->options['code'], null);
+    }
 }

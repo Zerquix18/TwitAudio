@@ -46,6 +46,7 @@ $(window).scroll(function() {
     success: function( result ) {
       if (!result.success) {
         displayError(result.response);
+        return;
       }
       // success:
       $(window.loadMore.selector).append(result.response);

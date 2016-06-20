@@ -7,87 +7,47 @@
 **/
 namespace application;
 
-use Abraham\TwitterOAuth\TwitterOAuth as TwitterOAuth;
+use \models\Users;
 
-class Twitter {
-	const CONSUMER_KEY        = 'jM8rVR9XiDRTuiV0qh7ULmi9b';
-	const CONSUMER_KEY_SECRET = 
-	'QKX2iCmKeKM6pOXFWYDdyIkqCNFjs9Jbf6T8QjcgpMopfaCUEp';
-	public $tw;
-	public function __construct( $access_token        = null,
-								 $access_token_secret = null
-							) {
-		$this->tw = new TwitterOAuth(
-			self::CONSUMER_KEY,
-			self::CONSUMER_KEY_SECRET,
-			$access_token,
-			$access_token_secret
-		);
-		$this->callback = url() . 'callback';
+class Twitter
+{
+    private static $prod_consumer_key    = 'jM8rVR9XiDRTuiV0qh7ULmi9b';
+    private static $prod_consumer_secret = 
+    'QKX2iCmKeKM6pOXFWYDdyIkqCNFjs9Jbf6T8QjcgpMopfaCUEp';
 
-		if('www.twitaudio.com' !== $_SERVER['HTTP_HOST']) {
-			/*
-			 here the callback property can be overwritten safely
-			 if you're in localhost, Twitter won't redirect to localhost
-			 the solution is to redirect to a real url and then
-			 change the URL in the browser bar
-			 ex: arealurl123.com
-			 update: just use 127.0.0.1 :(
-			*/
-			#$this->callback = 'http://arealurl123.com/callback';
-		}
-	}
-	/**
-	 * Returns a string with the login URL for Twitter
-	 *
-	 * @throws TwitterOAuthException
-	 * @return string
-	 */
-	public function get_login_url() {
-		if( null === $this->tw ) {
-			return '';
-		}
-		try {
-			$request_token = $this->tw->oauth(
-				'oauth/request_token',
-				array('oauth_callback' => $this->callback)
-			);
-			$url = $this->tw->url(
-				'oauth/authorize',
-				array('oauth_token' => $request_token['oauth_token'])
-			);
-		} catch ( \TwitterOAuthException $e ) {
-			throw new \VendorException(
-					'TwitterOAuth',
-					$e->getMessage()
-				);
-		}
-		$_SESSION['oauth_token'] 		= $request_token['oauth_token'];
-		$_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
-		return $url;
-	}
-	/**
-	 * Posts a tweet a returns the ID
-	 *
-	 * @param string  $tweet The content of the tweet. As you may know,
-	 *                      it has a limit of 140 characters.
-	 * @param string  $reply_to If the tweet is replying to another tweet,
-	 *                         this param will tell Twitter.
-	 * @return string
-	 * @throws  TwitterOAuthException
-	 *
-	**/
-	public function tweet( $tweet, $reply_to = '' ) {
-		$params = array("status" => $tweet );
-		if( '' != $reply_to ) {
-			$params['in_reply_to_status_id'] = $reply_to;
-		}
+    private static $dev_consumer_key     = 'chkQ6AvFyXup8WmaMmkd3AiWQ';
+    private static $dev_consumer_secret  = 
+    'nGnTknnae6Eh52dASCFYivAyidYsmAZVP0nmjHMdz2Lg086coM';
+    /**
+     * Returns the tokens for Twitter
+     * @return array An array with 2-4 keys
+     */
+    public static function getTokens()
+    {
+        $result = array();
+        if ('www.twitaudio.com' === $_SERVER['HTTP_HOST']) {
+            /**
+             * These tokens will only be used in this domain,
+             * no matter if the config says we're in production
+             */
+            $result[] = self::$prod_consumer_key;
+            $result[] = self::$prod_consumer_secret;
+        } else {
+            $result[] = self::$dev_consumer_key;
+            $result[] = self::$dev_consumer_secret;
+        }
+        // if the user is already logged, then add the access tokens
+        // but not if they're trying to re-login
+        $is_signin_page   =
+                'signin'   === substr($_SERVER['REQUEST_URI'], 1, 6);
+        $is_callback_page =
+                'callback' === substr($_SERVER['REQUEST_URI'], 1, 8);
 
-		$this->tweet = $this->tw->post('statuses/update', $params);
-		
-		if( isset($this->tweet->errors, $this->tweet->error) ) {
-			return '';
-		}
-		return $this->tweet->id_str;
-	}
+        if (is_logged() && ! $is_signin_page && ! $is_callback_page) {
+            $current_user = Users::getCurrentUser();
+            $result[]     = $current_user->access_token;
+            $result[]     = $current_user->access_token_secret;
+        }
+        return $result;
+    }
 }

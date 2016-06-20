@@ -41,9 +41,10 @@ CREATE TABLE IF NOT EXISTS `audios` (
 
 	`audio_url`   char(36), -- NULL when is a reply :)
 	`reply_to`    char(6),  -- null means not reply and filled means replying
-	`description` varchar(160)     NOT NULL,
 
-	`twitter_id`  int(25) unsigned NOT NULL DEFAULT 0,
+	`description` varchar(160)     NOT NULL,
+	`twitter_id`  varchar(25)      NOT NULL DEFAULT 0,
+
 	`date_added`  int(32) unsigned NOT NULL COMMENT 'Unix Timestamp',
 	`plays`       int(8)  unsigned NOT NULL DEFAULT 0,
 	`favorites`   int(8)  unsigned NOT NULL DEFAULT 0,

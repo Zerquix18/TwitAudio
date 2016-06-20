@@ -8,7 +8,9 @@
 *
 **/
 namespace application\interfaces;
-interface ModelInterface {
+
+interface ModelInterface
+{
 	/**
 	 * To complete things after a SELECT query. This will force types,
 	 * add aditional keys and delete useless stuff after a query.
@@ -16,7 +18,7 @@ interface ModelInterface {
 	 * @param  array $array_to_complete
 	 * @return array
 	 */
-	public static function complete( array $array_to_complete );
+	public static function complete(array $array_to_complete);
 	/**
 	 * Deletes something, like an audio or a user.
 	 * 
@@ -24,7 +26,7 @@ interface ModelInterface {
 	 * @throws \Exception if there was a query error
 	 * @return bool
 	 */
-	public static function delete( $id );
+	public static function delete($id);
 	/**
 	 * Inserts something in the database.
 	 * 
@@ -32,7 +34,7 @@ interface ModelInterface {
 	 * @throws \Exception if there was an query error
 	 * @return array Useful information to display after the insert
 	 */
-	public static function insert(   array $parameters );
+	public static function insert(array $parameters);
 	/**
 	 * Get something from the database.
 	 * 
@@ -42,6 +44,5 @@ interface ModelInterface {
 	 * @throws  \Exception if there was a query error
 	 * @return array  An empty array in case that nothing was found.
 	 */
-	public static function get( $by, array $which_columns = array() );
-	
+	public static function get($by, array $which_columns = []);
 }

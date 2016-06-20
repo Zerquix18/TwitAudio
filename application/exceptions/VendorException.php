@@ -13,12 +13,16 @@
  * @copyright  Luis A. Martínez 2016
  */
 
-class VendorException extends \Exception {
-
-	public $vendor;
-
-	public function __construct( $vendor, $message ) {
-		$this->vendor = $vendor;
-		parent::__construct($message);
-	}
+class VendorException extends \Exception
+{
+    private $vendor;
+    public function __construct($vendor, $message)
+    {
+        $this->vendor = $vendor;
+        parent::__construct($message);
+    }
+    public function getVendor()
+    {
+        return $this->vendor;
+    }
 }

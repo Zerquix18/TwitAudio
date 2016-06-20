@@ -198,7 +198,7 @@
 		</p>
 		<p>
 			{{! it must be 'public' or 'private' }}
-			Your audios were set as {{main.after_login.status}} because your tweets are also {{main.after_login.status}}
+			Your audios were set as {{main.after_login.status}} because your tweets are also {{main.after_login.status}}.
 			You can change this on your
 			<a href="#settings" class="modal-trigger">Settings</a>.
 		</p>
@@ -235,7 +235,7 @@ window.onLoadFunctions.push( function() {
 {{#if main.login_error}}
 <script>
 	window.onLoadFunctions.push( function() {
-		displayError("{{main.login_error}}", 10000);
+		displayError("{{{main.login_error}}}", 10000);
 	});
 </script>
 {{/if}}
