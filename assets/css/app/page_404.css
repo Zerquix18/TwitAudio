@@ -9,34 +9,42 @@
 .page-404 {
   background-color: #14455C;
 }
+
 .page-404 .container {
   color: #FFF;
   text-align: center;
 }
+
 .page-404 .not-found {
   color: inherit;
   font-family: Roboto, Helvetica, Times, Serif, Arial;
   font-weight: bold;
 }
+
 .page-404 .container img,
 .page-404 form {
   display: block;
   margin: 0 auto;
 }
+
 .page-404 .container img {
   height: auto;
 }
+
 .page-404 form {
   max-width: 50%;
 }
+
 .page-404 ul li {
   display: inline-block;
   margin: 0 5px;
 }
+
 .page-404 ul a {
   float: left;
   font-size: 25px;
 }
+
 @media (max-width: 550px) {
   .page_404 .container img {
     width: 100%;

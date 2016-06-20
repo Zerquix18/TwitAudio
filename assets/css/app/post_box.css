@@ -7,19 +7,23 @@
   margin: 0 auto;
   width: 250px;
 }
+
 .post-box i {
   /* resize icons :) */
   font-size: 70px;
   margin: 0 10px;
 }
+
 .post-record,
 .post-upload {
   cursor: pointer;
   text-align: center;
 }
+
 .post-or {
   line-height: 70px;
 }
+
 .post-or,
 .post-action-text {
   color: #616161;
@@ -32,73 +36,92 @@
      -o-user-select: none;
         user-select: none;
 }
+
 .waiting-box {
   height: 100px;
 }
+
 .waiting-text {
   font-size: 16px;
   margin: 0 auto;
   text-align: center;
 }
+
 .uploading-box {
   margin: 20px 0;
   padding: 0 40px;    
 }
+
 .uploading-text {
   text-align: center;
 }
+
 .record-box {
   margin: 20px auto;
   text-align: center;
 }
+
 .record-actions,
 .record-actions span {
   font-size: 20px;
   color: #424242;
 }
+
 .record-count {
   margin-right: 5px;
 }
+
 .record-stop,
 .record-cancel {
   cursor: pointer;
 }
+
 .upload-file {
   display: none;
   visibility: hidden;
 }
+
 .cut-form {
   margin-top: 10px;
   min-height: 100px;
   text-align: center;
 }
+
 .cut-inputs {
   margin: 10px auto;
 }
+
 .cut-inputs input {
   width: 35px;
 }
+
 .post-description-box {
   margin: 30px 0 0 10px;
 }
+
 .post-send_to_twitter-box {
   margin-left: 10px;
 }
+
 .post-buttons {
-  margin:0 auto;
+  margin: 0 auto;
   width: 300px;
 }
+
 .post-footer {
   min-height: 40px;
 }
+
 @media (max-width: 400px) {
   .post-buttons {
     width: 270px;
   }
 }
+
 .effects {
   max-width: 500px;
 }
+
 .effect-action-choose {
   display: block;
   margin: 25px auto;

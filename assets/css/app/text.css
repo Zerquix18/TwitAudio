@@ -9,13 +9,16 @@
   background-color: #FFF;
   padding: 60px;
 }
+
 .text-text {
   margin: 0 5px;
 }
+
 .text footer,
 footer.notop {
   margin-top: -20px;
 }
+
 footer.notop .footer-copyright {
   padding-right: 10px;
 }

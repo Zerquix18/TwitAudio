@@ -18,9 +18,11 @@
 .side-nav li {
   padding: 0;
 }
+
 .left-sidebar-list li:hover {
   background-color: #616161;
 }
+
 .left-sidebar-list a {
   font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
   height: 40px;
@@ -34,16 +36,20 @@
 .side-nav .left-sidebar-list a {
   color: #FFF;
 }
+
 .left-sidebar-list i {
   font-size: 20px;
   margin: 0 5px;
 }
+
 .left-sidebar-list ._badge {
   margin-top: 10px;
 }
+
 .left-sidebar-profile-picture {
   vertical-align: middle;
 }
+
 .left-sidebar-open {
   margin-left: 10px;
 }
@@ -53,10 +59,12 @@
 .right-sidebar-links {
   text-align: center;
 }
+
 .right-sidebar-links li {
   display: inline-block;
   margin-left: 2px;
 }
+
 .right-sidebar-links a {
   float: left;
 }

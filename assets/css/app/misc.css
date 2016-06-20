@@ -12,6 +12,7 @@
   height: 70px;
   margin-bottom: 10px;
 }
+
 .search-submit {
   display: block;
   margin-top: 15px;
@@ -22,17 +23,21 @@ ul.user li {
   display: inline-block;
   vertical-align: middle;
 }
+
 ul.user .name {
   font-size: 25px;
 }
+
 ul.user .uname {
   font-size: 20px;
 }
+
 ul.user li a {
   color: inherit;
   float: left;
   text-decoration: none;
 }
+
 ul.user .verified {
   font-size: 15px;
 }
@@ -43,6 +48,7 @@ ul.user .verified {
   min-height: 50px;
   padding-left: 10px;
 }
+
 .audio-share-buttons {
   text-align: right;
 }

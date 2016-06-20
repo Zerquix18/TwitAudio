@@ -10,10 +10,12 @@
   min-height: 47px;
   width: 100%;
 }
+
 .audio-user-avatar {
   float: left;
   vertical-align: middle;
 }
+
 .audio-user-name {
   color: #3B3B3B;
   display: inline;
@@ -21,10 +23,12 @@
   font-weight: bold;
   margin-left: 10px;
 }
+
 .audio-user-user {
   color: #CCC;
   font-size: 13px;
 }
+
 .audio-date {
   color: #CCC;
   float: right;
@@ -42,39 +46,47 @@
     font-size: 10px;
   }
 }
+
 .reply-linked {
   font-weight: bold;
   margin-left: 5px;
   text-transform: uppercase;
 }
+
 .audio-description {
   margin-bottom: 5px;
   margin-left: 60px;
   margin-top: 5px;
 }
+
 .audio-play {
   margin-left: 60px;
   margin-top: 5px;
 }
+
 .audio-footer {
   margin-right: 10px;
   margin-top: 20px;
   text-align: center;
   vertical-align: bottom;
 }
+
 .audio-action {
   color: #CBCBCB;
   font-size: 18px;
   margin-left: 5px;
   text-decoration: none;
 }
+
 .audio-action-favorite {
   cursor: pointer;
 }
+
 .audio-action-favorite:hover,
 .audio-is_favorited {
   color: #ffc107;
 }
+
 .audio-action-delete:hover {
   color: #FF0000;
 }
@@ -83,42 +95,52 @@
   font-size: 20px;
   margin-left: 5px;
 }
+
 .audio-big .audio-user-user {
   font-size: 15px;
   margin-left: 5px;
 }
+
 .audio-big .audio-play {
   margin-left: 80px;
 }
+
 .audio-big ul.jp-controls {
   height: 35px;
 }
+
 .audio-big div.jp-volume-bar,
 .audio-big div.jp-progress {
-  height:11px;
+  height: 11px;
   top: 13px;
 }
+
 .audio-big div.jp-play-bar,
 .audio-big div.jp-seek-bar,
 .audio-big div.jp-volume-bar-value {
   height: 11px;
 }
+
 .audio-big div.jp-current-time,
 .audio-big div.jp-duration {
   top: 35px;
 }
+
 .audio-big .control {
   font-size: 18px;
   left: 15px;
   top: 8px;
 }
+
 .audio-big .vcontrol {
   font-size: 15px;
   top: 10px;
 }
+
 .audio-big .audio-btn i {
   font-size: 25px;
 }
+
 .audio-big .audio-desc {
   margin-left: 80px;
 }
@@ -128,14 +150,16 @@
   position: relative;
   z-index: 1;
 }
+
 .jp-interface ul,
 .jp-interface ul li{
-  left:0;
-  margin:0;
-  padding:0;
-  right:0;
-  top:0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  right: 0;
+  top: 0;
 }
+
 .jp-controls{
   -webkit-box-shadow: inset 0 1px 0 0 #fff;
   -moz-box-shadow: inset 0 1px 0 0 #fff;
@@ -152,6 +176,7 @@
   position: relative;
   width: auto;
 }
+
 .jp-controls a,
 .jp-toggles a {
   display: none;
@@ -163,6 +188,7 @@
 .jp-pause {
   width: 30px;
 }
+
 .jp-play  i,
 .jp-pause i  {
   color: #393939;
@@ -171,6 +197,7 @@
   position: absolute;
   top: 0.4em;
 }
+
 .jp-mute   i,
 .jp-unmute i  {
   color: #393939;
@@ -178,37 +205,41 @@
   right: 70px;
   top: 2px;
 }
+
 .jp-stop {
   display: none;
 }
+
 .jp-volume-max {
   display: none;
 }
+
 .jp-current-time {
-  color:#626262;
-  font-size:13px;
-  height:25px;
-  left:0;
-  line-height:25px;
-  overflow:hidden;
+  color: #626262;
+  font-size: 13px;
+  height: 25px;
+  left: 0;
+  line-height: 25px;
+  overflow: hidden;
   position: absolute;
-  text-align:right;
-  top:21px;
-  width:50px;
-  z-index:1;
+  text-align: right;
+  top: 21px;
+  width: 50px;
+  z-index: 1;
 }
+
 .jp-duration{
-  color:#626262;
-  font-size:13px;
-  height:25px;
-  line-height:25px;
-  overflow:hidden;
-  position:absolute;
-  right:0;
-  text-align:left;
-  top:21px;
-  width:55px;
-  z-index:1;
+  color: #626262;
+  font-size: 13px;
+  height: 25px;
+  line-height: 25px;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  text-align: left;
+  top: 21px;
+  width: 55px;
+  z-index: 1;
 }
 /* VOLUME BAR */
 .jp-volume-bar {
@@ -242,12 +273,12 @@
             inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 
   cursor: pointer; 
-  height:8px;
+  height: 8px;
   overflow: hidden;
   position: absolute;
-  right:10px;
-  top:8px;
-  width:50px;
+  right: 10px;
+  top: 8px;
+  width: 50px;
 }
 
 .jp-volume-bar-value {
@@ -311,11 +342,13 @@ div.jp-progress {
   top: 8px;
   z-index: 2;
 }
+
 .jp-seek-bar {
   height: 8px;
   margin: 0;
   padding: 0;
 }
+
 .jp-seeking-bg {
   background: none;
 }

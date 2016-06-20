@@ -7,7 +7,7 @@
 *
 **/
 .home-header {
-  background: url('../img/homepage-bg.png');
+  background: url(../img/homepage-bg.png);
   background-attachment: fixed;
   -webkit-background-size: 100% 100%;
      -moz-background-size: 100% 100%;
@@ -18,32 +18,38 @@
   height: 500px;
   width: 100%;
 }
+
 @media (max-width: 380px) {
   .home {
     height: 450px;
   }
 }
+
 .home-logo {
   padding-top: 20px;
 }
+
 .home-logo img.logo-full {
   display: block;
   height: 244px;
   margin: 0 auto;
   width: 323px;
 }
+
 @media (max-width: 415px) {
   .home-logo img.logo-full {
     height: 200px;
     width: 275px;
   }
 }
+
 @media (max-width: 360px) {
   .home-logo img.logo-full {
     height: 150px;
     width: 200px;
   }
 }
+
 .home-slogan {
   color: #FFF;
   font-size: 35px;
@@ -55,20 +61,25 @@
     font-size: 25px;
   }
 }
+
 @media (max-width: 320px) {
   .home-slogan {
     font-size: 17px;
   }
 }
+
 .home-features {
   padding: 30px 0;
 }
+
 .home-features p {
   text-align: center;
 }
+
 .home-features i {
   color: #42a5f5;
 }
+
 .home-features .col p:nth-child(2) {
   font-size: 2.0em;
   margin-bottom: 0;

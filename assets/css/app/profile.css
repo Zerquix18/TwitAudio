@@ -13,6 +13,7 @@
   margin: 10px auto;
   width: 150px;
 }
+
 .profile-name,
 .profile-user,
 .profile-bio {
@@ -21,16 +22,20 @@
   margin: 0;
   text-align: center;
 }
+
 .profile-name {
   font-weight: bold;
 }
+
 .profile-bio {
   font-size: 17px;
   margin: 0 auto;
 }
+
 .tabs .indicator {
   background-color: #2196f3;
 }
+
 .profile-navigation {
   margin-bottom: 20px;
 }
