@@ -6,16 +6,16 @@
 *
 **/
 .text > .container {
-	padding: 60px;
-	background-color: #FFF;
+  padding: 60px;
+  background-color: #FFF;
 }
 .text-text {
-	margin: 0 5px;
+  margin: 0 5px;
 }
 .text footer,
 footer.notop {
-	margin-top: -20px;
+  margin-top: -20px;
 }
 footer.notop .footer-copyright {
-	padding-right: 10px;
+  padding-right: 10px;
 }

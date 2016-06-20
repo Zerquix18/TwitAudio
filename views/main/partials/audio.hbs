@@ -1,123 +1,123 @@
 {{!
-	Audio partial
-	Loads an audio and includes the player
-	Here user is not the logged user, it is the one
-	of the audio
+  Audio partial
+  Loads an audio and includes the player
+  Here user is not the logged user, it is the one
+  of the audio
 }}
 <div
-	{{#if big}}
-	class="audio-{{id}} audio-big"
-	{{else}}
-	class="audio-{{id}}"
-	{{/if}}
-	>
-	<div class="audio-header">
-		<a href="{{user.profile_url}}">
-			<img class="circle audio-user-avatar"
-			src="{{user.avatar}}"
-			onerror="{{{get_image 'unknown.png'}}}"
-			{{#if big}}
-			height="73"
-			width="73"
-			{{else}}
-			height="48"
-			width="48"
-			{{/if}}
-			>
-		</a>
-		<span class="audio-user-name">
-			<a
-			class="no-deco"
-			href="{{{user.profile_url}}}"
-			>
-				{{user.name}}
-				{{show_verified_badge is_verified}}
-			</a>
-		</span>
-		<span class="audio-user-user">
-			<a
-			class="no-deco"
-			href="{{user.profile_url}}"
-			>
-				@{{user.username}}
-			</a>
-		</span>
-		<span class="audio-date">
-			<i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
-			<a
-			href="{{audio_url}}"
-			class="datetime"
-			data-timestamp="{{date_added}}">
-				{{! date will be placed here with javascript }}
-			</a>
-		</span>
-		{{#if is_linked}}
-		<div class="chip reply-linked">
-			<i class="fa fa-link"></i>&nbsp;
-			Linked reply
-		</div>
-		{{/if}}
-	</div><!-- .audio-header -->
-	{{#if description}}
-		<div class="audio-description">
-			{{! description comes sanitized }}
-			{{{description}}}
-		</div>
-	{{/if}}
-	{{#if player}}{{!if requires player}}
-	<div class="audio-play">
-		{{{get_partial 'player' player}}}
-	</div>
-	{{/if}}
-	<div class="audio-footer">
-	{{#if player}}{{! if it has a player }}
-		<a
-		class="audio-action audio-plays-{{id}}"
-		id="{{id}}"
-		title="{{plays_count_text}}" {{! x people played this }}
-		>
-			<i class="fa fa-headphones"></i>&nbsp;
-			<span>
-				{{plays_count}} {{! 3k, 1m }}
-			</span>
-		</a>
-	{{/if}}
-		<a class="audio-action
-			{{#if user.can_favorite}}
-				audio-action-favorite
-			{{/if}}
-			{{#if is_favorited}}
-				audio-is_favorited
-			{{/if}}"
-		data-id="{{id}}"
-		title="Mark as favorite">
-			<i class="fa fa-star"></i>&nbsp;
-			<span>
-				{{favorites_count}}
-			</span>
-		</a>
-	{{#if player }}{{! if it has a player, it was an audio}}
-		<a class="audio-action"
-		      href="{{audio_url}}#replies"
-		      title="Leave a reply"
-		      >
-			<i class="fa fa-reply"></i>&nbsp;
-			<span>
-				{{replies_count}}
-			</span>
-		</a>
-	{{/if}}
-	{{#if user.can_delete}}
-		<a
-		href="javascript:void(0);"
-		class="audio-action audio-action-delete"
-		data-id="{{id}}"
-		title="Delete this audio"
-		>
-			<i class="fa fa-times"></i>
-			&nbsp;Delete
-		</a>
-	{{/if}}
-	</div> <!-- .audio-footer -->
-	<div class="divider"></div>
+  {{#if big}}
+  class="audio-{{id}} audio-big"
+  {{else}}
+  class="audio-{{id}}"
+  {{/if}}
+  >
+  <div class="audio-header">
+    <a href="{{user.profile_url}}">
+      <img class="circle audio-user-avatar"
+      src="{{user.avatar}}"
+      onerror="{{{get_image 'unknown.png'}}}"
+      {{#if big}}
+      height="73"
+      width="73"
+      {{else}}
+      height="48"
+      width="48"
+      {{/if}}
+      >
+    </a>
+    <span class="audio-user-name">
+      <a
+      class="no-deco"
+      href="{{{user.profile_url}}}"
+      >
+        {{user.name}}
+        {{show_verified_badge is_verified}}
+      </a>
+    </span>
+    <span class="audio-user-user">
+      <a
+      class="no-deco"
+      href="{{user.profile_url}}"
+      >
+        @{{user.username}}
+      </a>
+    </span>
+    <span class="audio-date">
+      <i class="fa fa-clock-o grey-text lighten-1-text"></i>&nbsp;
+      <a
+      href="{{audio_url}}"
+      class="datetime"
+      data-timestamp="{{date_added}}">
+        {{! date will be placed here with javascript }}
+      </a>
+    </span>
+    {{#if is_linked}}
+    <div class="chip reply-linked">
+      <i class="fa fa-link"></i>&nbsp;
+      Linked reply
+    </div>
+    {{/if}}
+  </div><!-- .audio-header -->
+  {{#if description}}
+    <div class="audio-description">
+      {{! description comes sanitized }}
+      {{{description}}}
+    </div>
+  {{/if}}
+  {{#if player}}{{!if requires player}}
+  <div class="audio-play">
+    {{{get_partial 'player' player}}}
+  </div>
+  {{/if}}
+  <div class="audio-footer">
+  {{#if player}}{{! if it has a player }}
+    <a
+    class="audio-action audio-plays-{{id}}"
+    id="{{id}}"
+    title="{{plays_count_text}}" {{! x people played this }}
+    >
+      <i class="fa fa-headphones"></i>&nbsp;
+      <span>
+        {{plays_count}} {{! 3k, 1m }}
+      </span>
+    </a>
+  {{/if}}
+    <a class="audio-action
+      {{#if user.can_favorite}}
+        audio-action-favorite
+      {{/if}}
+      {{#if is_favorited}}
+        audio-is_favorited
+      {{/if}}"
+    data-id="{{id}}"
+    title="Mark as favorite">
+      <i class="fa fa-star"></i>&nbsp;
+      <span>
+        {{favorites_count}}
+      </span>
+    </a>
+  {{#if player }}{{! if it has a player, it was an audio}}
+    <a class="audio-action"
+          href="{{audio_url}}#replies"
+          title="Leave a reply"
+          >
+      <i class="fa fa-reply"></i>&nbsp;
+      <span>
+        {{replies_count}}
+      </span>
+    </a>
+  {{/if}}
+  {{#if user.can_delete}}
+    <a
+    href="javascript:void(0);"
+    class="audio-action audio-action-delete"
+    data-id="{{id}}"
+    title="Delete this audio"
+    >
+      <i class="fa fa-times"></i>
+      &nbsp;Delete
+    </a>
+  {{/if}}
+  </div> <!-- .audio-footer -->
+  <div class="divider"></div>
 </div><!--/ .audio -->

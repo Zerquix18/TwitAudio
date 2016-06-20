@@ -4,27 +4,27 @@
 }}
 {{#if autoload}}
 <script>
-window.onLoadFunctions.push( function() {
-	$("#player-{{id}}").jPlayer({
-		ready: function( event ) {
-			$(this).jPlayer("setMedia", {
-				mp3: "{{audio}}",
-			});
-		},
-		play: function() {
-			$(".jp-jplayer").not(this).jPlayer("pause");
-		},
-		cssSelectorAncestor : '#container-{{id}}',
-		swfPath: swfPath,
-		supplied: "mp3",
-		wmode: "window",
-		useStateClassSkin: true,
-		autoBlur: false,
-		smoothPlayBar: true,
-		keyEnabled: true,
-		remainingDuration: true,
-		toggleDuration: true
-	});
+window.onLoadFunctions.push( function () {
+  $("#player-{{id}}").jPlayer({
+    ready: function (event) {
+      $(this).jPlayer("setMedia", {
+        mp3: "{{audio}}",
+      });
+    },
+    play: function() {
+      $(".jp-jplayer").not(this).jPlayer("pause");
+    },
+    cssSelectorAncestor : '#container-{{id}}',
+    swfPath: swfPath,
+    supplied: "mp3",
+    wmode: "window",
+    useStateClassSkin: true,
+    autoBlur: false,
+    smoothPlayBar: true,
+    keyEnabled: true,
+    remainingDuration: true,
+    toggleDuration: true
+  });
 });
 </script>
 {{/if}}
@@ -92,7 +92,7 @@ window.onLoadFunctions.push( function() {
             To play the media you will need to either update your browser
             to a recent version or update your
             <a href="http://get.adobe.com/flashplayer/" target="_blank">
-                Flash plugin
+              Flash plugin
             </a>.
         </div>
     </div>

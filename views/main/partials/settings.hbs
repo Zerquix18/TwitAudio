@@ -1,67 +1,67 @@
 {{!
-	The modal with the settings :)
+  The modal with the settings :)
 }}
 <div id="settings" class="modal">
-	<div class="modal-content">
-		<h4>Settings</h4>
-		<form
-			method="POST"
-			id="settings-form"
-			action="{{main.ajax_url}}post/settings">
-			{{!... }}
-			<p class="title">Privacy</p>
-			Your audios are:
-			<input type="hidden" name="audios_privacy" value="private">
-			<div class="switch">
-				<label>
-					Private
-					<input
-					type="checkbox"
-					name="audios_privacy"
-					value="public"
-					{{#if settings.are_audios_public}}
-					checked="checked"
-					{{/if}}
-					>
-					<span class="lever"></span>
-					Public
-				</label>
-			</div>
-			<br>
-			Your favorites are:
-			<input type="hidden" name="favs_privacy" value="private">
-			<div class="switch">
-				<label>
-					Private
-					<input
-					type="checkbox"
-					name="favs_privacy"
-					value="public"
-					{{#if settings.are_favs_public}}
-					checked="checked"
-					{{/if}}
-					>
-					<span class="lever"></span>
-					Public
-				</label>
-			</div>
-			<p class="grey-text">
-				If your audios are private, only your followers will be able
-				to see/listen to them. <br>
-				On the other hand, if your favorites 
-				are private, only you will be able to see them.
-			</p>
-			<hr>
-			<button type="submit" class="btn waves-effect waves-light center">
-				Update settings&nbsp;
-				<i class="fa fa-send"></i>
-			</button>
-		</form>
-	</div>
-	<div class="modal-footer">
-		<a href="javascript:void(0);"
-		class="modal-action modal-close waves-effect waves-green btn-flat">
-			Close
-		</a>
-	</div>
+  <div class="modal-content">
+    <h4>Settings</h4>
+    <form
+      method="POST"
+      id="settings-form"
+      action="{{main.ajax_url}}post/settings">
+      {{!... }}
+      <p class="title">Privacy</p>
+      Your audios are:
+      <input type="hidden" name="audios_privacy" value="private">
+      <div class="switch">
+        <label>
+          Private
+          <input
+          type="checkbox"
+          name="audios_privacy"
+          value="public"
+          {{#if settings.are_audios_public}}
+          checked="checked"
+          {{/if}}
+          >
+          <span class="lever"></span>
+          Public
+        </label>
+      </div>
+      <br>
+      Your favorites are:
+      <input type="hidden" name="favs_privacy" value="private">
+      <div class="switch">
+        <label>
+          Private
+          <input
+          type="checkbox"
+          name="favs_privacy"
+          value="public"
+          {{#if settings.are_favs_public}}
+          checked="checked"
+          {{/if}}
+          >
+          <span class="lever"></span>
+          Public
+        </label>
+      </div>
+      <p class="grey-text">
+        If your audios are private, only your followers will be able
+        to see/listen to them. <br>
+        On the other hand, if your favorites 
+        are private, only you will be able to see them.
+      </p>
+      <hr>
+      <button type="submit" class="btn waves-effect waves-light center">
+        Update settings&nbsp;
+        <i class="fa fa-send"></i>
+      </button>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a href="javascript:void(0);"
+    class="modal-action modal-close waves-effect waves-green btn-flat">
+      Close
+    </a>
+  </div>
 </div>

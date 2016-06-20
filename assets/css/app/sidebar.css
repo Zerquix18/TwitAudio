@@ -6,25 +6,25 @@
 **/
 /** the search input */
 .left-sidebar-search {
-	/*
-		important because materialize overwrites it,
-		and places padding:0;
-		fuck em ._.
-	*/
-	padding: 0 5px !important;
-	color: #FFF;
+  /*
+    important because materialize overwrites it,
+    and places padding:0;
+    fuck em ._.
+  */
+  padding: 0 5px !important;
+  color: #FFF;
 }
 /********* Sidebar *******/
 .side-nav li {
-	padding: 0;
+  padding: 0;
 }
 .left-sidebar-list li:hover {
-	background-color: #616161;
+  background-color: #616161;
 }
 .left-sidebar-list a {
-	height: 40px;
-	line-height: 40px;
-	font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
+  height: 40px;
+  line-height: 40px;
+  font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
 }
 /*
 * if you quit .side-nav from start
@@ -32,31 +32,31 @@
 * don't ask why
 **/
 .side-nav .left-sidebar-list a {
-	color: #FFF;
+  color: #FFF;
 }
 .left-sidebar-list i {
-	font-size: 20px;
-	margin: 0 5px;
+  font-size: 20px;
+  margin: 0 5px;
 }
 .left-sidebar-list ._badge {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 .left-sidebar-profile-picture {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 .left-sidebar-open {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 /** right sidebar */
 
 .right-sidebar-links {
-	text-align: center;
+  text-align: center;
 }
 .right-sidebar-links li {
-	display: inline-block;
-	margin-left: 2px;
+  display: inline-block;
+  margin-left: 2px;
 }
 .right-sidebar-links a {
-	float: left;
+  float: left;
 }

@@ -4,180 +4,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>
-		{{#if header.title}}
-			{{header.title}} | TwitAudio
-		{{else}}
-			TwitAudio
-		{{/if}}
-	</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	{{#unless header.robots}}
-	<meta name="robots" content="noindex,nofollow">
-	{{/unless}}
-	{{#each header.styles}}
-		<link
-		rel="stylesheet"
-		href="{{{get_style this}}}">
-	{{/each}}
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link rel="apple-touch-icon" href="{{{get_image 'apple-icon.png'}}}">
-	<link rel="icon" href="{{main.home_url}}favicon.ico">
-	{{#if header.twitter}}
-	<meta name="twitter:player" content="{{header.twitter.player}}">
-	<meta name="twitter:player:height" content="47">
-	<meta name="twitter:player:width" content="435">
-	<meta name="twitter:card" content="player">
-	<meta name="twitter:site" content="@twit_audio">
-	<meta name="twitter:title" content="{{header.twitter.title}}">
-	<meta name="twitter:image" content="{{get_image 'image.jpg'}}">
-	<meta
-	name="twitter:url"
-	content="{{header.twitter.url}}">
-	<meta name="twitter:description" content="Share voice notes and audios using Twitter!">
-	{{else}} {{! / if header.twitter }}
-	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:site" content="@twit_audio" />
-	<meta name="twitter:title" content="TwitAudio" />
-	<meta
-	name="twitter:description"
-	content="Share voice notes and audios with Twitter" />
-	<meta name="twitter:image" content="{{get_image 'logo-md.png'}}" />
-	{{/if}}{{!. / else }}
-	<meta property="og:title" content="TwitAudio">
-	<meta property="og:image" content="{{get_image 'logo-md.png'}}">
-	<meta name="theme-color" content="#64b5f6">
-	<meta name="msapplication-navbutton-color" content="#64b5f6">
-	<meta name="apple-mobile-web-app-status-bar-style" content="#64b5f6">
-	<script type="text/javascript">window.onLoadFunctions = [];</script>
+  <title>
+    {{#if header.title}}
+      {{header.title}} | TwitAudio
+    {{else}}
+      TwitAudio
+    {{/if}}
+  </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{#unless header.robots}}
+  <meta name="robots" content="noindex,nofollow">
+  {{/unless}}
+  {{#each header.styles}}
+    <link
+    rel="stylesheet"
+    href="{{{get_style this}}}">
+  {{/each}}
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="apple-touch-icon" href="{{{get_image 'apple-icon.png'}}}">
+  <link rel="icon" href="{{main.home_url}}favicon.ico">
+  {{#if header.twitter}}
+  <meta name="twitter:player" content="{{header.twitter.player}}">
+  <meta name="twitter:player:height" content="47">
+  <meta name="twitter:player:width" content="435">
+  <meta name="twitter:card" content="player">
+  <meta name="twitter:site" content="@twit_audio">
+  <meta name="twitter:title" content="{{header.twitter.title}}">
+  <meta name="twitter:image" content="{{get_image 'image.jpg'}}">
+  <meta
+  name="twitter:url"
+  content="{{header.twitter.url}}">
+  <meta name="twitter:description" content="Share voice notes and audios using Twitter!">
+  {{else}} {{! / if header.twitter }}
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@twit_audio" />
+  <meta name="twitter:title" content="TwitAudio" />
+  <meta
+  name="twitter:description"
+  content="Share voice notes and audios with Twitter" />
+  <meta name="twitter:image" content="{{get_image 'logo-md.png'}}" />
+  {{/if}}{{!. / else }}
+  <meta property="og:title" content="TwitAudio">
+  <meta property="og:image" content="{{get_image 'logo-md.png'}}">
+  <meta name="theme-color" content="#64b5f6">
+  <meta name="msapplication-navbutton-color" content="#64b5f6">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#64b5f6">
+  <script type="text/javascript">window.onLoadFunctions = [];</script>
 </head>
 <body
 {{#if main.body_class}}
-	class="{{{main.body_class}}}"
+  class="{{{main.body_class}}}"
 {{/if}}
 >
 {{#if main.show_navbar}}
   {{! navbar won't be shown in the home page (Without login) }}
 {{#if main.show_sidebar}}
 <div id="slide-out" class="side-nav fixed grey darken-3">
-	<form method="GET" action="{{main.search_url}}">
-		<div class="input-field">
-			<input
-				type="text"
-				class="validate left-sidebar-search"
-				id="q"
-				name="q"
-				title="Type something to search"
-				>
-			<label for="q">
-				<i class="fa fa-search"></i>
-				&nbsp;Search...
-			</label>
-		</div>
-	</form>
-	<ul class="left-sidebar-list">
-		<li>
-			<a
-			title="Go to the home page"
-			href="{{main.home_url}}">
-				<i class="fa fa-home"></i>
-				Home
-			</a>
-		</li>
-	{{#unless user.is_logged}}
-		<li>
-			<a href="{{{main.signin_url}}}">
-				<i class="fa fa-twitter"></i>
-				Sign in with Twitter
-			</a>
-		</li>
-	{{else}} {{! ./ unless user.is_logged }}
-		<li>
-			<a
-			title="Go to your profile"
-			href="{{{user.profile_url}}}">
-				<img
-				class="circle left-sidebar-profile-picture"
-				width="25"
-				height="25"
-				src="{{user.avatar}}"
-				onerror="this.src='{{get_image 'unknown.png'}}'" >
-				&nbsp;
-				{{user.name}}
-			</a>
-		</li>
-		<li>
-			<a
-			title="See your audios"
-			href="{{user.profile_url}}">
-				<i class="fa fa-headphones"></i>
-				Audios
-				{{#if user.audios_count}}
-				<span class="right _badge blue lighten-2">
-					{{user.audios_count}}
-				</span>
-				{{/if}}
-			</a>
-		</li>
-		<li>
-			<a
-			title="See your favorites"
-			href="{{user.favorites_url}}">
-				<i class="fa fa-star"></i>
-				Favorites
-				{{#if user.favorites_count}}
-				<span class="right _badge yellow darken-2">
-				{{user.favorites_count}}
-				</span>
-				{{/if}}
-			</a>
-		</li>
-		<li>
-			<a href="#payments" class="modal-trigger waves-effect waves-light">
-				<i class="fa fa-magic"></i>
-				Premium
-			</a>
-		</li>
-		<li>
-			<a href="#settings" class="modal-trigger waves-effect waves-light">
-				<i class="fa fa-cog"></i>
-				Settings
-			</a>
-		</li>
-		<li>
-			<a href="{{main.logout_url}}">
-				<i class="fa fa-sign-out"></i>
-				Log out
-			</a>
-		</li>
-		{{/unless}} {{! / user.is_logged }}
-	</ul>
+  <form method="GET" action="{{main.search_url}}">
+    <div class="input-field">
+      <input
+        type="text"
+        class="validate left-sidebar-search"
+        id="q"
+        name="q"
+        title="Type something to search"
+        >
+      <label for="q">
+        <i class="fa fa-search"></i>
+        &nbsp;Search...
+      </label>
+    </div>
+  </form>
+  <ul class="left-sidebar-list">
+    <li>
+      <a
+      title="Go to the home page"
+      href="{{main.home_url}}">
+        <i class="fa fa-home"></i>
+        Home
+      </a>
+    </li>
+  {{#unless user.is_logged}}
+    <li>
+      <a href="{{{main.signin_url}}}">
+        <i class="fa fa-twitter"></i>
+        Sign in with Twitter
+      </a>
+    </li>
+  {{else}} {{! ./ unless user.is_logged }}
+    <li>
+      <a
+      title="Go to your profile"
+      href="{{{user.profile_url}}}">
+        <img
+        class="circle left-sidebar-profile-picture"
+        width="25"
+        height="25"
+        src="{{user.avatar}}"
+        onerror="this.src='{{get_image 'unknown.png'}}'" >
+        &nbsp;
+        {{user.name}}
+      </a>
+    </li>
+    <li>
+      <a
+      title="See your audios"
+      href="{{user.profile_url}}">
+        <i class="fa fa-headphones"></i>
+        Audios
+        {{#if user.audios_count}}
+        <span class="right _badge blue lighten-2">
+          {{user.audios_count}}
+        </span>
+        {{/if}}
+      </a>
+    </li>
+    <li>
+      <a
+      title="See your favorites"
+      href="{{user.favorites_url}}">
+        <i class="fa fa-star"></i>
+        Favorites
+        {{#if user.favorites_count}}
+        <span class="right _badge yellow darken-2">
+        {{user.favorites_count}}
+        </span>
+        {{/if}}
+      </a>
+    </li>
+    <li>
+      <a href="#payments" class="modal-trigger waves-effect waves-light">
+        <i class="fa fa-magic"></i>
+        Premium
+      </a>
+    </li>
+    <li>
+      <a href="#settings" class="modal-trigger waves-effect waves-light">
+        <i class="fa fa-cog"></i>
+        Settings
+      </a>
+    </li>
+    <li>
+      <a href="{{main.logout_url}}">
+        <i class="fa fa-sign-out"></i>
+        Log out
+      </a>
+    </li>
+    {{/unless}} {{! / user.is_logged }}
+  </ul>
 </div>
 {{/if}} {{! / show_sidebar }}
 <div class="navbar-fixed">
-	<nav
-	{{#if main.show_sidebar}}
-	class="blue lighten-2 content"
-	{{else}}
-	class="blue lighten-2"
-	{{/if}}
-	>
-	{{#if main.show_sidebar}}
-	{{! just to show the open button in the mobile side }}
-		<a
-		href="javascript:void(0);"
-		data-activates="slide-out"
-		class="button-collapse sidebar-open">
-			<i class="mdi-navigation-menu"></i>
-		</a>
-	{{/if}} {{! / show_sidebar}}
-		<div class="nav-wrapper">
-			<a href="{{main.home_url}}" class="brand-logo center navbar-logo">
-				TwitAudio
-			</a>
-		</div>
-	</nav>
+  <nav
+  {{#if main.show_sidebar}}
+  class="blue lighten-2 content"
+  {{else}}
+  class="blue lighten-2"
+  {{/if}}
+  >
+  {{#if main.show_sidebar}}
+  {{! just to show the open button in the mobile side }}
+    <a
+    href="javascript:void(0);"
+    data-activates="slide-out"
+    class="button-collapse sidebar-open">
+      <i class="mdi-navigation-menu"></i>
+    </a>
+  {{/if}} {{! / show_sidebar}}
+    <div class="nav-wrapper">
+      <a href="{{main.home_url}}" class="brand-logo center navbar-logo">
+        TwitAudio
+      </a>
+    </div>
+  </nav>
 </div>
 {{/if}} {{! /show navbar }}
 {{! ----- All the content dynamic content of the page goes here ------ }}
@@ -189,54 +189,54 @@
 }}
 {{#if main.after_login}}
  <div id="welcome" class="modal bottom-sheet">
-	<div class="modal-content">
-		<h4>
-			Welcome
-		</h4>
-		<p>
-			Welcome to TwitAudio! We are very happy that you are here.
-		</p>
-		<p>
-			{{! it must be 'public' or 'private' }}
-			Your audios were set as {{main.after_login.status}} because your tweets are also {{main.after_login.status}}.
-			You can change this on your
-			<a href="#settings" class="modal-trigger">Settings</a>.
-		</p>
-		<p>
-			By using TwitAudio, you agree with our
-				<a href="{{main.terms_url}}">terms and conditions</a>.
-		</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!"
-		class="modal-action modal-close waves-effect waves-green btn-flat">
-			OK
-		</a>
-	</div>
+  <div class="modal-content">
+    <h4>
+      Welcome
+    </h4>
+    <p>
+      Welcome to TwitAudio! We are very happy that you are here.
+    </p>
+    <p>
+      {{! it must be 'public' or 'private' }}
+      Your audios were set as {{main.after_login.status}} because your tweets are also {{main.after_login.status}}.
+      You can change this on your
+      <a href="#settings" class="modal-trigger">Settings</a>.
+    </p>
+    <p>
+      By using TwitAudio, you agree with our
+        <a href="{{main.terms_url}}">terms and conditions</a>.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!"
+    class="modal-action modal-close waves-effect waves-green btn-flat">
+      OK
+    </a>
+  </div>
 </div>
 <script>
 window.onLoadFunctions.push( function() {
-	$("#welcome").openModal();
+  $("#welcome").openModal();
 });
 </script>
 {{/if}} {{! / main.after_login}}
 
 {{!
-	show the messages of error after a failed login
-	or after the logout
+  show the messages of error after a failed login
+  or after the logout
 }}
 {{#if main.logout_successful}}
 <script>
-	window.onLoadFunctions.push( function() {
-		displayInfo("You are now logged out.", 10000);
-	});
+  window.onLoadFunctions.push( function() {
+    displayInfo("You are now logged out.", 10000);
+  });
 </script>
 {{/if}}
 {{#if main.login_error}}
 <script>
-	window.onLoadFunctions.push( function() {
-		displayError("{{{main.login_error}}}", 10000);
-	});
+  window.onLoadFunctions.push( function() {
+    displayError("{{{main.login_error}}}", 10000);
+  });
 </script>
 {{/if}}
 
@@ -244,21 +244,21 @@ window.onLoadFunctions.push( function() {
 
 {{#if footer.show_ads}}
 <div class="box footer-ads">
-	<p class="title">Advertising</p>
-	<script
-	async
-	src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
-	</script>
+  <p class="title">Advertising</p>
+  <script
+  async
+  src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+  </script>
 <!-- Responsive -->
-	<ins class="adsbygoogle"
-		style="display:block"
-		data-ad-client="ca-pub-1967021427191293"
-		data-ad-slot="1547888976"
-		data-ad-format="auto">
-	</ins>
-	<script>
-		(adsbygoogle = window.adsbygoogle || []).push({});
-	</script>
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-1967021427191293"
+    data-ad-slot="1547888976"
+    data-ad-format="auto">
+  </ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 </div>
 {{/if}}
 {{! google analytics @todo place it in the scripts }}
@@ -274,88 +274,88 @@ var maxDuration     = "{{user.audio_duration_limit}}";
 </script>
 {{#if footer.show_page_footer}}
 <footer class="page-footer grey darken-3">
-	<div class="container">
-		<div class="row">
-			<div class="col l6 s12">
-				<h5 class="white-text">
-					We've reached the end
-				</h5>
-				<p class="grey-text text-lighten-4">
-					Haven't we?
-				</p>
-			</div>
-			<div class="col l4 offset-l2 s12">
-				<h5 class="white-text">
-					More info
-				</h5>
-				<ul>
-					<li>
-						<a
-						class="grey-text text-lighten-4"
-						href="{{main.about_url}}">
-							About
-						</a>
-					</li>
-					<li>
-						<a
-						class="grey-text text-lighten-4"
-						href="{{main.terms_url}}">
-							Terms and conditions
-						</a>
-					</li>
-					<li>
-						<a
-						class="grey-text text-lighten-4"
-						href="{{main.privacy_url}}">
-							Privacy Policy
-						</a>
-					</li>
-					<li>
-						<a
-						class="grey-text text-lighten-4"
-						href="{{main.faq_url}}">
-							FAQ
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-		</div>
-		  <div class="footer-copyright grey darken-4">
-			<div class="container">
-			TwitAudio © 2015-{{footer.current_year}}
-				<div class="right">
-					<a
-					title="Follow us on Twitter"
-					class="grey-text text-lighten-4"
-					href="//twitter.com/twit_audio">
-						<i class="fa fa-twitter"></i>
-					</a>
-					&nbsp;
-					<a
-					class="grey-text text-lighten-4"
-					href="//fb.com/twitaudio">
-						<i class="fa fa-facebook"></i>
-					</a>
-				</div>
-			</div>
-		</div>
+  <div class="container">
+    <div class="row">
+      <div class="col l6 s12">
+        <h5 class="white-text">
+          We've reached the end
+        </h5>
+        <p class="grey-text text-lighten-4">
+          Haven't we?
+        </p>
+      </div>
+      <div class="col l4 offset-l2 s12">
+        <h5 class="white-text">
+          More info
+        </h5>
+        <ul>
+          <li>
+            <a
+            class="grey-text text-lighten-4"
+            href="{{main.about_url}}">
+              About
+            </a>
+          </li>
+          <li>
+            <a
+            class="grey-text text-lighten-4"
+            href="{{main.terms_url}}">
+              Terms and conditions
+            </a>
+          </li>
+          <li>
+            <a
+            class="grey-text text-lighten-4"
+            href="{{main.privacy_url}}">
+              Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a
+            class="grey-text text-lighten-4"
+            href="{{main.faq_url}}">
+              FAQ
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    </div>
+      <div class="footer-copyright grey darken-4">
+      <div class="container">
+      TwitAudio © 2015-{{footer.current_year}}
+        <div class="right">
+          <a
+          title="Follow us on Twitter"
+          class="grey-text text-lighten-4"
+          href="//twitter.com/twit_audio">
+            <i class="fa fa-twitter"></i>
+          </a>
+          &nbsp;
+          <a
+          class="grey-text text-lighten-4"
+          href="//fb.com/twitaudio">
+            <i class="fa fa-facebook"></i>
+          </a>
+        </div>
+      </div>
+    </div>
 </footer>
 {{/if}} {{! ./ show_main_footer }}
 {{#if user.is_logged }}
-	{{! load the modals for settings and footer }}
-	{{{get_partial 'settings' this}}}
-	{{{get_partial 'premium'  this}}}
+  {{! load the modals for settings and footer }}
+  {{{get_partial 'settings' this}}}
+  {{{get_partial 'premium'  this}}}
 {{/if}}
 {{#each footer.scripts}}
-	<script
-	type="text/javascript"
-	src="{{get_script this}}"
-	></script>
+  <script
+  type="text/javascript"
+  src="{{get_script this}}"
+  ></script>
 {{/each}}
 <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
 <script type="text/javascript">
-	Stripe.setPublishableKey('{{main.stripe_key}}');
+  Stripe.setPublishableKey('{{main.stripe_key}}');
 </script>
 </body>
 </html>

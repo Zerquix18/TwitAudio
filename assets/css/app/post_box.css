@@ -4,102 +4,102 @@
  * and effects.
  */
 .post-box {
-	margin: 0 auto;
-	 width: 250px;
+  margin: 0 auto;
+   width: 250px;
 }
 .post-box i {
-	/* resize icons :) */
-	font-size: 70px;
-	margin: 0 10px;
+  /* resize icons :) */
+  font-size: 70px;
+  margin: 0 10px;
 }
 .post-record,
 .post-upload {
-	cursor: pointer;
-	text-align: center;
+  cursor: pointer;
+  text-align: center;
 }
 .post-or {
-	line-height: 70px;
+  line-height: 70px;
 }
 .post-or,
 .post-action-text {
-	margin: 0;
-	color: #616161;
-	font-family: Helvetica, 'Nelvetica Neue', 'Helvetica Neue LT',
-	'Roboto', Arial, Serif;
-	-webkit-user-select: none; /* Chrome/Safari */        
-	   -moz-user-select: none; /* Firefox */
-	    -ms-user-select: none; /* IE10+ */
-		 -o-user-select: none;
-		    user-select: none;
+  margin: 0;
+  color: #616161;
+  font-family: Helvetica, 'Nelvetica Neue', 'Helvetica Neue LT',
+  'Roboto', Arial, Serif;
+  -webkit-user-select: none; /* Chrome/Safari */        
+     -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+ */
+     -o-user-select: none;
+        user-select: none;
 }
 .waiting-box {
-	height: 100px;
+  height: 100px;
 }
 .waiting-text {
-	margin: 0 auto;
-	font-size: 16px;
-	text-align: center;
+  margin: 0 auto;
+  font-size: 16px;
+  text-align: center;
 }
 .uploading-box {
-	margin: 20px 0;
-	padding: 0 40px;    
+  margin: 20px 0;
+  padding: 0 40px;    
 }
 .uploading-text {
-	text-align: center;
+  text-align: center;
 }
 .record-box {
-	margin: 20px auto;
-	text-align: center;
+  margin: 20px auto;
+  text-align: center;
 }
 .record-actions,
 .record-actions span {
-	font-size: 20px;
-	color: #424242;
+  font-size: 20px;
+  color: #424242;
 }
 .record-count {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 .record-stop,
 .record-cancel {
-	cursor: pointer;
+  cursor: pointer;
 }
 .upload-file {
-	visibility: hidden;
-	display: none;
+  visibility: hidden;
+  display: none;
 }
 .cut-form {
-	min-height: 100px;
-	text-align: center;
-	margin-top: 10px;
+  min-height: 100px;
+  text-align: center;
+  margin-top: 10px;
 }
 .cut-inputs {
-	margin: 10px auto;
+  margin: 10px auto;
 }
 .cut-inputs input {
-	width: 35px;
+  width: 35px;
 }
 .post-description-box {
-	margin: 30px 0 0 10px;
+  margin: 30px 0 0 10px;
 }
 .post-send_to_twitter-box {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 .post-buttons {
-	margin:0 auto;
-	width: 300px;
+  margin:0 auto;
+  width: 300px;
 }
 .post-footer {
-	min-height: 40px;
+  min-height: 40px;
 }
 @media (max-width: 400px) {
-	.post-buttons {
-		width: 270px;
-	}
+  .post-buttons {
+    width: 270px;
+  }
 }
 .effects {
-	max-width: 500px;
+  max-width: 500px;
 }
 .effect-action-choose {
-	margin: 25px auto;
-	display: block;
+  margin: 25px auto;
+  display: block;
 }

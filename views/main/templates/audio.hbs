@@ -1,107 +1,107 @@
 {{!
-	Template for the audios page :)
-	Shows a big audio and its replies
+  Template for the audios page :)
+  Shows a big audio and its replies
 }}
 <div class="content main">
-	<div class="row">
-		<div class="col l9 m12 s12">
-			<div class="box">
-				{{{get_partial 'audio' audio.audio}}}
-				<div class="audio-share-buttons">
-					<script type="text/javascript"
-					async
-					src="https://platform.twitter.com/widgets.js">
-					</script>
-					<a
-					class="twitter-share-button"
-					data-size="large"
-					href="{{{audio.twitter_share_url}}}">
-						<i class="fa fa-twitter"></i>&nbsp;
-						Tweet
-					</a>
-				</div>
-				<hr>
-				<p class="title">
-					Replies
-				</p>
-				{{#if user.is_logged}}
-				<form
-				method="POST"
-				id="reply-form"
-				action="{{main.ajax_url}}post/reply">
-				<input type="hidden" name="id" value="{{audio.audio.id}}">
-					<div class="input-field">
-   						<textarea
-   						class="materialize-textarea"
-   						name="reply"
-   						maxlength="200"
-   						id="reply-input"
-   						required="required"></textarea>
-						<label id="reply-input-label">
-							<i class="fa fa-pencil"></i>
-							&nbsp;Write a reply
-						</label>
-					</div>
-					<div class="reply-options">
-						<input type="hidden" name="s_twitter" value="0">
-						<input
-						checked="checked"
-						type="checkbox"
-						id="twsent"
-						name="s_twitter"
-						value="1">
-						<label for="twsent">
-							Send to Twitter
-						</label>
-						<button
-						type="submit"
-						class="btn right waves-effect waves-light reply-submit"
-						id="reply-submit"
-						{{! disabled until they type something }}
-						disabled="disabled"
-						>
-							Reply&nbsp;
-							<i class="fa fa-send"></i>
-						</button>
-					</div>
-				</form>
-				{{else}} {{! / is_logged }}
-				<a
-				title="You must be logged in to leave a reply"
-				href="{{main.signin_url}}"
-				>
-					<img
-					class="signin"
-					src="{{{get_image 'signin.png'}}}">
-				</a>
-				{{/if}}
-				<div class="divider"></div>
-				<div id="replies">
-				{{#unless audio.replies.audios}}
-					{{{alert_info 'There are not replies yet... Be the first!'}}}
-				{{else}}
-					{{#each audio.replies.audios}}
-						{{{get_partial 'audio'}}}
-					{{/each}}
-				{{/unless}}
-				</div>
-			</div>
-		</div>
-		<div class="col l3 m12 s12">
-			{{{get_partial 'sidebar'}}}
-		</div>
-	</div>
+  <div class="row">
+    <div class="col l9 m12 s12">
+      <div class="box">
+        {{{get_partial 'audio' audio.audio}}}
+        <div class="audio-share-buttons">
+          <script type="text/javascript"
+          async
+          src="https://platform.twitter.com/widgets.js">
+          </script>
+          <a
+          class="twitter-share-button"
+          data-size="large"
+          href="{{{audio.twitter_share_url}}}">
+            <i class="fa fa-twitter"></i>&nbsp;
+            Tweet
+          </a>
+        </div>
+        <hr>
+        <p class="title">
+          Replies
+        </p>
+        {{#if user.is_logged}}
+        <form
+        method="POST"
+        id="reply-form"
+        action="{{main.ajax_url}}post/reply">
+        <input type="hidden" name="id" value="{{audio.audio.id}}">
+          <div class="input-field">
+               <textarea
+               class="materialize-textarea"
+               name="reply"
+               maxlength="200"
+               id="reply-input"
+               required="required"></textarea>
+            <label id="reply-input-label">
+              <i class="fa fa-pencil"></i>
+              &nbsp;Write a reply
+            </label>
+          </div>
+          <div class="reply-options">
+            <input type="hidden" name="s_twitter" value="0">
+            <input
+            checked="checked"
+            type="checkbox"
+            id="twsent"
+            name="s_twitter"
+            value="1">
+            <label for="twsent">
+              Send to Twitter
+            </label>
+            <button
+            type="submit"
+            class="btn right waves-effect waves-light reply-submit"
+            id="reply-submit"
+            {{! disabled until they type something }}
+            disabled="disabled"
+            >
+              Reply&nbsp;
+              <i class="fa fa-send"></i>
+            </button>
+          </div>
+        </form>
+        {{else}} {{! / is_logged }}
+        <a
+        title="You must be logged in to leave a reply"
+        href="{{main.signin_url}}"
+        >
+          <img
+          class="signin"
+          src="{{{get_image 'signin.png'}}}">
+        </a>
+        {{/if}}
+        <div class="divider"></div>
+        <div id="replies">
+        {{#unless audio.replies.audios}}
+          {{{alert_info 'There are not replies yet... Be the first!'}}}
+        {{else}}
+          {{#each audio.replies.audios}}
+            {{{get_partial 'audio'}}}
+          {{/each}}
+        {{/unless}}
+        </div>
+      </div>
+    </div>
+    <div class="col l3 m12 s12">
+      {{{get_partial 'sidebar'}}}
+    </div>
+  </div>
 </div>
 {{#if audio.replies.load_more}}
 <script type="text/javascript">
 window.loadMore = {
-	toLoad   : 'replies',
-	selector : '#replies',
-	data: {
-		id       : '{{audio.audio.id}}',
-		p        : 1,
-		reply_id : '{{audio.linked}}'
-	}
+  toLoad   : 'replies',
+  selector : '#replies',
+  data: {
+    id       : '{{audio.audio.id}}',
+    p        : 1,
+    reply_id : '{{audio.linked}}'
+  }
 };
 var audioId = {{audio.audio.id}}
 </script>

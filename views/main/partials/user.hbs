@@ -1,27 +1,27 @@
 {{!
-	User template
-	For the user search
+  User template
+  For the user search
 }}
 <ul class="user">
-	<li>
-		<a href="{{profile_url}}">
-			<img class="circle"
-				 src="{{avatar}}"
-				 onerror="this.src='{{get_image 'unknown.png'}}"
-				 height="48"
-				 width="48"
-			>
-		</a>
-	</li>
-	<li class="audio-user-name">
-		<a href="{{profile_url}}">
-		{{name}}
-		{{show_verified_badge is_verified}}
-		</a>
-	</li>
-	<li class="audio-user-user">
-		<a href="{{profile_url}}">
-			@{{username}}
-		</a>
-	</li>
+  <li>
+    <a href="{{profile_url}}">
+      <img class="circle"
+         src="{{avatar}}"
+         onerror="this.src='{{get_image 'unknown.png'}}"
+         height="48"
+         width="48"
+      >
+    </a>
+  </li>
+  <li class="audio-user-name">
+    <a href="{{profile_url}}">
+    {{name}}
+    {{show_verified_badge is_verified}}
+    </a>
+  </li>
+  <li class="audio-user-user">
+    <a href="{{profile_url}}">
+      @{{username}}
+    </a>
+  </li>
 </ul>

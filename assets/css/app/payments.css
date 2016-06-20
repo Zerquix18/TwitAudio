@@ -4,22 +4,22 @@
 *
 **/
 .premium-inputs {
-	margin: 10px auto;
-	width: 70%;
+  margin: 10px auto;
+  width: 70%;
 }
 .premium-tabs {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 .premium-text-enjoy {
-	font-family: Helvetica, 'Helvetica Neue', Arial, Serif, Times;
+  font-family: Helvetica, 'Helvetica Neue', Arial, Serif, Times;
 }
 .premium-action-record {
-	text-align: center;
-	display: block;
-	margin: 0 auto;
-	margin-top: 40px;
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+  margin-top: 40px;
 }
 .premium-action-record i {
-	color: #FF0000;
-	font-size: 12px;
+  color: #FF0000;
+  font-size: 12px;
 }
