@@ -6,8 +6,8 @@
 *
 **/
 .text > .container {
-  padding: 60px;
   background-color: #FFF;
+  padding: 60px;
 }
 .text-text {
   margin: 0 5px;

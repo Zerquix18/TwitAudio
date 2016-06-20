@@ -10,13 +10,13 @@
   background-color: #14455C;
 }
 .page-404 .container {
-  text-align: center;
   color: #FFF;
+  text-align: center;
 }
 .page-404 .not-found {
+  color: inherit;
   font-family: Roboto, Helvetica, Times, Serif, Arial;
   font-weight: bold;
-  color: inherit;
 }
 .page-404 .container img,
 .page-404 form {

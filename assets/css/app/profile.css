@@ -5,28 +5,28 @@
 *
 **/
 .profile-picture {
-  display: block;
-  margin: 10px auto;
-  border-width: 5px;
-  border-style: solid;
   border-color: #FFF;
+  border-style: solid;
+  border-width: 5px;
+  display: block;
   height: 150px;
+  margin: 10px auto;
   width: 150px;
 }
 .profile-name,
 .profile-user,
 .profile-bio {
   display: block;
-  text-align: center;
   font-family: 'Roboto', Helvetica, 'Helvetica Neue', Times, Serif, Arial;
   margin: 0;
+  text-align: center;
 }
 .profile-name {
   font-weight: bold;
 }
 .profile-bio {
   font-size: 17px;
-  margin:0 auto;
+  margin: 0 auto;
 }
 .tabs .indicator {
   background-color: #2196f3;

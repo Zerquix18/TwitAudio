@@ -11,8 +11,8 @@
     and places padding:0;
     fuck em ._.
   */
-  padding: 0 5px !important;
   color: #FFF;
+  padding: 0 5px !important;
 }
 /********* Sidebar *******/
 .side-nav li {
@@ -22,9 +22,9 @@
   background-color: #616161;
 }
 .left-sidebar-list a {
+  font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
   height: 40px;
   line-height: 40px;
-  font-family: Helvetica, 'Helvetica Neue', Times, Serif, Arial;
 }
 /*
 * if you quit .side-nav from start

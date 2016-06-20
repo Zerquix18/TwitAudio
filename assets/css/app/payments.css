@@ -14,10 +14,10 @@
   font-family: Helvetica, 'Helvetica Neue', Arial, Serif, Times;
 }
 .premium-action-record {
-  text-align: center;
   display: block;
-  margin: 0 auto;
   margin-top: 40px;
+  margin: 0 auto;
+  text-align: center;
 }
 .premium-action-record i {
   color: #FF0000;

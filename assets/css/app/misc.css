@@ -13,8 +13,8 @@
   margin-bottom: 10px;
 }
 .search-submit {
-  margin-top: 15px;
   display: block;
+  margin-top: 15px;
   margin: 0 auto;
 }
 
@@ -29,8 +29,8 @@ ul.user .uname {
   font-size: 20px;
 }
 ul.user li a {
-  float: left;
   color: inherit;
+  float: left;
   text-decoration: none;
 }
 ul.user .verified {
@@ -50,9 +50,9 @@ ul.user .verified {
 /** footer */
 
 .footer-ads {
-  max-width: 720px;
   display: block;
   margin: 10px auto 20px auto;
+  max-width: 720px;
 }
 
 /** sidebar **/
@@ -62,13 +62,13 @@ ul.user .verified {
 }
 
 b.caret {
+  border-left:  4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top:   4px dashed;
+  border-top:   4px solid \9;
   display: inline-block;
-  width: 0;
   height: 0;
   margin-left: 2px;
   vertical-align: middle;
-  border-top: 4px dashed;
-  border-top: 4px solid \9;
-  border-right: 4px solid transparent;
-  border-left: 4px solid transparent;
+  width: 0;
 }

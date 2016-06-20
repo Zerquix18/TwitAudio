@@ -5,7 +5,7 @@
  */
 .post-box {
   margin: 0 auto;
-   width: 250px;
+  width: 250px;
 }
 .post-box i {
   /* resize icons :) */
@@ -22,10 +22,10 @@
 }
 .post-or,
 .post-action-text {
-  margin: 0;
   color: #616161;
   font-family: Helvetica, 'Nelvetica Neue', 'Helvetica Neue LT',
   'Roboto', Arial, Serif;
+    margin: 0;
   -webkit-user-select: none; /* Chrome/Safari */        
      -moz-user-select: none; /* Firefox */
       -ms-user-select: none; /* IE10+ */
@@ -36,8 +36,8 @@
   height: 100px;
 }
 .waiting-text {
-  margin: 0 auto;
   font-size: 16px;
+  margin: 0 auto;
   text-align: center;
 }
 .uploading-box {
@@ -64,13 +64,13 @@
   cursor: pointer;
 }
 .upload-file {
-  visibility: hidden;
   display: none;
+  visibility: hidden;
 }
 .cut-form {
+  margin-top: 10px;
   min-height: 100px;
   text-align: center;
-  margin-top: 10px;
 }
 .cut-inputs {
   margin: 10px auto;
@@ -100,6 +100,6 @@
   max-width: 500px;
 }
 .effect-action-choose {
-  margin: 25px auto;
   display: block;
+  margin: 25px auto;
 }

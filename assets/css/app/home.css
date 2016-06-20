@@ -7,8 +7,6 @@
 *
 **/
 .home-header {
-  height: 500px;
-  width: 100%;
   background: url('../img/homepage-bg.png');
   background-attachment: fixed;
   -webkit-background-size: 100% 100%;
@@ -17,6 +15,8 @@
             background-size: 100% 100%;
   background-position: center center;
   background-repeat: no-repeat;
+  height: 500px;
+  width: 100%;
 }
 @media (max-width: 380px) {
   .home {
@@ -27,28 +27,28 @@
   padding-top: 20px;
 }
 .home-logo img.logo-full {
-  width: 323px;
-  height: 244px;
   display: block;
+  height: 244px;
   margin: 0 auto;
+  width: 323px;
 }
 @media (max-width: 415px) {
   .home-logo img.logo-full {
-    width: 275px;
     height: 200px;
+    width: 275px;
   }
 }
 @media (max-width: 360px) {
   .home-logo img.logo-full {
-    width: 200px;
     height: 150px;
+    width: 200px;
   }
 }
 .home-slogan {
-  text-align: center;
-  font-weight: bold;
   color: #FFF;
   font-size: 35px;
+  font-weight: bold;
+  text-align: center;
 }
 @media (max-width: 636px) {
   .home-slogan {

@@ -6,29 +6,29 @@
 *
 */
 .audio {
-  width: 100%;
-  min-height: 47px;
   margin-bottom: 10px;
+  min-height: 47px;
+  width: 100%;
 }
 .audio-user-avatar {
   float: left;
   vertical-align: middle;
 }
 .audio-user-name {
-  font-size: 17px;
-  font-weight: bold;
   color: #3B3B3B;
   display: inline;
+  font-size: 17px;
+  font-weight: bold;
   margin-left: 10px;
 }
 .audio-user-user {
-  font-size: 13px;
   color: #CCC;
+  font-size: 13px;
 }
 .audio-date {
+  color: #CCC;
   float: right;
   font-size: 15px;
-  color: #CCC;
   vertical-align: top;
 }
 @media (max-width: 300px) {
@@ -44,29 +44,29 @@
 }
 .reply-linked {
   font-weight: bold;
-  text-transform: uppercase;
   margin-left: 5px;
+  text-transform: uppercase;
 }
 .audio-description {
-  margin-top: 5px;
-  margin-left: 60px;
   margin-bottom: 5px;
+  margin-left: 60px;
+  margin-top: 5px;
 }
 .audio-play {
-  margin-top: 5px;
   margin-left: 60px;
+  margin-top: 5px;
 }
 .audio-footer {
-  vertical-align: bottom;
-  text-align: center;
   margin-right: 10px;
   margin-top: 20px;
+  text-align: center;
+  vertical-align: bottom;
 }
 .audio-action {
-  margin-left: 5px;
-  text-decoration: none;
   color: #CBCBCB;
   font-size: 18px;
+  margin-left: 5px;
+  text-decoration: none;
 }
 .audio-action-favorite {
   cursor: pointer;
@@ -95,8 +95,8 @@
 }
 .audio-big div.jp-volume-bar,
 .audio-big div.jp-progress {
-  top: 13px;
   height:11px;
+  top: 13px;
 }
 .audio-big div.jp-play-bar,
 .audio-big div.jp-seek-bar,
@@ -108,13 +108,13 @@
   top: 35px;
 }
 .audio-big .control {
+  font-size: 18px;
   left: 15px;
   top: 8px;
-  font-size: 18px;
 }
 .audio-big .vcontrol {
-  top: 10px;
   font-size: 15px;
+  top: 10px;
 }
 .audio-big .audio-btn i {
   font-size: 25px;
@@ -124,39 +124,39 @@
 }
 /* CONTROLS OF THE PLAYER */
 .jp-interface {
+  overflow: visible;
   position: relative;
   z-index: 1;
-  overflow: visible;
 }
 .jp-interface ul,
 .jp-interface ul li{
-  top:0;
   left:0;
-  right:0;
   margin:0;
   padding:0;
+  right:0;
+  top:0;
 }
 .jp-controls{
-  position: relative;
-  margin: 0;
-  padding: 0;
-  width: auto;
-  height: 22px;
-  background-color: #EDEDED;
   -webkit-box-shadow: inset 0 1px 0 0 #fff;
-     -moz-box-shadow: inset 0 1px 0 0 #fff;
-          box-shadow: inset 0 1px 0 0 #fff;
-  border-width: 1px;
-  border-style: solid;
+  -moz-box-shadow: inset 0 1px 0 0 #fff;
+  box-shadow: inset 0 1px 0 0 #fff;
+  background-color: #EDEDED;
   border-color: #babec4;
+  border-style: solid;
+  border-width: 1px;
+  height: 22px;
   list-style: none;
+  margin: 0;
   overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: auto;
 }
 .jp-controls a,
 .jp-toggles a {
-  text-decoration: none;
   display: none;
   overflow: hidden;
+  text-decoration: none;
 }
 /* BUTTONS */
 .jp-play,
@@ -165,17 +165,16 @@
 }
 .jp-play  i,
 .jp-pause i  {
-  position: absolute;
-  left: 11px;
-  /* em, so it's responsive */
-  top: 0.4em;
   color: #393939;
   font-size: 12px;
+  left: 11px;
+  position: absolute;
+  top: 0.4em;
 }
 .jp-mute   i,
 .jp-unmute i  {
-  position: absolute;
   color: #393939;
+  position: absolute;
   right: 70px;
   top: 2px;
 }
@@ -186,40 +185,34 @@
   display: none;
 }
 .jp-current-time {
-  position: absolute;
-  z-index:1;
-  top:21px;
-  left:0;
-  width:50px;
-  height:25px;
-  text-align:right;
-  font-size:13px;
   color:#626262;
+  font-size:13px;
+  height:25px;
+  left:0;
   line-height:25px;
   overflow:hidden;
+  position: absolute;
+  text-align:right;
+  top:21px;
+  width:50px;
+  z-index:1;
 }
 .jp-duration{
-  position:absolute;
-  z-index:1;
-  top:21px;
-  right:0;
-  width:55px;
-  height:25px;
-  text-align:left;
-  font-size:13px;
   color:#626262;
+  font-size:13px;
+  height:25px;
   line-height:25px;
   overflow:hidden;
+  position:absolute;
+  right:0;
+  text-align:left;
+  top:21px;
+  width:55px;
+  z-index:1;
 }
 /* VOLUME BAR */
 .jp-volume-bar {
-  position: absolute;
-  top:8px;
-  right:10px;
-  height:8px;
-  width:50px;
   background: #c9cdd1;
-
   background: -webkit-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
   background:    -moz-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
   background:     -ms-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
@@ -248,13 +241,16 @@
             inset 0 0 0 1px rgba(0, 0, 0, 0.2),
             inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 
-  overflow: hidden;
   cursor: pointer; 
+  height:8px;
+  overflow: hidden;
+  position: absolute;
+  right:10px;
+  top:8px;
+  width:50px;
 }
 
 .jp-volume-bar-value {
-  width: 0;
-  height: 7px;
   background: #009AFF;
   background: -webkit-linear-gradient(top, #009AFF 0, #0088D5 100%);
   background:    -moz-linear-gradient(top, #009AFF 0, #0088D5 100%);
@@ -271,20 +267,15 @@
     endColorstr='#0088D5',
     GradientType=0
   );
-  
-  border-width: 1px;
-  border-style: solid;
+
   border-color: #0077EF;
+  border-style: solid;
+  border-width: 1px;
+  height: 7px;
+  width: 0;
 }
 /* PROGRESS BAR */
 div.jp-progress {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  right: 105px;
-  left: 45px;
-  height: 8px;
-  
   background: #c9cdd1;
   background: -webkit-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
   background:    -moz-linear-gradient(top, #c9cdd1 0%, #d8dbde 100%);
@@ -310,21 +301,25 @@ div.jp-progress {
           box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3),
                 inset 0 0 0 1px rgba(0, 0, 0, 0.2),
                 inset 0 0 0 1px rgba(0, 0, 0, 0.2);
-    
-  overflow: hidden;
+
   cursor: pointer;
+  height: 8px;
+  left: 45px;
+  overflow: hidden;
+  position: absolute;
+  right: 105px;
+  top: 8px;
+  z-index: 2;
 }
 .jp-seek-bar {
-  margin: 0;
   height: 8px;
+  margin: 0;
   padding: 0;
-  }
+}
 .jp-seeking-bg {
   background: none;
 }
 div.jp-play-bar {
-  width: 0;
-  height: 8px;
   background: #009AFF;
   background: -webkit-linear-gradient(top, #009AFF 0, #0088D5 100%);
   background:    -moz-linear-gradient(top, #009AFF 0, #0088D5 100%);
@@ -340,9 +335,11 @@ div.jp-play-bar {
       endColorstr='#0088D5',
       GradientType=0
     );
-  border-width: 1px;
-  border-style: solid;
   border-color: #0077EF;
+  border-style: solid;
+  border-width: 1px;
+  height: 8px;
+  width: 0;
 }
 /* hide this cuz it always shows before the player to load */
 .jp-no-solution {
